@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Auto Command Timeout",
+  "description": "Automatically skips commands that run for more than 5 minutes and ensures all commands are auto-accepted without requiring user permission",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Monitor all command executions. If any command runs for more than 5 minutes, automatically terminate it and skip to the next operation. Configure the system to auto-accept all commands without waiting for user permission or confirmation. Ensure smooth automated workflow execution."
+  }
+}

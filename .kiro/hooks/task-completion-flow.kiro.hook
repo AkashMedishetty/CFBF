@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "name": "Task Completion Flow",
+  "description": "Monitors for task completion indicators and prompts to test the completed work and initiate the next task in the development sequence",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "blood-donation-management/**/*.js",
+      "blood-donation-management/**/*.ts",
+      "blood-donation-management/**/*.jsx",
+      "blood-donation-management/**/*.tsx",
+      "blood-donation-management/**/*.json",
+      "blood-donation-management/**/*.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A task appears to have been completed based on recent file changes. Please:\n\n1. **Test the completed work**: Review the changes and run appropriate tests (unit tests, integration tests, or manual testing) to verify the implementation works correctly\n2. **Validate against requirements**: Ensure the completed task meets the specified requirements and follows the project's coding standards and conventions\n3. **Start the next task**: Based on the project roadmap and current progress, identify and begin work on the next logical task in the development sequence\n\nFocus on maintaining the development momentum while ensuring quality standards are met."
+  }
+}
