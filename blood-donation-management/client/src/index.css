@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS properties for theme switching */
+:root {
+  --color-primary: 220 38 38; /* red-600 */
+  --color-primary-foreground: 255 255 255;
+  --color-secondary: 71 85 105; /* slate-600 */
+  --color-secondary-foreground: 255 255 255;
+  --color-background: 255 255 255;
+  --color-foreground: 15 23 42; /* slate-900 */
+  --color-muted: 241 245 249; /* slate-100 */
+  --color-muted-foreground: 100 116 139; /* slate-500 */
+  --color-border: 226 232 240; /* slate-200 */
+  --color-input: 255 255 255;
+  --color-ring: 220 38 38; /* red-600 */
+}
+
+.dark {
+  --color-primary: 239 68 68; /* red-500 */
+  --color-primary-foreground: 255 255 255;
+  --color-secondary: 71 85 105; /* slate-600 */
+  --color-secondary-foreground: 255 255 255;
+  --color-background: 2 6 23; /* slate-950 */
+  --color-foreground: 248 250 252; /* slate-50 */
+  --color-muted: 15 23 42; /* slate-900 */
+  --color-muted-foreground: 148 163 184; /* slate-400 */
+  --color-border: 30 41 59; /* slate-800 */
+  --color-input: 30 41 59; /* slate-800 */
+  --color-ring: 239 68 68; /* red-500 */
+}
+
+/* Base styles */
+* {
+  border-color: rgb(var(--color-border));
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--color-muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-muted-foreground));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-secondary));
+}
+
+/* Focus styles for accessibility */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900;
+}
+
+/* Animation utilities */
+.animate-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.animate-out {
+  animation: fadeOut 0.3s ease-in-out;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Custom component styles */
+.btn-primary {
+  @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus-ring;
+}
+
+.btn-secondary {
+  @apply bg-secondary-100 hover:bg-secondary-200 text-secondary-900 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus-ring;
+}
+
+.card {
+  @apply bg-white dark:bg-slate-800 rounded-xl shadow-soft border border-slate-200 dark:border-slate-700 p-6;
+}
+
+.input-field {
+  @apply w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus-ring;
+}

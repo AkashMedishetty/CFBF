@@ -1,0 +1,30 @@
+{
+  "name": "call-for-blood-foundation",
+  "version": "1.0.0",
+  "description": "Blood Donation Management System - A revolutionary digital platform for connecting blood donors and recipients",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "cd client && npm start",
+    "server": "cd server && npm run dev",
+    "build": "cd client && npm run build",
+    "install-client": "cd client && npm install",
+    "install-server": "cd server && npm install",
+    "install-all": "npm run install-server && npm run install-client",
+    "start": "cd server && npm start",
+    "seed:education": "cd server && node scripts/seedEducation.js",
+    "db:seed": "npm run seed:education"
+  },
+  "keywords": [
+    "blood-donation",
+    "healthcare",
+    "emergency-response",
+    "whatsapp-integration",
+    "donor-matching"
+  ],
+  "author": "Call For Blood Foundation",
+  "license": "PROPRIETARY",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

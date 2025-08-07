@@ -1,0 +1,123 @@
+{
+  "content": [
+    {
+      "_id": "6501234567890abcdef12345",
+      "title": "Complete Guide to Blood Donation Preparation",
+      "slug": "complete-guide-to-blood-donation-preparation",
+      "type": "guide",
+      "category": "preparation",
+      "content": "# Complete Guide to Blood Donation Preparation\n\nBlood donation is a noble act that can save lives. Proper preparation ensures a safe and comfortable donation experience for both you and the recipient.\n\n## Before Your Donation\n\n### 24-48 Hours Before\n- Get adequate sleep (7-8 hours)\n- Stay well-hydrated by drinking plenty of water\n- Eat iron-rich foods like spinach, red meat, or beans\n- Avoid alcohol consumption\n\n### Day of Donation\n- Eat a healthy, iron-rich meal 3-4 hours before donation\n- Drink 16-20 ounces of water before arriving\n- Wear comfortable clothing with sleeves that can be rolled up\n- Bring a valid ID and donor card if you have one\n\n## What to Expect\n\n### Registration Process\n1. Complete health questionnaire\n2. Mini-physical examination (temperature, blood pressure, pulse)\n3. Hemoglobin test\n4. Review of medical history\n\n### Donation Process\n1. Comfortable seating in donation chair\n2. Arm cleaning and needle insertion\n3. 8-10 minutes of actual donation\n4. Post-donation monitoring\n\n## After Donation Care\n\n### Immediate Care (First 24 Hours)\n- Keep bandage on for 4-6 hours\n- Avoid heavy lifting with donation arm\n- Drink extra fluids\n- Eat iron-rich foods\n\n### Recovery Tips\n- Rest if feeling lightheaded\n- Avoid strenuous exercise for 24 hours\n- Monitor donation site for any unusual symptoms\n- Contact medical staff if concerns arise\n\n## Common Concerns Addressed\n\n**Will it hurt?** Most donors experience only a brief pinch during needle insertion.\n\n**How long does it take?** The entire process takes about 45-60 minutes, with actual donation taking 8-10 minutes.\n\n**Is it safe?** Yes, all equipment is sterile and used only once. There's no risk of infection.\n\nRemember, your donation can save up to three lives. Thank you for your generosity!",
+      "excerpt": "A comprehensive guide covering everything you need to know about preparing for blood donation, from pre-donation care to post-donation recovery.",
+      "author": {
+        "name": "Dr. Sarah Johnson",
+        "title": "Hematologist",
+        "credentials": "MD, PhD in Hematology"
+      },
+      "tags": ["preparation", "safety", "health", "donation process"],
+      "readingTime": 8,
+      "difficulty": "beginner",
+      "isPublished": true,
+      "isFeatured": true,
+      "publishedAt": "2024-01-15T00:00:00.000Z",
+      "views": 1250,
+      "downloadCount": 45,
+      "likes": 89
+    },
+    {
+      "_id": "6501234567890abcdef12346",
+      "title": "Nutrition Tips for Blood Donors",
+      "slug": "nutrition-tips-for-blood-donors",
+      "type": "article",
+      "category": "nutrition",
+      "content": "# Nutrition Tips for Blood Donors\n\nProper nutrition plays a crucial role in maintaining healthy blood levels and ensuring successful donations.\n\n## Iron-Rich Foods\n\n### Best Sources\n- **Red meat**: Beef, lamb (3-4mg iron per serving)\n- **Poultry**: Chicken, turkey (1-2mg iron per serving)\n- **Fish**: Salmon, tuna, sardines (1-3mg iron per serving)\n- **Plant sources**: Spinach, lentils, tofu (2-6mg iron per serving)\n\n### Enhancing Iron Absorption\n- Combine with Vitamin C sources (citrus fruits, tomatoes, bell peppers)\n- Cook in cast iron cookware\n- Avoid tea and coffee with iron-rich meals\n\n## Hydration Guidelines\n\n### Daily Requirements\n- **Men**: 15.5 cups (3.7 liters) of fluids daily\n- **Women**: 11.5 cups (2.7 liters) of fluids daily\n- **Pre-donation**: Extra 16-20 oz of water\n\n### Best Hydration Sources\n- Water (primary choice)\n- Natural fruit juices\n- Herbal teas\n- Milk and dairy products\n\n## Foods to Avoid\n\n### Before Donation\n- Fatty or greasy foods (can affect blood tests)\n- Excessive caffeine\n- Alcohol (24 hours before)\n- High-sodium processed foods\n\n### After Donation\n- Alcohol (for 24 hours)\n- Very hot beverages immediately after\n\n## Recovery Nutrition\n\n### Immediate Post-Donation (0-2 hours)\n- Light snacks provided at donation center\n- Continue hydrating\n- Avoid heavy meals\n\n### 24-48 Hours After\n- Focus on iron-rich foods\n- Include protein for tissue repair\n- Maintain increased fluid intake\n- Consider iron supplements if recommended\n\n## Special Dietary Considerations\n\n### Vegetarian/Vegan Donors\n- Focus on plant-based iron sources\n- Combine with Vitamin C\n- Consider B12 supplementation\n- Monitor iron levels regularly\n\n### Donors with Dietary Restrictions\n- Consult with healthcare provider\n- Plan alternative iron sources\n- Consider nutritional supplements\n- Monitor hemoglobin levels closely\n\nRemember: Good nutrition is an ongoing commitment, not just a pre-donation requirement!",
+      "excerpt": "Essential nutrition guidelines for blood donors, including iron-rich foods, hydration tips, and dietary recommendations for optimal donation health.",
+      "author": {
+        "name": "Lisa Chen",
+        "title": "Registered Dietitian",
+        "credentials": "RD, MS in Nutrition Science"
+      },
+      "tags": ["nutrition", "iron", "hydration", "health", "recovery"],
+      "readingTime": 6,
+      "difficulty": "beginner",
+      "isPublished": true,
+      "isFeatured": false,
+      "publishedAt": "2024-01-20T00:00:00.000Z",
+      "views": 890,
+      "downloadCount": 23,
+      "likes": 67
+    },
+    {
+      "_id": "6501234567890abcdef12347",
+      "title": "Understanding Blood Types and Compatibility",
+      "slug": "understanding-blood-types-and-compatibility",
+      "type": "article",
+      "category": "medical_info",
+      "content": "# Understanding Blood Types and Compatibility\n\nBlood type compatibility is crucial for safe transfusions. Understanding your blood type helps you know who you can help and who can help you.\n\n## The ABO System\n\n### Blood Type Groups\n- **Type A**: Has A antigens, anti-B antibodies\n- **Type B**: Has B antigens, anti-A antibodies  \n- **Type AB**: Has both A and B antigens, no antibodies (Universal Plasma Donor)\n- **Type O**: Has no antigens, both anti-A and anti-B antibodies (Universal Red Cell Donor)\n\n## Rh Factor\n\n### Positive vs Negative\n- **Rh Positive (85% of population)**: Has Rh antigen\n- **Rh Negative (15% of population)**: Lacks Rh antigen\n\n## Compatibility Chart\n\n### Who Can Donate to Whom\n- **O-**: Universal donor (can donate to all types)\n- **AB+**: Universal recipient (can receive from all types)\n- **A+**: Can donate to A+, AB+\n- **A-**: Can donate to A+, A-, AB+, AB-\n- **B+**: Can donate to B+, AB+\n- **B-**: Can donate to B+, B-, AB+, AB-\n- **AB-**: Can donate to AB+, AB-\n- **O+**: Can donate to A+, B+, AB+, O+\n\n## Special Considerations\n\n### Rare Blood Types\n- **Rh-null**: Extremely rare, can donate to all Rh-negative types\n- **Duffy negative**: Common in African Americans, important for sickle cell patients\n- **Diego positive**: More common in Hispanic and Asian populations\n\n### Emergency Situations\n- O-negative used in emergencies when blood type unknown\n- Type-specific blood preferred when time allows\n- Cross-matching always performed before transfusion\n\n## Why Blood Type Matters\n\n### For Donors\n- Determines who can receive your donation\n- Affects donation frequency recommendations\n- Influences special donation programs (platelets, plasma)\n\n### For Recipients\n- Ensures safe transfusion\n- Prevents dangerous immune reactions\n- Optimizes treatment outcomes\n\n## Getting Tested\n\n### Where to Test\n- Blood donation centers\n- Healthcare providers\n- Home testing kits (less reliable)\n- Hospital laboratories\n\n### What to Expect\n- Simple blood draw\n- Results available same day\n- Free testing at most donation centers\n- Permanent record for future reference\n\n## Myths vs Facts\n\n**Myth**: Blood type determines personality\n**Fact**: No scientific evidence supports this claim\n\n**Myth**: O-negative donors are always in demand\n**Fact**: While valuable, all blood types are needed\n\n**Myth**: You can change your blood type\n**Fact**: Blood type is determined by genetics and cannot be changed\n\nUnderstanding your blood type empowers you to make informed decisions about donation and helps save lives in your community!",
+      "excerpt": "Comprehensive guide to blood types, compatibility, and the science behind safe blood transfusions.",
+      "author": {
+        "name": "Dr. Michael Rodriguez",
+        "title": "Transfusion Medicine Specialist",
+        "credentials": "MD, Board Certified in Pathology"
+      },
+      "tags": ["blood types", "compatibility", "medical", "science", "transfusion"],
+      "readingTime": 10,
+      "difficulty": "intermediate",
+      "isPublished": true,
+      "isFeatured": true,
+      "publishedAt": "2024-01-25T00:00:00.000Z",
+      "views": 1456,
+      "downloadCount": 78,
+      "likes": 123
+    }
+  ],
+  "faqs": [
+    {
+      "_id": "6501234567890abcdef22345",
+      "question": "How often can I donate blood?",
+      "answer": "For whole blood donations, you can donate every 8 weeks (56 days). For platelets, you can donate every 7 days, up to 24 times per year. For plasma, you can donate twice per week with at least 48 hours between donations. These intervals ensure your body has adequate time to replenish blood components safely.",
+      "category": "general",
+      "tags": ["frequency", "donation intervals", "safety"],
+      "priority": 95,
+      "isPublished": true,
+      "views": 2340,
+      "helpfulVotes": {
+        "positive": 187,
+        "negative": 12
+      },
+      "updatedBy": "System Administrator",
+      "lastReviewed": "2024-02-01T00:00:00.000Z"
+    },
+    {
+      "_id": "6501234567890abcdef22346",
+      "question": "What are the basic eligibility requirements for blood donation?",
+      "answer": "Basic requirements include: being at least 16-17 years old (varies by location), weighing at least 110 pounds, being in good general health, having adequate iron levels (hemoglobin), and not having donated blood in the past 8 weeks. Additional requirements may apply based on travel history, medications, and medical conditions.",
+      "category": "eligibility",
+      "tags": ["requirements", "age", "weight", "health"],
+      "priority": 90,
+      "isPublished": true,
+      "views": 1890,
+      "helpfulVotes": {
+        "positive": 156,
+        "negative": 8
+      },
+      "updatedBy": "System Administrator",
+      "lastReviewed": "2024-02-01T00:00:00.000Z"
+    },
+    {
+      "_id": "6501234567890abcdef22347",
+      "question": "Will donating blood hurt?",
+      "answer": "Most donors experience only a brief pinch when the needle is inserted, similar to a routine blood test. The actual donation process is painless. Some donors may feel slight pressure or a pulling sensation, but significant pain is not normal. If you experience unusual pain, inform the staff immediately.",
+      "category": "donation_process",
+      "tags": ["pain", "needle", "comfort"],
+      "priority": 85,
+      "isPublished": true,
+      "views": 1567,
+      "helpfulVotes": {
+        "positive": 134,
+        "negative": 15
+      },
+      "updatedBy": "System Administrator",
+      "lastReviewed": "2024-02-01T00:00:00.000Z"
+    }
+  ]
+}
