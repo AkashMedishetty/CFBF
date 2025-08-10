@@ -29,30 +29,23 @@ const HomePage = () => {
   const navigateWithLoading = useNavigateWithLoading();
   const { showEmergencyAlert } = useToast();
 
-  const [isFestivalOpen, setIsFestivalOpen] = useState(false);
+  const [isFestivalOpen, setIsFestivalOpen] = useState(true);
 
   useEffect(() => {
     logger.componentMount('HomePage');
     logger.startTimer('HomePage Render');
-    // Festival modal once per day (with URL override ?banner=1)
+    // Always show festival modal by default; allow explicit suppression via ?banner=0
     try {
-      const key = `festival-banner-${new Date().toISOString().slice(0,10)}`;
-      const seen = localStorage.getItem(key);
       const params = new URLSearchParams(window.location.search);
-      const forceBanner = params.get('banner') === '1';
-      if (forceBanner || !seen) {
-        setIsFestivalOpen(true);
-        localStorage.setItem(key, '1');
-      }
+      const disableBanner = params.get('banner') === '0';
+      setIsFestivalOpen(!disableBanner);
     } catch {}
 
-    // Show a demo emergency toast once per session, unless explicitly disabled via ?toast=0
+    // Always show emergency toast by default; allow explicit suppression via ?toast=0
     try {
       const params = new URLSearchParams(window.location.search);
       const disableToast = params.get('toast') === '0';
-      const forceToast = params.get('toast') === '1';
-      const demoShown = sessionStorage.getItem('demo-emergency-toast');
-      if ((forceToast || !demoShown) && !disableToast) {
+      if (!disableToast) {
         setTimeout(() => {
           showEmergencyAlert({
             name: 'John Doe',
@@ -61,8 +54,7 @@ const HomePage = () => {
             timeNeeded: 'ASAP',
             condition: 'Critical transfusion required'
           });
-          sessionStorage.setItem('demo-emergency-toast', '1');
-        }, 800);
+        }, 600);
       }
     } catch {}
     
