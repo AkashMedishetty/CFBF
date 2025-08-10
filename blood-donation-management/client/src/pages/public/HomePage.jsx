@@ -27,29 +27,49 @@ import {
 
 const HomePage = () => {
   const navigateWithLoading = useNavigateWithLoading();
-  const { /* showToast, showEmergencyAlert */ } = useToast();
-  const { /* showLoading */ } = useLoading();
+  const { showEmergencyAlert } = useToast();
 
   const [isFestivalOpen, setIsFestivalOpen] = useState(false);
 
   useEffect(() => {
     logger.componentMount('HomePage');
     logger.startTimer('HomePage Render');
-    
-    return () => {
-      logger.componentUnmount('HomePage');
-      logger.endTimer('HomePage Render');
-    };
-    // Festival modal once per day
+    // Festival modal once per day (with URL override ?banner=1)
     try {
       const key = `festival-banner-${new Date().toISOString().slice(0,10)}`;
       const seen = localStorage.getItem(key);
-      if (!seen) {
+      const params = new URLSearchParams(window.location.search);
+      const forceBanner = params.get('banner') === '1';
+      if (forceBanner || !seen) {
         setIsFestivalOpen(true);
         localStorage.setItem(key, '1');
       }
     } catch {}
 
+    // Show a demo emergency toast once per session, unless explicitly disabled via ?toast=0
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const disableToast = params.get('toast') === '0';
+      const forceToast = params.get('toast') === '1';
+      const demoShown = sessionStorage.getItem('demo-emergency-toast');
+      if ((forceToast || !demoShown) && !disableToast) {
+        setTimeout(() => {
+          showEmergencyAlert({
+            name: 'John Doe',
+            bloodType: 'A+',
+            location: 'City Hospital, Ward 3',
+            timeNeeded: 'ASAP',
+            condition: 'Critical transfusion required'
+          });
+          sessionStorage.setItem('demo-emergency-toast', '1');
+        }, 800);
+      }
+    } catch {}
+    
+    return () => {
+      logger.componentUnmount('HomePage');
+      logger.endTimer('HomePage Render');
+    };
   }, []);
 
   // const handleEmergencyRequest = () => {
@@ -133,7 +153,7 @@ const HomePage = () => {
               className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight"
             >
               A Beating Promise to Save Lives
-              <span className="block text-red-300">Call For Blood Foundation</span>
+              <span className="block text-white">Call For Blood Foundation</span>
             </motion.h1>
             
             <motion.p
@@ -177,9 +197,44 @@ const HomePage = () => {
         </div>
 
         {/* Floating elements */}
-        {/* Heart + heartbeat line visual */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-20">
+        {/* Heart + heartbeat line visual (subtle animation) */}
+        <motion.div
+          className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30"
+          animate={{ scale: [1, 1.06, 1] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+        >
           <Heart className="h-40 w-40 text-[#ff6b6b]" />
+        </motion.div>
+
+        {/* Centered heartbeat line (stationary, pulsing) */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <svg
+            width="560"
+            height="56"
+            viewBox="0 0 560 56"
+            fill="none"
+            className="opacity-80"
+          >
+            <defs>
+              <filter id="centerGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <motion.path
+              d="M0 28 H100 L120 28 L130 18 L140 38 L150 28 H220 L240 28 L250 10 L260 46 L270 28 H340 L360 28 L370 18 L380 38 L390 28 H460 L560 28"
+              stroke="rgba(255,107,107,0.75)"
+              strokeWidth={2}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              filter="url(#centerGlow)"
+              animate={{ opacity: [0.6, 1, 0.6], strokeWidth: [2, 3, 2] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </svg>
         </div>
       </section>
 

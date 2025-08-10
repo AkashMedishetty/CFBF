@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 // Utils
@@ -33,15 +33,28 @@ import ArticleDetail from './components/public/ArticleDetail';
 // Component to track route changes and hide loader after navigation
 const RouteTracker = () => {
   const location = useLocation();
-  const { hideLoading } = useLoading();
-  
+  const { showLoading, hideLoading } = useLoading();
+  const isFirstRenderRef = useRef(true);
+
   useEffect(() => {
     logger.route('NAVIGATE', location.pathname, 'APP');
     logger.debug(`Full location: ${JSON.stringify(location)}`, 'APP');
-    // Hide any pending loaders once the route changes
-    try { hideLoading(); } catch (e) { /* no-op */ }
-  }, [location]);
-  
+
+    // Skip showing loader on the very first mount to avoid flash
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
+
+    // Brief loader pulse on each route change
+    showLoading('Loading...');
+    const timeoutId = setTimeout(() => {
+      hideLoading();
+    }, 600);
+
+    return () => clearTimeout(timeoutId);
+  }, [location, showLoading, hideLoading]);
+
   return null;
 };
 
@@ -67,7 +80,7 @@ function App() {
         <ToastProvider>
           <Router>
             <RouteTracker />
-            <div className="min-h-screen bg-background text-foreground">
+            <div className="min-h-screen bg-white dark:bg-[rgb(var(--color-background))] text-foreground">
               <Header />
               
               <main className="flex-1">
