@@ -122,7 +122,7 @@ const Modal = ({
               initial="hidden"
               animate="visible"
               exit="exit"
-              className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-slate-800 rounded-xl shadow-strong border border-slate-200 dark:border-slate-700 ${className}`}
+              className={`relative w-full ${sizeClasses[size]} bg-white text-slate-900 dark:bg-slate-800 dark:text-white rounded-xl shadow-strong border border-slate-200 dark:border-slate-700 ${className}`}
             >
               {/* Header */}
               {(title || showCloseButton) && (
