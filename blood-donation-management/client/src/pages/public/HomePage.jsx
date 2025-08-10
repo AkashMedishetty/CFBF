@@ -139,7 +139,7 @@ const HomePage = () => {
       <section className="relative overflow-hidden text-white bg-[#170b0b] dark:bg-[#0e0707]">
         {/* Background pattern */}
         {/* EmergencyToast-style highlight glow and conic border */}
-        <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 pointer-events-none z-0">
           <div className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(ellipse_at_center,rgba(245,20,20,0.28),transparent_65%)] blur-3xl" />
           <div className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(ellipse_at_left,rgba(245,20,20,0.22),transparent_65%)] blur-3xl" />
           <div className="absolute inset-0 rounded-[3rem]">
@@ -152,22 +152,44 @@ const HomePage = () => {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="text-center"
+            className="relative z-20 text-center"
           >
             <motion.h1
               variants={itemVariants}
-              className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight"
+              className="max-w-5xl mx-auto text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-extrabold mb-4 md:mb-6 leading-[1.1] tracking-tight"
             >
               A Beating Promise to Save Lives
-              <span className="block text-white">Call For Blood Foundation</span>
+              {/* Heartbeat line precisely between the two lines */}
+              <div className="relative h-8 md:h-10 my-1 md:my-2">
+                <svg
+                  viewBox="0 0 560 56"
+                  className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-[560px] max-w-full h-full opacity-80"
+                  fill="none"
+                >
+                  <defs>
+                    <filter id="centerGlowTitle" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="3" result="blur" />
+                      <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <motion.path
+                    d="M0 28 H100 L120 28 L130 18 L140 38 L150 28 H220 L240 28 L250 10 L260 46 L270 28 H340 L360 28 L370 18 L380 38 L390 28 H460 L560 28"
+                    stroke="rgba(245,20,20,0.8)"
+                    strokeWidth={3}
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    filter="url(#centerGlowTitle)"
+                    animate={{ opacity: [0.6, 1, 0.6], strokeWidth: [2.5, 3.5, 2.5] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                  />
+                </svg>
+              </div>
+              <span className="block mt-3 md:mt-4 text-white">Call For Blood Foundation</span>
             </motion.h1>
-            
-            <motion.p
-              variants={itemVariants}
-              className="text-lg md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed"
-            >
-              Premium, verified, and secure connections between donors and recipients with real-time response and meaningful impact.
-            </motion.p>
+
 
             <motion.div
               variants={itemVariants}
@@ -205,43 +227,14 @@ const HomePage = () => {
         {/* Floating elements */}
         {/* Heart + heartbeat line visual (subtle animation) */}
         <motion.div
-          className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-30"
+          className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center opacity-50"
           animate={{ scale: [1, 1.06, 1] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <Heart className="h-40 w-40 text-[#f51414]" />
+          <Heart className="h-[22rem] w-[22rem] text-[#f51414]/45" />
         </motion.div>
 
-        {/* Centered heartbeat line (stationary, pulsing) */}
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <svg
-            width="560"
-            height="56"
-            viewBox="0 0 560 56"
-            fill="none"
-            className="opacity-80"
-          >
-            <defs>
-              <filter id="centerGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <motion.path
-              d="M0 28 H100 L120 28 L130 18 L140 38 L150 28 H220 L240 28 L250 10 L260 46 L270 28 H340 L360 28 L370 18 L380 38 L390 28 H460 L560 28"
-              stroke="#f51414"
-              strokeWidth={2}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              filter="url(#centerGlow)"
-              animate={{ opacity: [0.6, 1, 0.6], strokeWidth: [2, 3, 2] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          </svg>
-        </div>
+        {/* Removed extra centered heartbeat line to keep a single line between title rows */}
       </section>
 
       {/* Festival / Special Occasion Modal */}
