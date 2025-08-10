@@ -381,6 +381,7 @@ const HomePage = () => {
             >
               <Link to="/register">
                 <AnimatedButton
+                  variant="outline"
                   size="xl"
                   className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
                   onClick={() => {
