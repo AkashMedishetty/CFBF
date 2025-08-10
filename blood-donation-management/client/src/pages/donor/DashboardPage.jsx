@@ -257,7 +257,7 @@ const DashboardPage = () => {
   const eligibilityDays = getNextEligibilityDays();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-6">
+    <div className="min-h-screen bg-white dark:bg-[#121726] p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <motion.div

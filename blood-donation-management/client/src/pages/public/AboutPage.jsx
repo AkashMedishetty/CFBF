@@ -60,7 +60,7 @@ const AboutPage = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white dark:bg-[#121726]">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-20">
         <div className="absolute inset-0 opacity-20">
@@ -94,7 +94,7 @@ const AboutPage = () => {
       </section>
 
       {/* Mission & Vision Section */}
-      <section className="py-20 bg-white dark:bg-slate-900">
+      <section className="py-20 bg-white dark:bg-[#121726]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -141,7 +141,7 @@ const AboutPage = () => {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 bg-slate-50 dark:bg-slate-800">
+      <section className="py-20 bg-white dark:bg-[#121726]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -196,7 +196,7 @@ const AboutPage = () => {
       </section>
 
       {/* Story Section */}
-      <section className="py-20 bg-white dark:bg-slate-900">
+      <section className="py-20 bg-white dark:bg-[#121726]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -275,7 +275,7 @@ const AboutPage = () => {
       </section>
 
       {/* Contact CTA Section */}
-      <section className="py-20 bg-slate-50 dark:bg-slate-800">
+      <section className="py-20 bg-white dark:bg-[#121726]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             variants={containerVariants}

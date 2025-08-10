@@ -298,7 +298,7 @@ const HomePage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-slate-50 dark:bg-slate-800">
+      <section className="py-20 bg-white dark:bg-[#121726]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -354,7 +354,7 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-[#121726] text-white">
+      <section className="py-20 bg-white dark:bg-[#121726]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             variants={containerVariants}
@@ -364,13 +364,13 @@ const HomePage = () => {
           >
             <motion.h2
               variants={itemVariants}
-              className="text-3xl md:text-4xl font-bold text-white mb-6"
+              className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-6"
             >
               Ready to Save Lives?
             </motion.h2>
             <motion.p
               variants={itemVariants}
-              className="text-xl text-white/80 mb-8 max-w-2xl mx-auto"
+              className="text-xl text-slate-600 dark:text-white/80 mb-8 max-w-2xl mx-auto"
             >
               Join thousands of heroes who are making a difference in their communities. 
               Your donation can save up to 3 lives.

@@ -319,7 +319,7 @@ const OnboardingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-red-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-white dark:bg-[#121726] py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div
