@@ -208,7 +208,7 @@ const HomePage = () => {
           animate={{ scale: [1, 1.06, 1] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <Heart className="h-40 w-40 text-[#ff6b6b]" />
+          <Heart className="h-40 w-40 text-[#fca5a5]" />
         </motion.div>
 
         {/* Centered heartbeat line (stationary, pulsing) */}
@@ -231,7 +231,7 @@ const HomePage = () => {
             </defs>
             <motion.path
               d="M0 28 H100 L120 28 L130 18 L140 38 L150 28 H220 L240 28 L250 10 L260 46 L270 28 H340 L360 28 L370 18 L380 38 L390 28 H460 L560 28"
-              stroke="rgba(255,107,107,0.75)"
+              stroke="rgba(252,165,165,0.9)"
               strokeWidth={2}
               strokeLinejoin="round"
               strokeLinecap="round"
