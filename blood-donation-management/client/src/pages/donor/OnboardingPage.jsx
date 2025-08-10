@@ -34,8 +34,18 @@ const OnboardingPage = () => {
   useEffect(() => {
     logger.componentMount('OnboardingPage');
     
+    logger.debug('🔍 OnboardingPage user data', 'ONBOARDING_PAGE', {
+      hasUser: !!user,
+      userId: user?.id,
+      userIdUnderscore: user?._id,
+      userKeys: user ? Object.keys(user) : 'null',
+      locationState: location.state,
+      hasLocationUser: !!location.state?.user
+    });
+    
     // Redirect if no user data
     if (!user) {
+      logger.warn('❌ No user data found, redirecting to register', 'ONBOARDING_PAGE');
       navigate('/register');
       return;
     }
@@ -107,33 +117,22 @@ const OnboardingPage = () => {
   const handleDocumentComplete = async (documents) => {
     logger.ui('COMPLETE', 'DocumentUpload', { count: documents.length }, 'ONBOARDING_PAGE');
     
-    setIsLoading(true);
+    logger.debug('🎉 Document upload completed', 'ONBOARDING_PAGE', {
+      documentsCount: documents.length,
+      documentTypes: documents.map(doc => doc.type),
+      hasUser: !!user,
+      userId: user?.id
+    });
     
-    try {
-      const response = await fetch(`/api/v1/users/${user._id}/documents`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ documents })
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        setCompletedSteps(prev => ({ ...prev, documents: true }));
-        setCurrentStep(2);
-        logger.success('Documents uploaded successfully', 'ONBOARDING_PAGE');
-      } else {
-        throw new Error(data.message || 'Failed to save documents');
-      }
-    } catch (error) {
-      logger.error('Failed to complete document upload', 'ONBOARDING_PAGE', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
+    // Documents are already uploaded individually by DocumentUpload component
+    // We just need to mark this step as complete and move to the next step
+    setCompletedSteps(prev => ({ ...prev, documents: true }));
+    setCurrentStep(2);
+    
+    logger.success('✅ Documents step completed, moving to next step', 'ONBOARDING_PAGE', {
+      currentStep: 2,
+      completedSteps: { ...completedSteps, documents: true }
+    });
   };
 
   const handleQuestionnaireComplete = async (questionnaireData) => {

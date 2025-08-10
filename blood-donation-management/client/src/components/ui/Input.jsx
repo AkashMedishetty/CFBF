@@ -2,7 +2,7 @@ import React, { useState, forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
-const Input = forwardRef(({
+const Input = forwardRef(({ 
   label,
   type = 'text',
   value,
@@ -15,12 +15,14 @@ const Input = forwardRef(({
   required = false,
   icon: Icon,
   className = '',
+  multiline = false,
+  rows = 3,
   ...props
 }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
-  const isPassword = type === 'password';
+  const isPassword = !multiline && type === 'password';
   const inputType = isPassword && showPassword ? 'text' : type;
 
   const handleFocus = (e) => {
@@ -67,36 +69,66 @@ const Input = forwardRef(({
                 : 'text-slate-400'
           }`} />
         )}
-        
-        <motion.input
-          ref={ref}
-          type={inputType}
-          value={value}
-          onChange={onChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          placeholder={placeholder}
-          disabled={disabled}
-          className={`
-            w-full px-4 py-3 bg-white dark:bg-slate-800 border rounded-lg
-            transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
-            placeholder-slate-400 dark:placeholder-slate-500
-            text-slate-900 dark:text-white
-            ${error 
-              ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-              : 'border-slate-300 dark:border-slate-600 focus:ring-primary-500 focus:border-primary-500'
-            }
-            ${disabled 
-              ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-700' 
-              : 'hover:border-slate-400 dark:hover:border-slate-500'
-            }
-            ${Icon ? 'pl-12' : ''}
-            ${isPassword ? 'pr-12' : ''}
-          `}
-          whileFocus={{ scale: 1.01 }}
-          transition={{ duration: 0.15 }}
-          {...props}
-        />
+        {multiline ? (
+          <motion.textarea
+            ref={ref}
+            value={value}
+            onChange={onChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            placeholder={placeholder}
+            disabled={disabled}
+            rows={rows}
+            className={`
+              w-full px-4 py-3 bg-white dark:bg-slate-800 border rounded-lg
+              transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
+              placeholder-slate-400 dark:placeholder-slate-500
+              text-slate-900 dark:text-white
+              ${error 
+                ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                : 'border-slate-300 dark:border-slate-600 focus:ring-primary-500 focus:border-primary-500'
+              }
+              ${disabled 
+                ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-700' 
+                : 'hover:border-slate-400 dark:hover:border-slate-500'
+              }
+              ${Icon ? 'pl-12' : ''}
+            `}
+            whileFocus={{ scale: 1.01 }}
+            transition={{ duration: 0.15 }}
+            {...props}
+          />
+        ) : (
+          <motion.input
+            ref={ref}
+            type={inputType}
+            value={value}
+            onChange={onChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            placeholder={placeholder}
+            disabled={disabled}
+            className={`
+              w-full px-4 py-3 bg-white dark:bg-slate-800 border rounded-lg
+              transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
+              placeholder-slate-400 dark:placeholder-slate-500
+              text-slate-900 dark:text-white
+              ${error 
+                ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                : 'border-slate-300 dark:border-slate-600 focus:ring-primary-500 focus:border-primary-500'
+              }
+              ${disabled 
+                ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-700' 
+                : 'hover:border-slate-400 dark:hover:border-slate-500'
+              }
+              ${Icon ? 'pl-12' : ''}
+              ${isPassword ? 'pr-12' : ''}
+            `}
+            whileFocus={{ scale: 1.01 }}
+            transition={{ duration: 0.15 }}
+            {...props}
+          />
+        )}
         
         {isPassword && (
           <motion.button

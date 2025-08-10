@@ -1,0 +1,112 @@
+{
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "त्रुटि",
+    "success": "सफलता",
+    "cancel": "रद्द करें",
+    "save": "सहेजें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "close": "बंद करें",
+    "back": "वापस",
+    "next": "अगला",
+    "previous": "पिछला",
+    "submit": "जमा करें",
+    "search": "खोजें",
+    "filter": "फ़िल्टर",
+    "sort": "क्रमबद्ध करें",
+    "yes": "हाँ",
+    "no": "नहीं",
+    "accept": "स्वीकार करें",
+    "decline": "अस्वीकार करें",
+    "view": "देखें",
+    "share": "साझा करें",
+    "call": "कॉल करें",
+    "changeLanguage": "भाषा बदलें",
+    "currentLanguage": "वर्तमान भाषा: {language}",
+    "successRate": "सफलता दर"
+  },
+  "nav": {
+    "home": "होम",
+    "about": "हमारे बारे में",
+    "contact": "संपर्क",
+    "emergency": "आपातकाल",
+    "login": "लॉगिन",
+    "register": "पंजीकरण",
+    "dashboard": "डैशबोर्ड",
+    "profile": "प्रोफ़ाइल",
+    "logout": "लॉगआउट"
+  },
+  "emergency": {
+    "title": "आपातकालीन रक्त अनुरोध",
+    "urgent": "तत्काल",
+    "critical": "गंभीर",
+    "bloodType": "रक्त समूह",
+    "location": "स्थान",
+    "hospital": "अस्पताल",
+    "contact": "संपर्क",
+    "submit": "अनुरोध भेजें",
+    "success": "आपातकालीन अनुरोध सफलतापूर्वक भेजा गया",
+    "requestsToday": "आज के अनुरोध",
+    "activeRequests": "सक्रिय आपातकालीन अनुरोध",
+    "urgency": "तात्कालिकता स्तर"
+  },
+  "auth": {
+    "login": "लॉगिन",
+    "register": "पंजीकरण",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "confirmPassword": "पासवर्ड की पुष्टि करें",
+    "phone": "फोन नंबर",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "resetPassword": "पासवर्ड रीसेट करें",
+    "loginSuccess": "लॉगिन सफल",
+    "registerSuccess": "पंजीकरण सफल"
+  },
+  "donor": {
+    "dashboard": "दाता डैशबोर्ड",
+    "profile": "दाता प्रोफ़ाइल",
+    "history": "दान इतिहास",
+    "availability": "उपलब्धता",
+    "certificates": "प्रमाणपत्र",
+    "bloodType": "रक्त समूह",
+    "lastDonation": "अंतिम दान",
+    "totalDonations": "कुल दान",
+    "totalDonors": "कुल दाता: {count}"
+  },
+  "notification": {
+    "newRequest": "आपके क्षेत्र में नया रक्त अनुरोध",
+    "requestAccepted": "आपका रक्त अनुरोध स्वीकार कर लिया गया है",
+    "donationReminder": "आपके अगले दान का समय",
+    "emergencyAlert": "आपातकालीन रक्त अनुरोध - तत्काल सहायता की आवश्यकता"
+  },
+  "time": {
+    "now": "अभी",
+    "minutesAgo": "{count} मिनट पहले",
+    "hoursAgo": "{count} घंटे पहले",
+    "daysAgo": "{count} दिन पहले",
+    "today": "आज",
+    "yesterday": "कल",
+    "tomorrow": "कल"
+  },
+  "bloodType": {
+    "aPositive": "A+",
+    "aNegative": "A-",
+    "bPositive": "B+",
+    "bNegative": "B-",
+    "abPositive": "AB+",
+    "abNegative": "AB-",
+    "oPositive": "O+",
+    "oNegative": "O-"
+  },
+  "a11y": {
+    "skipToMain": "मुख्य सामग्री पर जाएं",
+    "skipToNav": "नेवीगेशन पर जाएं",
+    "openMenu": "मेनू खोलें",
+    "closeMenu": "मेनू बंद करें",
+    "loading": "सामग्री लोड हो रही है",
+    "error": "त्रुटि हुई",
+    "required": "आवश्यक फ़ील्ड",
+    "optional": "वैकल्पिक फ़ील्ड"
+  }
+}

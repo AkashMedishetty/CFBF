@@ -1,11 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Upload, 
   File, 
   Image, 
   CheckCircle, 
-  X, 
   AlertTriangle,
   Eye,
   Trash2,
@@ -124,15 +123,71 @@ const DocumentUpload = ({ onComplete, initialDocuments = [] }) => {
       formData.append('type', documentType.id);
       formData.append('userId', localStorage.getItem('userId'));
 
+      // Get token and validate
+      const token = localStorage.getItem('token');
+      
+      logger.debug('🔍 Getting token for document upload', 'DOCUMENT_UPLOAD', {
+        hasToken: !!token,
+        tokenLength: token?.length,
+        tokenPreview: token ? `${token.substring(0, 20)}...` : 'null',
+        allLocalStorageKeys: Object.keys(localStorage),
+        localStorageSize: JSON.stringify(localStorage).length
+      });
+      
+      if (!token) {
+        logger.error('❌ No authentication token found', 'DOCUMENT_UPLOAD');
+        throw new Error('Authentication token not found. Please log in again.');
+      }
+
+      logger.debug('🚀 Starting document upload with token', 'DOCUMENT_UPLOAD', { 
+        hasToken: !!token,
+        tokenLength: token?.length,
+        tokenPreview: token ? `${token.substring(0, 20)}...` : 'null',
+        documentType: documentType.id,
+        fileSize: file.size,
+        fileName: file.name
+      });
+
+      logger.debug('📡 Making upload request', 'DOCUMENT_UPLOAD', {
+        url: '/api/v1/documents/upload',
+        method: 'POST',
+        authHeader: `Bearer ${token.substring(0, 20)}...`,
+        hasFormData: !!formData
+      });
+
       const response = await fetch('/api/v1/documents/upload', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: formData
       });
 
+      logger.debug('📨 Upload response received', 'DOCUMENT_UPLOAD', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+
       const data = await response.json();
+      
+      logger.debug('📄 Upload response data', 'DOCUMENT_UPLOAD', {
+        success: data.success,
+        error: data.error,
+        message: data.message,
+        hasData: !!data.data
+      });
+
+      if (response.status === 401) {
+        // Authentication failed
+        setErrors(prev => ({
+          ...prev,
+          [documentType.id]: 'Authentication failed. Please log in again.'
+        }));
+        logger.error('Authentication failed during upload', 'DOCUMENT_UPLOAD');
+        return;
+      }
 
       if (data.success) {
         const newDocument = {

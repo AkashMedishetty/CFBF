@@ -22,7 +22,14 @@ class ApiClient {
 
   // Build full URL
   buildUrl(endpoint) {
-    // Always use absolute URLs for now to bypass proxy issues
+    // In development, use relative URLs to leverage the proxy
+    if (process.env.NODE_ENV === 'development') {
+      const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+      logger.debug(`Using relative URL for development: ${cleanEndpoint}`, 'API_CLIENT');
+      return cleanEndpoint;
+    }
+    
+    // In production, use the full URL
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
     const fullUrl = `${this.baseURL}/${cleanEndpoint}`;
     
@@ -46,10 +53,53 @@ class ApiClient {
       ...options,
     };
 
+    // Add token to headers if available and not already present
+    const token = localStorage.getItem('token');
+    if (token && !defaultOptions.headers.Authorization) {
+      defaultOptions.headers.Authorization = `Bearer ${token}`;
+    }
+
     try {
       logger.api('REQUEST', `${options.method || 'GET'} ${endpoint}`, 'API_CLIENT');
+      logger.debug('🚀 Making API request', 'API_CLIENT', {
+        url,
+        method: options.method || 'GET',
+        hasToken: !!token,
+        tokenPreview: token ? token.substring(0, 20) + '...' : 'null',
+        headers: Object.keys(defaultOptions.headers),
+        hasAuthHeader: !!defaultOptions.headers.Authorization
+      });
       
-      const response = await fetch(url, defaultOptions);
+      let response = await fetch(url, defaultOptions);
+
+      // If unauthorized, attempt token refresh once then retry original request
+      if (response.status === 401 && endpoint !== 'api/v1/auth/refresh') {
+        try {
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (refreshToken) {
+            const refreshRes = await fetch(this.buildUrl('api/v1/auth/refresh'), {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refreshToken })
+            });
+            if (refreshRes.ok) {
+              const refreshData = await refreshRes.json();
+              const newAccess = refreshData?.data?.accessToken;
+              if (newAccess) {
+                localStorage.setItem('token', newAccess);
+                defaultOptions.headers.Authorization = `Bearer ${newAccess}`;
+                response = await fetch(url, defaultOptions);
+              }
+            } else {
+              // Clear tokens if refresh fails
+              localStorage.removeItem('token');
+              localStorage.removeItem('refreshToken');
+            }
+          }
+        } catch (e) {
+          // Swallow and proceed to normal error path
+        }
+      }
       const endTime = performance.now();
       const duration = endTime - startTime;
       
@@ -155,8 +205,11 @@ export const authApi = {
   // Register user
   register: (userData) => apiClient.post('api/v1/auth/register', userData),
   
-  // Login user
+  // Login user (password-based)
   login: (credentials) => apiClient.post('api/v1/auth/login', credentials),
+  
+  // Login user with OTP
+  loginWithOTP: (credentials) => apiClient.post('api/v1/auth/login-otp', credentials),
   
   // Refresh token
   refreshToken: (refreshToken) => apiClient.post('api/v1/auth/refresh', { refreshToken }),
@@ -165,7 +218,24 @@ export const authApi = {
   logout: () => apiClient.post('api/v1/auth/logout'),
   
   // Get current user
-  getCurrentUser: () => apiClient.get('api/v1/auth/me'),
+  getCurrentUser: () => {
+    const token = localStorage.getItem('token');
+    logger.debug('🔍 Getting current user', 'API_CLIENT', {
+      hasToken: !!token,
+      tokenLength: token?.length,
+      tokenPreview: token ? token.substring(0, 20) + '...' : 'null'
+    });
+    return apiClient.get('api/v1/auth/me');
+  },
+  
+  // Check if email is available
+  checkEmailAvailability: (email) => apiClient.post('api/v1/auth/check-email', { email }),
+  
+  // Check if phone number is available
+  checkPhoneAvailability: (phone) => apiClient.post('api/v1/auth/check-phone', { phone }),
+  
+  // Reset password
+  resetPassword: (resetData) => apiClient.post('api/v1/auth/reset-password', resetData)
 };
 
 // Blood Request API endpoints
@@ -203,14 +273,18 @@ export const facilityApi = {
 
 // OTP API endpoints
 export const otpApi = {
-  // Send OTP
-  sendOTP: (phoneNumber, purpose = 'verification') => apiClient.post('api/v1/otp/send', { phoneNumber, purpose }),
+  // Request OTP
+  sendOTP: (phoneNumber, purpose = 'verification') => apiClient.post('api/v1/otp/request', { phoneNumber, purpose }),
   
   // Verify OTP
   verifyOTP: (phoneNumber, otp, purpose = 'verification') => apiClient.post('api/v1/otp/verify', { phoneNumber, otp, purpose }),
   
-  // Resend OTP
-  resendOTP: (phoneNumber, purpose = 'verification') => apiClient.post('api/v1/otp/resend', { phoneNumber, purpose }),
+  // Resend OTP (alias for sendOTP with the same endpoint but different purpose)
+  resendOTP: (phoneNumber, purpose = 'verification') => apiClient.post('api/v1/otp/request', { 
+    phoneNumber, 
+    purpose,
+    isResend: true 
+  }),
 };
 
 // Export the main API client and specific APIs

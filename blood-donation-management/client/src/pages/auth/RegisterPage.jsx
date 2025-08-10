@@ -21,7 +21,10 @@ import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
+import PasswordInput from '../../components/ui/PasswordInput';
+import PasswordConfirmInput from '../../components/ui/PasswordConfirmInput';
 import OTPModal from '../../components/ui/OTPModal';
+import LocationPicker from '../../components/ui/LocationPicker';
 import { authApi } from '../../utils/api';
 import logger from '../../utils/logger';
 
@@ -31,11 +34,17 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [errors, setErrors] = useState({});
+  const [validationState, setValidationState] = useState({
+    email: { checking: false, available: null, lastChecked: null },
+    phoneNumber: { checking: false, available: null, lastChecked: null }
+  });
   const [formData, setFormData] = useState({
     // Personal Information
     name: '',
     phoneNumber: '',
     email: '',
+    password: '',
+    confirmPassword: '',
     dateOfBirth: '',
     gender: '',
     bloodType: '',
@@ -115,7 +124,7 @@ const RegisterPage = () => {
       title: 'Personal Information',
       description: 'Tell us about yourself',
       icon: User,
-      fields: ['name', 'phoneNumber', 'email', 'dateOfBirth', 'gender']
+      fields: ['name', 'phoneNumber', 'email', 'password', 'confirmPassword', 'dateOfBirth', 'gender']
     },
     {
       id: 2,
@@ -166,6 +175,96 @@ const RegisterPage = () => {
     { value: 'other', label: 'Other' }
   ];
 
+  // Check if email is available
+  const checkEmailAvailability = async (email) => {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+    
+    setValidationState(prev => ({
+      ...prev,
+      email: { ...prev.email, checking: true, available: null }
+    }));
+    
+    try {
+      const response = await authApi.checkEmailAvailability(email);
+      setValidationState(prev => ({
+        ...prev,
+        email: { 
+          checking: false, 
+          available: response.available,
+          lastChecked: Date.now()
+        }
+      }));
+      
+      if (!response.available) {
+        setErrors(prev => ({
+          ...prev,
+          email: 'This email is already registered'
+        }));
+      }
+    } catch (error) {
+      logger.error('Error checking email availability', 'REGISTER_PAGE', error);
+      setValidationState(prev => ({
+        ...prev,
+        email: { ...prev.email, checking: false }
+      }));
+    }
+  };
+  
+  // Check if phone number is available
+  const checkPhoneAvailability = async (phone) => {
+    if (!phone || !/^[6-9]\d{9}$/.test(phone)) return;
+    
+    setValidationState(prev => ({
+      ...prev,
+      phoneNumber: { ...prev.phoneNumber, checking: true, available: null }
+    }));
+    
+    try {
+      const response = await authApi.checkPhoneAvailability(phone);
+      setValidationState(prev => ({
+        ...prev,
+        phoneNumber: { 
+          checking: false, 
+          available: response.available,
+          lastChecked: Date.now()
+        }
+      }));
+      
+      if (!response.available) {
+        setErrors(prev => ({
+          ...prev,
+          phoneNumber: 'This phone number is already registered'
+        }));
+      }
+    } catch (error) {
+      logger.error('Error checking phone availability', 'REGISTER_PAGE', error);
+      setValidationState(prev => ({
+        ...prev,
+        phoneNumber: { ...prev.phoneNumber, checking: false }
+      }));
+    }
+  };
+  
+  // Debounce function to prevent too many API calls
+  const debounce = (func, delay) => {
+    let timeoutId;
+    return function(...args) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
+  };
+  
+  // Create debounced versions of the validation functions
+  const debouncedCheckEmail = React.useMemo(
+    () => debounce(checkEmailAvailability, 500),
+    []
+  );
+  
+  const debouncedCheckPhone = React.useMemo(
+    () => debounce(checkPhoneAvailability, 500),
+    []
+  );
+
   const handleInputChange = (field, value) => {
     setFormData(prev => {
       if (field.includes('.')) {
@@ -191,11 +290,55 @@ const RegisterPage = () => {
         [field]: null
       }));
     }
+    
+    // Trigger validation for email and phone
+    if (field === 'email' && value) {
+      setValidationState(prev => ({
+        ...prev,
+        email: { ...prev.email, available: null }
+      }));
+      debouncedCheckEmail(value);
+    } else if (field === 'phoneNumber' && value) {
+      setValidationState(prev => ({
+        ...prev,
+        phoneNumber: { ...prev.phoneNumber, available: null }
+      }));
+      debouncedCheckPhone(value);
+    }
   };
 
   const validateStep = (step) => {
     const stepErrors = {};
     const currentStepFields = steps[step - 1].fields;
+    
+    // Check if email/phone validation is in progress
+    if (
+      (currentStepFields.includes('email') && validationState.email.checking) ||
+      (currentStepFields.includes('phoneNumber') && validationState.phoneNumber.checking)
+    ) {
+      return false;
+    }
+    
+    // Check if email/phone is already taken
+    if (currentStepFields.includes('email') && formData.email) {
+      if (validationState.email.available === false) {
+        stepErrors.email = 'This email is already registered';
+      } else if (validationState.email.available === null) {
+        // If we haven't checked this email yet, check it now
+        checkEmailAvailability(formData.email);
+        return false;
+      }
+    }
+    
+    if (currentStepFields.includes('phoneNumber') && formData.phoneNumber) {
+      if (validationState.phoneNumber.available === false) {
+        stepErrors.phoneNumber = 'This phone number is already registered';
+      } else if (validationState.phoneNumber.available === null) {
+        // If we haven't checked this phone yet, check it now
+        checkPhoneAvailability(formData.phoneNumber);
+        return false;
+      }
+    }
     
     currentStepFields.forEach(field => {
       if (field === 'address') {
@@ -246,6 +389,17 @@ const RegisterPage = () => {
         if (field === 'height' && formData[field] && (formData[field] < 120 || formData[field] > 250)) {
           stepErrors[field] = 'Height must be between 120-250 cm';
         }
+        if (field === 'password' && formData[field]) {
+          // Basic password validation - detailed validation is handled by PasswordInput component
+          if (formData[field].length < 8) {
+            stepErrors[field] = 'Password must be at least 8 characters long';
+          }
+        }
+        if (field === 'confirmPassword' && formData[field]) {
+          if (formData[field] !== formData.password) {
+            stepErrors[field] = 'Passwords do not match';
+          }
+        }
       }
     });
     
@@ -276,7 +430,39 @@ const RegisterPage = () => {
     setIsLoading(true);
     
     try {
-      const data = await authApi.register(formData);
+      // Split full name into first and last name
+      const [firstName, ...lastNameParts] = formData.name.split(' ');
+      const lastName = lastNameParts.join(' ') || ' '; // Ensure last name is not empty
+      
+      // Format the registration data according to backend schema
+      const registrationData = {
+        phone: formData.phoneNumber, // Note: backend expects 'phone' not 'phoneNumber'
+        email: formData.email,
+        password: formData.password,
+        profile: {
+          firstName,
+          lastName,
+          dateOfBirth: formData.dateOfBirth,
+          gender: formData.gender,
+          bloodType: formData.bloodType
+        },
+        location: {
+          address: formData.address.street,
+          city: formData.address.city,
+          state: formData.address.state,
+          pincode: formData.address.pincode
+        },
+        emergencyContact: {
+          name: formData.emergencyContact.name,
+          relationship: formData.emergencyContact.relationship,
+          phone: formData.emergencyContact.phoneNumber
+        },
+        preferences: formData.preferences || {}
+      };
+      
+      logger.debug('Sending registration data:', 'REGISTER_PAGE', registrationData);
+      
+      const data = await authApi.register(registrationData);
       
       if (data.success) {
         logger.success('User registration successful', 'REGISTER_PAGE');
@@ -286,27 +472,92 @@ const RegisterPage = () => {
         setErrors({ submit: data.message || 'Registration failed' });
       }
     } catch (error) {
-      logger.error('Network error during registration', 'REGISTER_PAGE', error);
-      setErrors({ submit: 'Network error. Please try again.' });
+      logger.error('Error during registration', 'REGISTER_PAGE', error);
+      setErrors({ 
+        submit: error.response?.data?.message || 'An error occurred during registration. Please try again.' 
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleOTPSuccess = (data) => {
-    logger.success('Phone verification successful', 'REGISTER_PAGE');
-    navigate('/donor/onboarding', { 
-      state: { 
-        message: 'Phone verified! Please complete your donor profile.',
-        user: data.user,
-        step: 'documents'
+  const handleOTPSuccess = async (verificationData) => {
+    try {
+      logger.success('Phone verification successful', 'REGISTER_PAGE');
+      
+      // Get the user data from verification response or fetch it if not available
+      let userData = verificationData.user;
+      
+      if (!userData) {
+        // If user data is not in the verification response, fetch it
+        const response = await authApi.getCurrentUser();
+        if (response.success) {
+          userData = response.data;
+        }
       }
-    });
+      
+      // Store the authentication token if available
+      if (verificationData.token) {
+        localStorage.setItem('token', verificationData.token);
+      }
+      
+      // Navigate to onboarding with user data
+      navigate('/donor/onboarding', { 
+        state: { 
+          message: 'Phone verified! Please complete your donor profile.',
+          user: userData,
+          step: 'documents',
+          fromRegistration: true
+        },
+        replace: true // Replace the current entry in the history stack
+      });
+      
+    } catch (error) {
+      logger.error('Error after OTP verification', 'REGISTER_PAGE', error);
+      setErrors({ 
+        submit: 'Verification successful but encountered an error. Please log in to continue.' 
+      });
+      // Redirect to login if there's an error after verification
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
+    }
   };
 
   const handleOTPError = (error) => {
     logger.error('Phone verification failed', 'REGISTER_PAGE', error);
     setErrors({ otp: error.message || 'Phone verification failed' });
+  };
+
+  // Helper to render validation status icon
+  const renderValidationStatus = (field) => {
+    const state = validationState[field];
+    
+    if (state.checking) {
+      return (
+        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
+        </div>
+      );
+    }
+    
+    if (state.available === true) {
+      return (
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
+          <CheckCircle className="h-5 w-5" />
+        </div>
+      );
+    }
+    
+    if (state.available === false) {
+      return (
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
+          <AlertCircle className="h-5 w-5" />
+        </div>
+      );
+    }
+    
+    return null;
   };
 
   const renderStepContent = () => {
@@ -317,59 +568,135 @@ const RegisterPage = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
+            transition={{ duration: 0.3 }}
+            className="space-y-4"
           >
-            <Input
-              label="Full Name"
-              icon={User}
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              error={errors.name}
-              placeholder="Enter your full name"
-              required
-            />
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Personal Information</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">Tell us about yourself</p>
             
-            <Input
-              label="Phone Number"
-              icon={Phone}
-              type="tel"
-              value={formData.phoneNumber}
-              onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-              error={errors.phoneNumber}
-              placeholder="10-digit mobile number"
-              required
-            />
-            
-            <Input
-              label="Email Address"
-              icon={Mail}
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              error={errors.email}
-              placeholder="your.email@example.com"
-            />
-            
-            <Input
-              label="Date of Birth"
-              icon={Calendar}
-              type="date"
-              value={formData.dateOfBirth}
-              onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-              error={errors.dateOfBirth}
-              required
-            />
-            
-            <Select
-              label="Gender"
-              icon={Users}
-              value={formData.gender}
-              onChange={(value) => handleInputChange('gender', value)}
-              options={genderOptions}
-              error={errors.gender}
-              placeholder="Select your gender"
-              required
-            />
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input
+                  label="Full Name"
+                  placeholder="John Doe"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  error={errors.name}
+                  icon={User}
+                  required
+                />
+                
+                <div className="relative">
+                  <Input
+                    label="Phone Number"
+                    placeholder="9876543210"
+                    value={formData.phoneNumber}
+                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                    error={errors.phoneNumber}
+                    icon={Phone}
+                    type="tel"
+                    required
+                    className={validationState.phoneNumber.checking ? 'pr-10' : ''}
+                  />
+                  {renderValidationStatus('phoneNumber')}
+                  {validationState.phoneNumber.available === false && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                      This phone number is already registered
+                    </p>
+                  )}
+                  {validationState.phoneNumber.available === true && (
+                    <p className="mt-1 text-sm text-green-600 dark:text-green-400">
+                      Phone number is available
+                    </p>
+                  )}
+                </div>
+                
+                <div className="relative">
+                  <Input
+                    label="Email Address"
+                    placeholder="john@example.com"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    error={errors.email}
+                    icon={Mail}
+                    type="email"
+                    required
+                    className={validationState.email.checking ? 'pr-10' : ''}
+                  />
+                  {renderValidationStatus('email')}
+                  {validationState.email.available === false && (
+                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                      This email is already registered
+                    </p>
+                  )}
+                  {validationState.email.available === true && (
+                    <p className="mt-1 text-sm text-green-600 dark:text-green-400">
+                      Email is available
+                    </p>
+                  )}
+                </div>
+                
+                <Input
+                  label="Date of Birth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                  error={errors.dateOfBirth}
+                  icon={Calendar}
+                  required
+                />
+                
+                <Select
+                  label="Gender"
+                  options={genderOptions}
+                  value={formData.gender}
+                  onChange={(value) => handleInputChange('gender', value)}
+                  error={errors.gender}
+                  placeholder="Select gender"
+                  icon={Users}
+                  required
+                />
+                
+                <Select
+                  label="Blood Type"
+                  options={bloodTypes}
+                  value={formData.bloodType}
+                  onChange={(value) => handleInputChange('bloodType', value)}
+                  error={errors.bloodType}
+                  placeholder="Select blood type"
+                  icon={Droplet}
+                  required
+                />
+              </div>
+
+              {/* Password Section */}
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+                  Create Your Password
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <PasswordInput
+                    label="Password"
+                    value={formData.password}
+                    onChange={(value) => handleInputChange('password', value)}
+                    error={errors.password}
+                    placeholder="Create a strong password"
+                    showStrengthIndicator={true}
+                    required
+                  />
+                  
+                  <PasswordConfirmInput
+                    label="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={(value) => handleInputChange('confirmPassword', value)}
+                    error={errors.confirmPassword}
+                    placeholder="Confirm your password"
+                    originalPassword={formData.password}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
           </motion.div>
         );
         
@@ -426,6 +753,32 @@ const RegisterPage = () => {
             exit={{ opacity: 0, x: -20 }}
             className="space-y-6"
           >
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold text-slate-900 dark:text-white">Your Location</h4>
+              <p className="text-sm text-slate-600 dark:text-slate-400">If you are currently not in your hometown, search and select your present locality.</p>
+              <LocationPicker
+                value={
+                  Array.isArray(formData.location.coordinates) && formData.location.coordinates.length === 2
+                    ? {
+                        latitude: formData.location.coordinates[1],
+                        longitude: formData.location.coordinates[0]
+                      }
+                    : null
+                }
+                onChange={(loc) => {
+                  // Update coordinates in [lon, lat] order
+                  setFormData(prev => ({
+                    ...prev,
+                    location: {
+                      type: 'Point',
+                      coordinates: [loc.longitude, loc.latitude]
+                    }
+                  }));
+                }}
+                required
+              />
+            </div>
+
             <div className="space-y-4">
               <h4 className="text-lg font-semibold text-slate-900 dark:text-white">Address</h4>
               

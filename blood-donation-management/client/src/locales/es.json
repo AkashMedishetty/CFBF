@@ -1,0 +1,112 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "yes": "Sí",
+    "no": "No",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "view": "Ver",
+    "share": "Compartir",
+    "call": "Llamar",
+    "changeLanguage": "Cambiar Idioma",
+    "currentLanguage": "Idioma Actual: {language}",
+    "successRate": "Tasa de Éxito"
+  },
+  "nav": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "emergency": "Emergencia",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "dashboard": "Panel",
+    "profile": "Perfil",
+    "logout": "Cerrar Sesión"
+  },
+  "emergency": {
+    "title": "Solicitud de Sangre de Emergencia",
+    "urgent": "Urgente",
+    "critical": "Crítico",
+    "bloodType": "Tipo de Sangre",
+    "location": "Ubicación",
+    "hospital": "Hospital",
+    "contact": "Contacto",
+    "submit": "Enviar Solicitud",
+    "success": "Solicitud de emergencia enviada exitosamente",
+    "requestsToday": "Solicitudes Hoy",
+    "activeRequests": "Solicitudes de Emergencia Activas",
+    "urgency": "Nivel de Urgencia"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "phone": "Número de Teléfono",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "resetPassword": "Restablecer Contraseña",
+    "loginSuccess": "Inicio de sesión exitoso",
+    "registerSuccess": "Registro exitoso"
+  },
+  "donor": {
+    "dashboard": "Panel del Donante",
+    "profile": "Perfil del Donante",
+    "history": "Historial de Donaciones",
+    "availability": "Disponibilidad",
+    "certificates": "Certificados",
+    "bloodType": "Tipo de Sangre",
+    "lastDonation": "Última Donación",
+    "totalDonations": "Total de Donaciones",
+    "totalDonors": "Total de Donantes: {count}"
+  },
+  "notification": {
+    "newRequest": "Nueva solicitud de sangre en tu área",
+    "requestAccepted": "Tu solicitud de sangre ha sido aceptada",
+    "donationReminder": "Es hora de tu próxima donación",
+    "emergencyAlert": "Solicitud de sangre de emergencia - se necesita ayuda inmediata"
+  },
+  "time": {
+    "now": "ahora",
+    "minutesAgo": "hace {count} minutos",
+    "hoursAgo": "hace {count} horas",
+    "daysAgo": "hace {count} días",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "tomorrow": "Mañana"
+  },
+  "bloodType": {
+    "aPositive": "A+",
+    "aNegative": "A-",
+    "bPositive": "B+",
+    "bNegative": "B-",
+    "abPositive": "AB+",
+    "abNegative": "AB-",
+    "oPositive": "O+",
+    "oNegative": "O-"
+  },
+  "a11y": {
+    "skipToMain": "Saltar al contenido principal",
+    "skipToNav": "Saltar a la navegación",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "loading": "Cargando contenido",
+    "error": "Ocurrió un error",
+    "required": "Campo obligatorio",
+    "optional": "Campo opcional"
+  }
+}

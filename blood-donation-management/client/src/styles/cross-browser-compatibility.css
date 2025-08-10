@@ -1,0 +1,545 @@
+/**
+ * Cross-Browser Compatibility CSS
+ * Handles browser-specific styles and accessibility features
+ */
+
+/* Browser-specific classes added by browserCompatibility.js */
+
+/* Chrome-specific styles */
+.browser-chrome {
+  /* Chrome-specific optimizations */
+}
+
+.browser-chrome .scroll-smooth {
+  scroll-behavior: smooth;
+}
+
+/* Firefox-specific styles */
+.browser-firefox {
+  /* Firefox-specific optimizations */
+}
+
+.browser-firefox .firefox-focus-fix *:focus {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+/* Safari-specific styles */
+.browser-safari {
+  /* Safari-specific optimizations */
+}
+
+.browser-safari input[type="search"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Edge-specific styles */
+.browser-edge {
+  /* Edge-specific optimizations */
+}
+
+/* Internet Explorer fixes */
+.browser-ie {
+  /* IE-specific fixes */
+}
+
+.browser-ie .ie-flexbox-fix {
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.browser-ie .ie-flexbox-fix > * {
+  -ms-flex: 1;
+  flex: 1;
+}
+
+/* Mobile-specific styles */
+.is-mobile {
+  /* Mobile optimizations */
+}
+
+.is-mobile .touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Tablet-specific styles */
+.is-tablet {
+  /* Tablet optimizations */
+}
+
+/* Desktop-specific styles */
+.is-desktop {
+  /* Desktop optimizations */
+}
+
+/* Feature detection classes */
+
+/* No Service Worker support */
+.no-serviceworker .pwa-features {
+  display: none;
+}
+
+/* No IndexedDB support */
+.no-indexeddb .offline-features {
+  display: none;
+}
+
+/* No Intersection Observer support */
+.no-intersectionobserver .lazy-load {
+  /* Fallback for lazy loading */
+  opacity: 1;
+  transform: none;
+}
+
+/* No CSS Grid support */
+.no-cssgrid .grid-layout {
+  display: block;
+}
+
+.no-cssgrid .grid-layout > * {
+  margin-bottom: 1rem;
+}
+
+/* No CSS Flexbox support */
+.no-cssflexbox .flex-layout {
+  display: block;
+}
+
+.no-cssflexbox .flex-layout > * {
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* No CSS Custom Properties support */
+.no-csscustomproperties {
+  /* Fallback colors for IE */
+  --primary-color: #dc2626;
+  --secondary-color: #64748b;
+  --background-color: #ffffff;
+  --text-color: #1e293b;
+}
+
+/* Accessibility Features */
+
+/* Skip links */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #000;
+  color: #fff;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 10000;
+  transition: top 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Focus indicators */
+.keyboard-focused {
+  outline: 2px solid #0066cc !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1) !important;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    border-color: ButtonText !important;
+  }
+  
+  button, input, select, textarea {
+    border: 2px solid ButtonText !important;
+    background: ButtonFace !important;
+    color: ButtonText !important;
+  }
+  
+  a {
+    color: LinkText !important;
+  }
+  
+  .bg-primary-600 {
+    background: Highlight !important;
+    color: HighlightText !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .reduce-motion *,
+  .reduce-motion *::before,
+  .reduce-motion *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .reduce-motion .parallax {
+    transform: none !important;
+  }
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.sr-only-focusable:focus {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  padding: inherit !important;
+  margin: inherit !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+}
+
+/* Focus within for containers */
+.focus-within:focus-within {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+/* Touch target minimum size */
+button, 
+a, 
+input, 
+select, 
+textarea, 
+[role="button"], 
+[role="link"],
+[tabindex]:not([tabindex="-1"]) {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Ensure text contrast */
+.low-contrast {
+  color: #000 !important;
+  background-color: #fff !important;
+}
+
+/* Dark mode high contrast */
+@media (prefers-color-scheme: dark) and (prefers-contrast: high) {
+  .low-contrast {
+    color: #fff !important;
+    background-color: #000 !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break-before {
+    page-break-before: always;
+  }
+  
+  .print-break-after {
+    page-break-after: always;
+  }
+  
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+  
+  abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+}
+
+/* Vendor prefixes for animations */
+@-webkit-keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@-moz-keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  -webkit-animation: fadeIn 0.3s ease-in-out;
+  -moz-animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Vendor prefixes for transforms */
+.transform-gpu {
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  backface-visibility: hidden;
+  
+  -webkit-perspective: 1000px;
+  -moz-perspective: 1000px;
+  perspective: 1000px;
+}
+
+/* Vendor prefixes for user-select */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Vendor prefixes for appearance */
+.no-appearance {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Scrollbar styling for webkit browsers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode scrollbar */
+@media (prefers-color-scheme: dark) {
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #334155;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #64748b;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
+/* Firefox scrollbar styling */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+@media (prefers-color-scheme: dark) {
+  .custom-scrollbar {
+    scrollbar-color: #64748b #334155;
+  }
+}
+
+/* iOS Safari specific fixes */
+.browser-safari.is-mobile {
+  /* Fix for iOS Safari viewport issues */
+  height: -webkit-fill-available;
+}
+
+.browser-safari.is-mobile input {
+  /* Fix for iOS Safari input zoom */
+  font-size: 16px;
+}
+
+.browser-safari.is-mobile .fixed-bottom {
+  /* Fix for iOS Safari bottom safe area */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Android Chrome specific fixes */
+.browser-chrome.is-mobile {
+  /* Android Chrome optimizations */
+}
+
+.browser-chrome.is-mobile .tap-highlight-none {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Accessibility error states */
+.a11y-error {
+  border: 2px solid #dc2626 !important;
+  background-color: #fef2f2 !important;
+}
+
+.a11y-error:focus {
+  outline: 2px solid #dc2626 !important;
+  outline-offset: 2px !important;
+}
+
+/* Accessibility success states */
+.a11y-success {
+  border: 2px solid #16a34a !important;
+  background-color: #f0fdf4 !important;
+}
+
+/* Live region styling */
+#aria-live-region,
+#aria-alert-region,
+#aria-status-region {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
+
+/* Keyboard navigation helpers */
+.keyboard-nav-active {
+  /* Show focus indicators when keyboard navigation is active */
+}
+
+.keyboard-nav-active *:focus {
+  outline: 2px solid #0066cc !important;
+  outline-offset: 2px !important;
+}
+
+/* Mouse navigation helpers */
+.mouse-nav-active *:focus {
+  /* Hide focus indicators when using mouse */
+  outline: none !important;
+}
+
+/* Touch navigation helpers */
+.touch-nav-active {
+  /* Touch-specific styles */
+}
+
+.touch-nav-active .hover\:bg-gray-100:hover {
+  /* Disable hover effects on touch devices */
+  background-color: inherit;
+}
+
+/* Compatibility fallbacks */
+.no-cssgrid .grid {
+  display: block;
+}
+
+.no-cssflexbox .flex {
+  display: block;
+}
+
+.no-csscustomproperties .bg-primary-600 {
+  background-color: #dc2626;
+}
+
+.no-csscustomproperties .text-primary-600 {
+  color: #dc2626;
+}
+
+/* Error boundary styles */
+.error-boundary {
+  padding: 2rem;
+  text-align: center;
+  border: 2px solid #dc2626;
+  border-radius: 8px;
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+.error-boundary h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.error-boundary button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error-boundary button:hover {
+  background-color: #b91c1c;
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .loading-skeleton {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+    background-size: 200% 100%;
+  }
+}
+
+/* Utility classes for browser compatibility */
+.webkit-only {
+  display: none;
+}
+
+.browser-chrome .webkit-only,
+.browser-safari .webkit-only {
+  display: block;
+}
+
+.gecko-only {
+  display: none;
+}
+
+.browser-firefox .gecko-only {
+  display: block;
+}
+
+.blink-only {
+  display: none;
+}
+
+.browser-chrome .blink-only,
+.browser-edge .blink-only {
+  display: block;
+}

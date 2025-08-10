@@ -304,7 +304,7 @@ class DonorMatchingService {
         message: this.formatBloodRequestMessage(bloodRequest, donor),
         type: 'blood_request',
         priority: bloodRequest.request.urgency,
-        channels: ['whatsapp', 'sms'],
+        channels: ['push', 'whatsapp', 'sms'],
         templateName: `blood_request_${bloodRequest.request.urgency}`,
         templateParams: [
           bloodRequest.patient.bloodType,
@@ -322,7 +322,8 @@ class DonorMatchingService {
           donorId: donor._id,
           distance: donor.distance,
           score: donor.score
-        }
+        },
+        userId: donor._id
       }));
 
       const result = await notificationService.sendBulkNotifications(notifications, {

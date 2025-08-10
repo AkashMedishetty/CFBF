@@ -120,6 +120,7 @@ router.post('/verify',
   otpVerifyLimiter,
   phoneNumberValidation,
   otpValidation,
+  purposeValidation,
   validateRequest,
   (req, res, next) => {
     logger.info(`OTP verification route hit from IP: ${req.ip}`, 'OTP_ROUTES');

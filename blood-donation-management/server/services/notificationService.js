@@ -68,6 +68,9 @@ class NotificationService {
           case 'email':
             channelResult = await this.sendEmailNotification(notification.email || userPreferences.email, message, type);
             break;
+          case 'push':
+            channelResult = await this.sendWebPushNotification(notification);
+            break;
           default:
             channelResult = { success: false, error: 'UNKNOWN_CHANNEL' };
         }
@@ -106,6 +109,24 @@ class NotificationService {
     this.logNotificationAttempt(notification, result);
 
     return result;
+  }
+
+  async sendWebPushNotification(notification) {
+    try {
+      const webpush = require('web-push');
+      const PushSubscription = require('../models/PushSubscription');
+      const { userId, title = 'Call For Blood', message, metadata } = notification;
+      const subs = await PushSubscription.find({ userId });
+      if (!subs.length) return { success: false, message: 'NO_SUBSCRIPTIONS' };
+      const payload = JSON.stringify({ title, body: message, data: { metadata } });
+      await Promise.all(
+        subs.map(s => webpush.sendNotification({ endpoint: s.endpoint, keys: s.keys }, payload))
+      );
+      return { success: true };
+    } catch (error) {
+      logger.error('Web Push notification failed', 'NOTIFICATION_SERVICE', error);
+      return { success: false, message: error.message };
+    }
   }
 
   /**

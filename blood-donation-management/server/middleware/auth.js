@@ -9,11 +9,28 @@ const auditLogger = require('../utils/auditLogger');
  */
 const auth = async (req, res, next) => {
   try {
+    logger.debug('🔍 Auth middleware started', 'AUTH_MIDDLEWARE', {
+      method: req.method,
+      url: req.url,
+      userAgent: req.get('User-Agent'),
+      ip: req.ip
+    });
+
     // Get token from header
     const authHeader = req.header('Authorization');
     
+    logger.debug('📋 Checking authorization header', 'AUTH_MIDDLEWARE', {
+      hasAuthHeader: !!authHeader,
+      authHeaderLength: authHeader?.length,
+      authHeaderPreview: authHeader ? authHeader.substring(0, 20) + '...' : 'null',
+      startsWithBearer: authHeader?.startsWith('Bearer ')
+    });
+    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      logger.warn('No valid authorization header provided', 'AUTH_MIDDLEWARE');
+      logger.warn('❌ No valid authorization header provided', 'AUTH_MIDDLEWARE', {
+        authHeader: authHeader || 'null',
+        allHeaders: req.headers
+      });
       return res.status(401).json({
         success: false,
         error: 'NO_TOKEN',
@@ -22,18 +39,32 @@ const auth = async (req, res, next) => {
     }
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    
+    logger.debug('Attempting to verify token', 'AUTH_MIDDLEWARE', {
+      tokenLength: token.length,
+      tokenPreview: token.substring(0, 20) + '...'
+    });
 
     try {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      logger.debug('Token decoded successfully', 'AUTH_MIDDLEWARE', {
+        userId: decoded.userId || decoded.id,
+        role: decoded.role
+      });
       
       // Get user from database
-      const user = await User.findById(decoded.id)
+      const userId = decoded.userId || decoded.id; // Support both formats
+      const user = await User.findById(userId)
         .select('-password')
         .lean();
 
       if (!user) {
-        logger.warn(`User not found for token: ${decoded.id}`, 'AUTH_MIDDLEWARE');
+        logger.warn(`❌ User not found for token: ${userId}`, 'AUTH_MIDDLEWARE', {
+          userId,
+          decodedToken: decoded,
+          tokenPreview: token.substring(0, 20) + '...'
+        });
         return res.status(401).json({
           success: false,
           error: 'USER_NOT_FOUND',
@@ -41,9 +72,20 @@ const auth = async (req, res, next) => {
         });
       }
 
-      // Check if user is active
-      if (user.status !== 'active') {
-        logger.warn(`Inactive user attempted access: ${user._id}`, 'AUTH_MIDDLEWARE');
+      logger.debug('👤 User found in database', 'AUTH_MIDDLEWARE', {
+        userId: user._id,
+        role: user.role,
+        status: user.status,
+        phone: user.phoneNumber
+      });
+
+      // Check if user is active or pending (pending users can complete onboarding)
+      if (!['active', 'pending'].includes(user.status)) {
+        logger.warn(`❌ Inactive user attempted access: ${user._id} (status: ${user.status})`, 'AUTH_MIDDLEWARE', {
+          userId: user._id,
+          status: user.status,
+          allowedStatuses: ['active', 'pending']
+        });
         return res.status(401).json({
           success: false,
           error: 'USER_INACTIVE',
@@ -51,17 +93,38 @@ const auth = async (req, res, next) => {
         });
       }
 
+      logger.debug('✅ User status check passed', 'AUTH_MIDDLEWARE', {
+        userId: user._id,
+        status: user.status
+      });
+
       // Attach user to request
-      req.user = user;
+      req.user = {
+        ...user,
+        id: user._id.toString() // Ensure consistent ID format
+      };
       req.token = token;
 
       // Log successful authentication
-      logger.debug(`User authenticated: ${user._id} (${user.role})`, 'AUTH_MIDDLEWARE');
+      logger.debug('🎉 User authenticated successfully', 'AUTH_MIDDLEWARE', {
+        userId: user._id,
+        role: user.role,
+        status: user.status,
+        phone: user.phoneNumber,
+        requestUrl: req.url,
+        requestMethod: req.method
+      });
 
       next();
 
     } catch (tokenError) {
-      logger.warn('Invalid token provided', 'AUTH_MIDDLEWARE', tokenError);
+      logger.warn('❌ Invalid token provided', 'AUTH_MIDDLEWARE', {
+        error: tokenError.message,
+        tokenPreview: token ? token.substring(0, 20) + '...' : 'null',
+        jwtSecret: process.env.JWT_SECRET ? 'SET' : 'NOT_SET',
+        tokenLength: token?.length,
+        errorName: tokenError.name
+      });
       
       // Log failed authentication attempt
       auditLogger.logSecurityEvent({

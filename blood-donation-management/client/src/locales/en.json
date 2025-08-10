@@ -1,0 +1,112 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "yes": "Yes",
+    "no": "No",
+    "accept": "Accept",
+    "decline": "Decline",
+    "view": "View",
+    "share": "Share",
+    "call": "Call",
+    "changeLanguage": "Change Language",
+    "currentLanguage": "Current Language: {language}",
+    "successRate": "Success Rate"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "emergency": "Emergency",
+    "login": "Login",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "emergency": {
+    "title": "Emergency Blood Request",
+    "urgent": "Urgent",
+    "critical": "Critical",
+    "bloodType": "Blood Type",
+    "location": "Location",
+    "hospital": "Hospital",
+    "contact": "Contact",
+    "submit": "Submit Request",
+    "success": "Emergency request submitted successfully",
+    "requestsToday": "Requests Today",
+    "activeRequests": "Active Emergency Requests",
+    "urgency": "Urgency Level"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "phone": "Phone Number",
+    "forgotPassword": "Forgot Password?",
+    "resetPassword": "Reset Password",
+    "loginSuccess": "Login successful",
+    "registerSuccess": "Registration successful"
+  },
+  "donor": {
+    "dashboard": "Donor Dashboard",
+    "profile": "Donor Profile",
+    "history": "Donation History",
+    "availability": "Availability",
+    "certificates": "Certificates",
+    "bloodType": "Blood Type",
+    "lastDonation": "Last Donation",
+    "totalDonations": "Total Donations",
+    "totalDonors": "Total Donors: {count}"
+  },
+  "notification": {
+    "newRequest": "New blood request in your area",
+    "requestAccepted": "Your blood request has been accepted",
+    "donationReminder": "Time for your next donation",
+    "emergencyAlert": "Emergency blood request - immediate help needed"
+  },
+  "time": {
+    "now": "now",
+    "minutesAgo": "{count} minutes ago",
+    "hoursAgo": "{count} hours ago",
+    "daysAgo": "{count} days ago",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow"
+  },
+  "bloodType": {
+    "aPositive": "A+",
+    "aNegative": "A-",
+    "bPositive": "B+",
+    "bNegative": "B-",
+    "abPositive": "AB+",
+    "abNegative": "AB-",
+    "oPositive": "O+",
+    "oNegative": "O-"
+  },
+  "a11y": {
+    "skipToMain": "Skip to main content",
+    "skipToNav": "Skip to navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "loading": "Loading content",
+    "error": "Error occurred",
+    "required": "Required field",
+    "optional": "Optional field"
+  }
+}

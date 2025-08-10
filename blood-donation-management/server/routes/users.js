@@ -8,6 +8,8 @@ const { createJoiValidator, endpointSchemas } = require('../middleware/joiValida
 const logger = require('../utils/logger');
 
 const router = express.Router();
+const User = require('../models/User');
+const Document = require('../models/Document');
 
 // Rate limiting for user registration
 const registrationLimiter = rateLimit({
@@ -127,6 +129,47 @@ router.get('/:userId',
     next();
   },
   userController.getUserProfile
+);
+
+/**
+ * @route   GET /api/v1/users/:userId/onboarding-status
+ * @desc    Get onboarding completion status (documents, questionnaire)
+ * @access  Private
+ */
+router.get('/:userId/onboarding-status',
+  userIdValidation,
+  validateRequest,
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+      logger.info(`Onboarding status request for: ${userId}`, 'USER_ROUTES');
+
+      const user = await User.findById(userId).lean();
+      if (!user) {
+        return res.status(404).json({ success: false, error: 'USER_NOT_FOUND' });
+      }
+
+      // Required document types to consider step complete
+      const requiredTypes = ['id_proof', 'address_proof'];
+      const docs = await Document.find({ userId }).select('type').lean();
+      const documentsComplete = requiredTypes.every(t => docs.some(d => d.type === t));
+
+      const questionnaireComplete = !!user.questionnaire?.completedAt;
+
+      return res.json({
+        success: true,
+        data: {
+          completedSteps: {
+            documents: documentsComplete,
+            questionnaire: questionnaireComplete
+          }
+        }
+      });
+    } catch (error) {
+      logger.error('Failed to get onboarding status', 'USER_ROUTES', error);
+      return res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
 );
 
 /**

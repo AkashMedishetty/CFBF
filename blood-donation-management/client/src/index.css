@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import responsive utilities for improved mobile experience */
+@import './styles/responsive-utilities.css';
+@import './styles/cross-browser-compatibility.css';
+
 /* Custom CSS properties for theme switching */
 :root {
   --color-primary: 220 38 38; /* red-600 */
@@ -46,22 +50,14 @@ body {
 }
 
 /* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgb(var(--color-muted)); }
+::-webkit-scrollbar-thumb { background: rgb(var(--color-muted-foreground)); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-secondary)); }
 
-::-webkit-scrollbar-track {
-  background: rgb(var(--color-muted));
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgb(var(--color-muted-foreground));
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--color-secondary));
-}
+/* Hide horizontal scrollbar for nav container */
+.hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
 
 /* Focus styles for accessibility */
 .focus-ring {

@@ -1,6 +1,7 @@
 {
   "short_name": "Call For Blood",
   "name": "Call For Blood Foundation - Blood Donation Management",
+  "description": "Emergency blood donation management system connecting donors with those in need. Save lives through instant blood request notifications and donor coordination.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,18 +9,146 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAwCAYAAABtG3WwAAAACXBIWXMAAAsSAAALEgHS3X78AAAAGXRFWHRTb2Z0d2FyZQBQbGFjZWhvbGRlciBQTkcgdjEAAABYSURBVHicY2AYBaOBlYGBgYGJgQGJmYGBgQGxgZGBwT8GJgZGBkYmBgYGBkYGBgYGJ4Z8DAwMDw9E0EwMDQ0NDg8MDAwMDw8DAwMDw4GBAUKYwQw0AAACUdQ8/65o5gAAAAASUVORK5CYII=",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any"
     },
     {
-      "src": "logo512.png",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAICAYAAABq3t2EAAAACXBIWXMAAAsSAAALEgHS3X78AAAAGXRFWHRTb2Z0d2FyZQBQbGFjZWhvbGRlciBQTkcgdjEAAABpSURBVHicY2AYBaOBlYGBgYGJgQGJmYGBgQGxgZGBwT8GJgZGBkYmBgYGBkYGBgYGJ4Z8DAwMDw9E0EwMDQ0NDg8MDAwMDw8DAwMDw4GBAX8GJgYGBgYGBiYGBgYGAA0gQEDAhQY0gQEDAhQY0gQEDAhQY0gQEDAhQY8AE8gA6y+EC3gAAAABJRU5ErkJggg==",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
   "theme_color": "#dc2626",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "prefer_related_applications": false,
+  "categories": ["health", "medical", "social", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "shortcuts": [
+    {
+      "name": "🚨 Emergency Blood Request",
+      "short_name": "Emergency",
+      "description": "Submit an urgent blood request - Critical access for life-threatening situations",
+      "url": "/emergency?source=shortcut&priority=critical",
+      "icons": [
+        {
+          "src": "icons/emergency-shortcut.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "🩸 Donor Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your donor dashboard and respond to blood requests",
+      "url": "/donor/dashboard?source=shortcut",
+      "icons": [
+        {
+          "src": "icons/dashboard-shortcut.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "🏥 Find Blood Banks",
+      "short_name": "Blood Banks",
+      "description": "Locate nearby blood banks and hospitals",
+      "url": "/blood-banks?source=shortcut",
+      "icons": [
+        {
+          "src": "icons/hospital-shortcut.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "📞 Emergency Hotline",
+      "short_name": "Hotline",
+      "description": "Quick access to emergency blood donation hotline",
+      "url": "/emergency/hotline?source=shortcut",
+      "icons": [
+        {
+          "src": "icons/hotline-shortcut.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Home screen showing emergency request and donor features"
+    },
+    {
+      "src": "screenshots/mobile-dashboard.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Donor dashboard with blood request notifications"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+cfb",
+      "url": "/handle?type=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/handle-files",
+      "accept": {
+        "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
+        "application/pdf": [".pdf"]
+      }
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "handle_links": "preferred",
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.cfb.blooddonation",
+      "id": "com.cfb.blooddonation"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/call-for-blood/id123456789"
+    }
+  ]
 }

@@ -7,6 +7,8 @@ logger.debug('Loading UI components...', 'UI_COMPONENTS');
 export { default as Button } from './Button';
 export { default as Card } from './Card';
 export { default as Input } from './Input';
+export { default as PasswordInput } from './PasswordInput';
+export { default as PasswordConfirmInput } from './PasswordConfirmInput';
 export { default as Modal } from './Modal';
 
 // OTP Components

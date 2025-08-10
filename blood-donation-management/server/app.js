@@ -25,6 +25,8 @@ const institutionsRoutes = require('./routes/institutions');
 const publicRoutes = require('./routes/public');
 const hospitalsRoutes = require('./routes/hospitals');
 const educationRoutes = require('./routes/education');
+const documentsRoutes = require('./routes/documents');
+const pushRoutes = require('./routes/push');
 
 // Import middleware
 const { auth, optionalAuth } = require('./middleware/auth');
@@ -161,11 +163,13 @@ app.use('/api/v1/blood-requests', bloodRequestRoutes);
 app.use('/api/v1/admin', auth, adminRoutes);
 app.use('/api/v1/whatsapp', whatsappRoutes);
 app.use('/api/v1/otp', otpRoutes);
+app.use('/api/v1/push', pushRoutes);
 app.use('/api/v1/security', securityRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/institutions', institutionsRoutes);
 app.use('/api/v1/public', publicRoutes);
 app.use('/api/v1/hospitals', hospitalsRoutes);
+app.use('/api/v1/documents', documentsRoutes);
 app.use('/api/public/education', educationRoutes);
 
 // Serve static files in production

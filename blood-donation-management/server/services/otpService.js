@@ -89,15 +89,30 @@ class OTPService {
       };
     }
 
-    // Check if already verified
+    // Check if already verified - allow reuse within 2 minutes for login purposes
     if (otpData.verified) {
-      logger.warn(`Already verified OTP used for: ${this.maskPhoneNumber(phoneNumber)}`, 'OTP_SERVICE');
-      return {
-        success: false,
-        error: 'OTP_ALREADY_USED',
-        message: 'This OTP has already been used. Please request a new OTP.',
-        remainingAttempts: 0
-      };
+      const timeSinceVerification = Date.now() - (otpData.verifiedAt || 0);
+      const gracePeriod = 2 * 60 * 1000; // 2 minutes
+      
+      if (timeSinceVerification > gracePeriod) {
+        logger.warn(`Expired verified OTP used for: ${this.maskPhoneNumber(phoneNumber)}`, 'OTP_SERVICE');
+        return {
+          success: false,
+          error: 'OTP_ALREADY_USED',
+          message: 'This OTP has already been used. Please request a new OTP.',
+          remainingAttempts: 0
+        };
+      } else {
+        // Allow reuse within grace period for login
+        logger.info(`Allowing verified OTP reuse within grace period for: ${this.maskPhoneNumber(phoneNumber)}`, 'OTP_SERVICE');
+        return {
+          success: true,
+          message: 'OTP verified successfully (reused within grace period)',
+          purpose: otpData.purpose,
+          verifiedAt: otpData.verifiedAt,
+          reused: true
+        };
+      }
     }
 
     // Increment attempt count
@@ -121,11 +136,11 @@ class OTPService {
       otpData.verifiedAt = Date.now();
       logger.success(`OTP verified successfully for: ${this.maskPhoneNumber(phoneNumber)}`, 'OTP_SERVICE');
       
-      // Clean up after successful verification (with delay to prevent replay)
+      // Clean up after successful verification (with grace period for login)
       setTimeout(() => {
         this.otpStore.delete(phoneNumber);
         logger.debug(`Cleaned up verified OTP for: ${this.maskPhoneNumber(phoneNumber)}`, 'OTP_SERVICE');
-      }, 30000); // 30 seconds
+      }, 2 * 60 * 1000); // 2 minutes grace period
       
       return {
         success: true,

@@ -34,6 +34,15 @@ import {
 
 } from '../../components/ui';
 
+import PerformanceOptimizationDemo from '../../components/features/PerformanceOptimizationDemo';
+import MobileFirstDesignDemo from '../../components/features/MobileFirstDesignDemo';
+import CrossBrowserCompatibilityDemo from '../../components/features/CrossBrowserCompatibilityDemo';
+import MultiLanguageDemo from '../../components/features/MultiLanguageDemo';
+import I18nDemo from '../../components/features/I18nDemo';
+import SecurityDemo from '../../components/features/SecurityDemo';
+import MonitoringDashboard from '../../components/features/MonitoringDashboard';
+import IOSPWADemo from '../../components/features/IOSPWADemo';
+
 const ComponentsPage = () => {
   const [selectedBloodType, setSelectedBloodType] = useState('');
   const [selectedMultiple, setSelectedMultiple] = useState([]);
@@ -633,9 +642,63 @@ const [showOTPModal, setShowOTPModal] = useState(false);
           </AnimatedCard>
         </FadeInWhenVisible>
 
+        {/* Performance Optimization Demo */}
+        <FadeInWhenVisible>
+          <PerformanceOptimizationDemo />
+        </FadeInWhenVisible>
+
+        {/* Mobile First Design Demo */}
+        <FadeInWhenVisible>
+          <div className="mt-8">
+            <MobileFirstDesignDemo />
+          </div>
+        </FadeInWhenVisible>
+
+        {/* Cross-Browser Compatibility Demo */}
+        <FadeInWhenVisible>
+          <div className="mt-8">
+            <CrossBrowserCompatibilityDemo />
+          </div>
+        </FadeInWhenVisible>
+
+        {/* Multi-Language Support Demo */}
+        <FadeInWhenVisible>
+          <div className="mt-8">
+            <MultiLanguageDemo />
+          </div>
+        </FadeInWhenVisible>
+
+        {/* I18n Demo */}
+        <FadeInWhenVisible>
+          <div className="mt-8">
+            <I18nDemo />
+          </div>
+        </FadeInWhenVisible>
+
+        {/* Security Demo */}
+        <FadeInWhenVisible>
+          <div className="mt-8">
+            <SecurityDemo />
+          </div>
+        </FadeInWhenVisible>
+
+        {/* Monitoring Dashboard */}
+        <FadeInWhenVisible>
+          <div className="mt-8">
+            <MonitoringDashboard />
+          </div>
+        </FadeInWhenVisible>
+
+        {/* iOS PWA Demo */}
+        <FadeInWhenVisible>
+          <div className="mt-8">
+            <IOSPWADemo />
+          </div>
+        </FadeInWhenVisible>
+
         {/* Performance Note */}
         <FadeInWhenVisible>
-          <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-6">
+          <div className="mt-8 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-6">
             <div className="flex items-start space-x-3">
               <Heart className="h-6 w-6 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
               <div>
@@ -666,7 +729,8 @@ const [showOTPModal, setShowOTPModal] = useState(false);
         onClose={() => setShowOTPModal(false)}
         phoneNumber="+919876543210"
         purpose="verification"
-        onVerificationSuccess={(data) => {
+        onVerificationSuccess={(verificationData) => {
+          console.log('OTP verification successful:', verificationData);
           logger.success('OTP verification successful', 'COMPONENTS_PAGE');
           addAlert('success');
           setShowOTPModal(false);

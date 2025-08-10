@@ -88,7 +88,7 @@ const requestOTP = async (req, res) => {
  */
 const verifyOTP = async (req, res) => {
   try {
-    const { phoneNumber, otp } = req.body;
+    const { phoneNumber, otp, purpose } = req.body;
     
     logger.info(`OTP verification request for: ${otpService.maskPhoneNumber(phoneNumber)}`, 'OTP_CONTROLLER');
 
