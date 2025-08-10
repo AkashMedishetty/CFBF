@@ -136,13 +136,13 @@ const HomePage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden text-white bg-[#0f121a] dark:bg-[#0b0d13]">
+      <section className="relative overflow-hidden text-white bg-[#170b0b] dark:bg-[#0e0707]">
         {/* Background pattern */}
         {/* EmergencyToast-style highlight glow and conic border */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(ellipse_at_center,rgba(255,107,107,0.22),transparent_65%)] blur-3xl" />
+          <div className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(ellipse_at_center,rgba(245,20,20,0.28),transparent_65%)] blur-3xl" />
           <div className="absolute inset-0 rounded-[3rem]">
-            <div className="absolute -inset-2 bg-[conic-gradient(from_0deg,_#ff6b6b,_transparent_30%)] rounded-[3rem] opacity-20 blur-sm" />
+            <div className="absolute -inset-2 bg-[conic-gradient(from_0deg,_#f51414,_transparent_30%)] rounded-[3rem] opacity-25 blur-sm" />
           </div>
         </div>
 
@@ -175,7 +175,7 @@ const HomePage = () => {
               <button type="button">
                 <AnimatedButton
                   size="xl"
-                  className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
+                  className="border-2 border-[#f51414] text-[#f51414] bg-transparent hover:bg-[#f51414]/10"
                   onClick={() => {
                     logger.ui('CLICK', 'NeedBloodNowButton', null, 'HOMEPAGE_HERO');
                     navigateWithLoading('/emergency', { message: 'Opening emergency request...' });
@@ -188,7 +188,7 @@ const HomePage = () => {
                 <AnimatedButton
                   variant="outline"
                   size="xl"
-                  className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
+                  className="border-2 border-[#f51414] text-[#f51414] bg-transparent hover:bg-[#f51414]/10"
                   onClick={() => {
                     logger.ui('CLICK', 'BecomeDonorButton', null, 'HOMEPAGE_HERO');
                     navigateWithLoading('/register', { message: 'Preparing registration...' });
@@ -208,7 +208,7 @@ const HomePage = () => {
           animate={{ scale: [1, 1.06, 1] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <Heart className="h-40 w-40 text-[#fca5a5]" />
+          <Heart className="h-40 w-40 text-[#f51414]" />
         </motion.div>
 
         {/* Centered heartbeat line (stationary, pulsing) */}
@@ -231,7 +231,7 @@ const HomePage = () => {
             </defs>
             <motion.path
               d="M0 28 H100 L120 28 L130 18 L140 38 L150 28 H220 L240 28 L250 10 L260 46 L270 28 H340 L360 28 L370 18 L380 38 L390 28 H460 L560 28"
-              stroke="rgba(252,165,165,0.9)"
+              stroke="#f51414"
               strokeWidth={2}
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -269,7 +269,7 @@ const HomePage = () => {
           <div className="flex items-center justify-end gap-3">
             <AnimatedButton
               variant="outline"
-              className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
+              className="border-2 border-[#f51414] text-[#f51414] bg-transparent hover:bg-[#f51414]/10"
               onClick={() => {
                 if (dontShowAgain) {
                   try { localStorage.setItem('hide-festival-banner', '1'); } catch {}
@@ -281,7 +281,7 @@ const HomePage = () => {
             </AnimatedButton>
             <AnimatedButton
               variant="outline"
-              className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
+              className="border-2 border-[#f51414] text-[#f51414] bg-transparent hover:bg-[#f51414]/10"
               onClick={() => {
                 if (dontShowAgain) {
                   try { localStorage.setItem('hide-festival-banner', '1'); } catch {}
