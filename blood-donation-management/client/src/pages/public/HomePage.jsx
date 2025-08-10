@@ -30,15 +30,26 @@ const HomePage = () => {
   const { showEmergencyAlert } = useToast();
 
   const [isFestivalOpen, setIsFestivalOpen] = useState(true);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
     logger.componentMount('HomePage');
     logger.startTimer('HomePage Render');
     // Always show festival modal by default; allow explicit suppression via ?banner=0
+    // and persistent suppression via localStorage when user checks "Do not show again".
     try {
       const params = new URLSearchParams(window.location.search);
+      const forceBanner = params.get('banner') === '1';
       const disableBanner = params.get('banner') === '0';
-      setIsFestivalOpen(!disableBanner);
+      const hiddenPref = localStorage.getItem('hide-festival-banner') === '1';
+
+      if (forceBanner) {
+        setIsFestivalOpen(true);
+      } else if (disableBanner || hiddenPref) {
+        setIsFestivalOpen(false);
+      } else {
+        setIsFestivalOpen(true);
+      }
     } catch {}
 
     // Always show emergency toast by default; allow explicit suppression via ?toast=0
@@ -233,23 +244,45 @@ const HomePage = () => {
       {/* Festival / Special Occasion Modal */}
       <Modal
         isOpen={isFestivalOpen}
-        onClose={() => setIsFestivalOpen(false)}
+        onClose={() => {
+          if (dontShowAgain) {
+            try { localStorage.setItem('hide-festival-banner', '1'); } catch {}
+          }
+          setIsFestivalOpen(false);
+        }}
         title="Wishing You Joy and Good Health"
         size="lg"
       >
         <div className="space-y-4 text-slate-700 dark:text-slate-100">
           <p className="text-base">On this special day, join hands to save lives. Your one donation can make a world of difference.</p>
+          <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+            <input
+              type="checkbox"
+              checked={dontShowAgain}
+              onChange={(e) => setDontShowAgain(e.target.checked)}
+              className="h-4 w-4 rounded border-slate-300 text-red-600 focus:ring-red-500"
+            />
+            Do not show this again
+          </label>
           <div className="flex items-center justify-end gap-3">
             <AnimatedButton
               variant="outline"
               className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
-              onClick={() => setIsFestivalOpen(false)}
+              onClick={() => {
+                if (dontShowAgain) {
+                  try { localStorage.setItem('hide-festival-banner', '1'); } catch {}
+                }
+                setIsFestivalOpen(false);
+              }}
             >
               Close
             </AnimatedButton>
             <AnimatedButton
               className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
               onClick={() => {
+                if (dontShowAgain) {
+                  try { localStorage.setItem('hide-festival-banner', '1'); } catch {}
+                }
                 setIsFestivalOpen(false);
                 navigateWithLoading('/register', { message: 'Redirecting to registration...' });
               }}
