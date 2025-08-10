@@ -82,8 +82,9 @@ const EmergencyToast = ({
           exit="exit"
           className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 z-50 max-w-md mx-auto md:mx-0 pointer-events-auto"
         >
-          <div className="relative bg-[#0f121a]/95 rounded-xl shadow-2xl backdrop-blur-md border border-white/10 ring-2 ring-[#ff6b6b]/40 shadow-[0_10px_40px_rgba(255,107,107,0.25)] overflow-hidden">
-            <div className="pointer-events-none absolute -inset-4 rounded-2xl bg-[radial-gradient(ellipse_at_center,rgba(255,107,107,0.22),transparent_65%)] blur-2xl" />
+          <div className="relative bg-[#0f121a]/95 rounded-xl shadow-2xl backdrop-blur-md border border-white/10 ring-2 ring-[#f51414]/40 shadow-[0_10px_40px_rgba(245,20,20,0.25)] overflow-hidden">
+            <div className="pointer-events-none absolute -inset-4 rounded-2xl bg-[radial-gradient(ellipse_at_center,rgba(245,20,20,0.22),transparent_65%)] blur-2xl" />
+            <div className="pointer-events-none absolute -inset-4 rounded-2xl bg-[radial-gradient(ellipse_at_left,rgba(245,20,20,0.18),transparent_65%)] blur-2xl" />
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute inset-0" style={{
@@ -93,7 +94,7 @@ const EmergencyToast = ({
 
             {/* Static Highlight Border (no rotation) */}
             <div className="absolute inset-0 rounded-2xl">
-              <div className="absolute -inset-1 bg-[conic-gradient(from_0deg,_#ff6b6b,_transparent_30%)] rounded-2xl opacity-20 blur-sm" />
+              <div className="absolute -inset-1 bg-[conic-gradient(from_0deg,_#f51414,_transparent_30%)] rounded-2xl opacity-20 blur-sm" />
             </div>
 
             {/* Content */}
@@ -104,9 +105,9 @@ const EmergencyToast = ({
                   <motion.div
                     variants={pulseVariants}
                     animate="pulse"
-                    className="flex items-center justify-center w-9 h-9 rounded-full shadow-lg bg-[#ff6b6b]/20 ring-1 ring-[#ff6b6b]/40"
+                    className="flex items-center justify-center w-9 h-9 rounded-full shadow-lg bg-[#f51414]/20 ring-1 ring-[#f51414]/40"
                   >
-                    <AlertTriangle className="h-5 w-5 text-[#ff6b6b]" />
+                    <AlertTriangle className="h-5 w-5 text-[#f51414]" />
                   </motion.div>
                   <div>
                     <h3 className="text-base font-bold text-white">Emergency Blood Request</h3>
@@ -180,7 +181,7 @@ const EmergencyToast = ({
                   whileTap={{ scale: 0.98 }}
                   type="button"
                   onClick={onClose}
-                  className="flex-1 bg-transparent border-2 border-[#ff6b6b] text-[#ff6b6b] hover:bg-[#ff6b6b]/10 ring-2 ring-[#ff6b6b]/30 hover:ring-[#ff6b6b]/40 px-4 py-2 rounded-md font-extrabold text-center transition-colors duration-200 flex items-center justify-center space-x-2 text-sm"
+                  className="flex-1 bg-transparent border-2 border-[#f51414] text-[#f51414] hover:bg-[#f51414]/10 ring-2 ring-[#f51414]/30 hover:ring-[#f51414]/40 px-4 py-2 rounded-md font-extrabold text-center transition-colors duration-200 flex items-center justify-center space-x-2 text-sm"
                 >
                   <Heart className="h-4 w-4" />
                   <span>I Can Donate</span>
@@ -223,7 +224,7 @@ const EmergencyToast = ({
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               >
-                <Heart className="h-3.5 w-3.5 text-[#ff6b6b] opacity-70 fill-current" />
+                <Heart className="h-3.5 w-3.5 text-[#f51414] opacity-70 fill-current" />
               </motion.div>
             </div>
           </div>

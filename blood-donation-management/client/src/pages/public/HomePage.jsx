@@ -141,6 +141,7 @@ const HomePage = () => {
         {/* EmergencyToast-style highlight glow and conic border */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(ellipse_at_center,rgba(245,20,20,0.28),transparent_65%)] blur-3xl" />
+          <div className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(ellipse_at_left,rgba(245,20,20,0.22),transparent_65%)] blur-3xl" />
           <div className="absolute inset-0 rounded-[3rem]">
             <div className="absolute -inset-2 bg-[conic-gradient(from_0deg,_#f51414,_transparent_30%)] rounded-[3rem] opacity-25 blur-sm" />
           </div>
