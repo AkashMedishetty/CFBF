@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -13,6 +13,10 @@ import {
 } from 'lucide-react';
 
 import logger from '../../utils/logger';
+import Modal from '../../components/ui/Modal';
+import { useToast } from '../../contexts/ToastContext';
+import { useLoading } from '../../contexts/LoadingContext';
+import useNavigateWithLoading from '../../hooks/useNavigateWithLoading';
 import { 
   AnimatedButton, 
   AnimatedCard, 
@@ -22,6 +26,12 @@ import {
 } from '../../components/ui';
 
 const HomePage = () => {
+  const navigateWithLoading = useNavigateWithLoading();
+  const { /* showToast, showEmergencyAlert */ } = useToast();
+  const { /* showLoading */ } = useLoading();
+
+  const [isFestivalOpen, setIsFestivalOpen] = useState(false);
+
   useEffect(() => {
     logger.componentMount('HomePage');
     logger.startTimer('HomePage Render');
@@ -30,7 +40,27 @@ const HomePage = () => {
       logger.componentUnmount('HomePage');
       logger.endTimer('HomePage Render');
     };
+    // Festival modal once per day
+    try {
+      const key = `festival-banner-${new Date().toISOString().slice(0,10)}`;
+      const seen = localStorage.getItem(key);
+      if (!seen) {
+        setIsFestivalOpen(true);
+        localStorage.setItem(key, '1');
+      }
+    } catch {}
+
   }, []);
+
+  // const handleEmergencyRequest = () => {
+  //   showEmergencyAlert({
+  //     name: 'Unidentified Patient',
+  //     bloodType: 'O+',
+  //     location: 'City Hospital, Ward 3',
+  //     timeNeeded: 'ASAP',
+  //     condition: 'Critical transfusion required'
+  //   });
+  // };
 
   // Animation variants
   const containerVariants = {
@@ -83,7 +113,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-red-800 text-white overflow-hidden">
+      <section className="relative overflow-hidden text-white bg-gradient-to-br from-[#0f0f14] via-[#141824] to-[#1c2230] dark:from-[#0b0d13] dark:via-[#10131b] dark:to-[#121726]">
         {/* Background pattern */}
         <div className="absolute inset-0 bg-black/10">
           <div className="absolute inset-0 opacity-20" style={{
@@ -100,67 +130,88 @@ const HomePage = () => {
           >
             <motion.h1
               variants={itemVariants}
-              className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
+              className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight"
             >
-              Save Lives Through
-              <span className="block text-red-200">Blood Donation</span>
+              A Beating Promise to Save Lives
+              <span className="block text-red-300">Call For Blood Foundation</span>
             </motion.h1>
             
             <motion.p
               variants={itemVariants}
-              className="text-xl md:text-2xl text-red-100 mb-8 max-w-3xl mx-auto leading-relaxed"
+              className="text-lg md:text-2xl text-white/80 mb-8 max-w-3xl mx-auto leading-relaxed"
             >
-              Connect with blood donors instantly through our intelligent platform. 
-              Emergency response in under 2 minutes with 95% success rate.
+              Premium, verified, and secure connections between donors and recipients with real-time response and meaningful impact.
             </motion.p>
 
             <motion.div
               variants={itemVariants}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Link to="/emergency">
+              <button type="button">
                 <AnimatedButton
                   size="xl"
-                  className="bg-white text-primary-600 hover:bg-red-50 shadow-lg"
+                  className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
                   onClick={() => {
                     logger.ui('CLICK', 'NeedBloodNowButton', null, 'HOMEPAGE_HERO');
+                    navigateWithLoading('/emergency', { message: 'Opening emergency request...' });
                   }}
                 >
                   Need Blood Now
                 </AnimatedButton>
-              </Link>
-              <Link to="/register">
+              </button>
+              <button type="button">
                 <AnimatedButton
                   variant="outline"
                   size="xl"
-                  className="border-2 border-white text-white hover:bg-white hover:text-primary-600"
+                  className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
                   onClick={() => {
                     logger.ui('CLICK', 'BecomeDonorButton', null, 'HOMEPAGE_HERO');
+                    navigateWithLoading('/register', { message: 'Preparing registration...' });
                   }}
                 >
                   Become a Donor
                 </AnimatedButton>
-              </Link>
+              </button>
             </motion.div>
           </motion.div>
         </div>
 
         {/* Floating elements */}
-        <motion.div
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-20 left-10 opacity-20"
-        >
-          <Heart className="h-16 w-16 text-white fill-current" />
-        </motion.div>
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute bottom-20 right-10 opacity-20"
-        >
-          <Heart className="h-12 w-12 text-white fill-current" />
-        </motion.div>
+        {/* Heart + heartbeat line visual */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-20">
+          <Heart className="h-40 w-40 text-[#ff6b6b]" />
+        </div>
       </section>
+
+      {/* Festival / Special Occasion Modal */}
+      <Modal
+        isOpen={isFestivalOpen}
+        onClose={() => setIsFestivalOpen(false)}
+        title="Wishing You Joy and Good Health"
+        size="lg"
+      >
+        <div className="space-y-4 text-slate-700 dark:text-slate-100">
+          <p className="text-base">On this special day, join hands to save lives. Your one donation can make a world of difference.</p>
+          <div className="flex items-center justify-end gap-3">
+            <AnimatedButton
+              variant="outline"
+              className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
+              onClick={() => setIsFestivalOpen(false)}
+            >
+              Close
+            </AnimatedButton>
+            <AnimatedButton
+              className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
+              onClick={() => {
+                setIsFestivalOpen(false);
+                navigateWithLoading('/register', { message: 'Redirecting to registration...' });
+              }}
+            >
+              Register as Donor
+            </AnimatedButton>
+          </div>
+        </div>
+      </Modal>
 
       {/* Stats Section */}
       <section className="py-16 bg-white dark:bg-slate-900">
@@ -248,7 +299,7 @@ const HomePage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary-600">
+      <section className="py-20 bg-[#121726] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             variants={containerVariants}
@@ -264,7 +315,7 @@ const HomePage = () => {
             </motion.h2>
             <motion.p
               variants={itemVariants}
-              className="text-xl text-red-100 mb-8 max-w-2xl mx-auto"
+              className="text-xl text-white/80 mb-8 max-w-2xl mx-auto"
             >
               Join thousands of heroes who are making a difference in their communities. 
               Your donation can save up to 3 lives.
@@ -276,7 +327,7 @@ const HomePage = () => {
               <Link to="/register">
                 <AnimatedButton
                   size="xl"
-                  className="bg-white text-primary-600 hover:bg-red-50 shadow-lg"
+                  className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
                   onClick={() => {
                     logger.ui('CLICK', 'RegisterAsDonorButton', null, 'HOMEPAGE_CTA');
                   }}
@@ -289,7 +340,7 @@ const HomePage = () => {
                 <AnimatedButton
                   variant="outline"
                   size="xl"
-                  className="border-2 border-white text-white hover:bg-white hover:text-primary-600"
+                  className="border-2 border-[#ff6b6b] text-[#ff6b6b] bg-transparent hover:bg-[#ff6b6b]/10"
                   onClick={() => {
                     logger.ui('CLICK', 'LearnMoreButton', null, 'HOMEPAGE_CTA');
                   }}

@@ -6,10 +6,14 @@ import logger from './utils/logger';
 
 // Context providers
 import { ThemeProvider } from './contexts/ThemeContext';
+import { LoadingProvider, useLoading } from './contexts/LoadingContext';
+import { ToastProvider } from './contexts/ToastContext';
 
 // Components
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
+import GlobalLoader from './components/ui/GlobalLoader';
+import ToastContainer from './components/ui/ToastContainer';
 
 // Pages
 import HomePage from './pages/public/HomePage';
@@ -26,13 +30,16 @@ import ArticleDetail from './components/public/ArticleDetail';
 
 
 
-// Component to track route changes
+// Component to track route changes and hide loader after navigation
 const RouteTracker = () => {
   const location = useLocation();
+  const { hideLoading } = useLoading();
   
   useEffect(() => {
     logger.route('NAVIGATE', location.pathname, 'APP');
     logger.debug(`Full location: ${JSON.stringify(location)}`, 'APP');
+    // Hide any pending loaders once the route changes
+    try { hideLoading(); } catch (e) { /* no-op */ }
   }, [location]);
   
   return null;
@@ -56,30 +63,46 @@ function App() {
 
   return (
     <ThemeProvider>
-      <Router>
-        <RouteTracker />
-        <div className="min-h-screen bg-background text-foreground">
-          <Header />
-          
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/components" element={<ComponentsPage />} />
-              <Route path="/education" element={<EducationPage />} />
-              <Route path="/education/article/:slug" element={<ArticleDetail />} />
-              <Route path="/emergency" element={<EmergencyRequestPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/blood-banks" element={<BloodBanksPage />} />
-            </Routes>
-          </main>
-          
-          <Footer />
-        </div>
-      </Router>
+      <LoadingProvider>
+        <ToastProvider>
+          <Router>
+            <RouteTracker />
+            <div className="min-h-screen bg-background text-foreground">
+              <Header />
+              
+              <main className="flex-1">
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/components" element={<ComponentsPage />} />
+                  <Route path="/education" element={<EducationPage />} />
+                  <Route path="/education/article/:slug" element={<ArticleDetail />} />
+                  <Route path="/emergency" element={<EmergencyRequestPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/blood-banks" element={<BloodBanksPage />} />
+                </Routes>
+              </main>
+              
+              <Footer />
+            </div>
+
+            {/* Global UI hooks */}
+            {/* Loader overlay */}
+            <LoaderMount />
+            {/* Toasts */}
+            <ToastContainer />
+          </Router>
+        </ToastProvider>
+      </LoadingProvider>
     </ThemeProvider>
   );
 }
 
 export default App;
+
+// Helper to mount GlobalLoader hooked into LoadingContext
+function LoaderMount() {
+  const { isLoading, loadingMessage } = useLoading();
+  return <GlobalLoader isLoading={isLoading} message={loadingMessage} />;
+}
