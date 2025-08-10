@@ -136,12 +136,14 @@ const HomePage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden text-white bg-gradient-to-br from-[#0f0f14] via-[#141824] to-[#1c2230] dark:from-[#0b0d13] dark:via-[#10131b] dark:to-[#121726]">
+      <section className="relative overflow-hidden text-white bg-[#0f121a] dark:bg-[#0b0d13]">
         {/* Background pattern */}
-        <div className="absolute inset-0 bg-black/10">
-          <div className="absolute inset-0 opacity-20" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}></div>
+        {/* EmergencyToast-style highlight glow and conic border */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(ellipse_at_center,rgba(255,107,107,0.22),transparent_65%)] blur-3xl" />
+          <div className="absolute inset-0 rounded-[3rem]">
+            <div className="absolute -inset-2 bg-[conic-gradient(from_0deg,_#ff6b6b,_transparent_30%)] rounded-[3rem] opacity-20 blur-sm" />
+          </div>
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
