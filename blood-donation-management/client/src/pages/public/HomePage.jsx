@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import HeroDroplet3D from '../../components/features/HeroDroplet3D';
 import { 
   Heart, 
   Users, 
@@ -135,106 +136,60 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden text-white bg-[#170b0b] dark:bg-[#0e0707]">
-        {/* Background pattern */}
-        {/* EmergencyToast-style highlight glow and conic border */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <div className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(ellipse_at_center,rgba(245,20,20,0.28),transparent_65%)] blur-3xl" />
-          <div className="absolute -inset-6 rounded-[3rem] bg-[radial-gradient(ellipse_at_left,rgba(245,20,20,0.22),transparent_65%)] blur-3xl" />
-          <div className="absolute inset-0 rounded-[3rem]">
-            <div className="absolute -inset-2 bg-[conic-gradient(from_0deg,_#f51414,_transparent_30%)] rounded-[3rem] opacity-25 blur-sm" />
+      {/* Hero Section (updated to match attached image with 3D droplet) */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#2b0e0e] via-[#330d0d] to-[#2a0a0a] text-white">
+        {/* Premium light streaks behind headline */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -top-24 -left-20 h-96 w-[36rem] rotate-[-18deg] bg-gradient-to-r from-[#f51414]/35 via-[#ff8a8a]/10 to-transparent blur-2xl" />
+          <div className="absolute top-[20%] -left-10 h-72 w-[28rem] rotate-[-22deg] bg-gradient-to-r from-[#f51414]/25 to-transparent blur-2xl" />
+          <div className="absolute -bottom-16 -right-24 h-96 w-[36rem] rotate-[16deg] bg-gradient-to-l from-[#f51414]/20 via-[#ff8a8a]/10 to-transparent blur-2xl" />
+        </div>
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(245,20,20,0.20),transparent_60%)]" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-6 lg:px-8 py-20 lg:py-28">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left: headline and actions */}
+            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6 will-change-transform">
+              <motion.h1 variants={itemVariants} className="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight drop-shadow-[0_6px_18px_rgba(245,20,20,0.35)]">
+                BLOOD
+                <br />
+                DONATION
+            </motion.h1>
+              <motion.p variants={itemVariants} className="text-3xl md:text-4xl font-semibold text-white/95">
+                Give blood, save a life
+              </motion.p>
+              <motion.p variants={itemVariants} className="max-w-xl text-white/85 text-lg">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </motion.p>
+
+              <motion.div variants={itemVariants}>
+                <AnimatedButton
+                  size="xl"
+                  className="bg-[#f51414] hover:bg-[#d11212] text-white px-8"
+                  onClick={() => {
+                    logger.ui('CLICK', 'DonateNowHero', null, 'HOMEPAGE_HERO');
+                    navigateWithLoading('/register', { message: 'Taking you to registration…' });
+                  }}
+                >
+                  DONATE NOW
+                </AnimatedButton>
+              </motion.div>
+            </motion.div>
+
+            {/* Right: 3D droplet */}
+            <motion.div
+              className="relative will-change-transform"
+              initial={{ y: 10 }}
+              whileInView={{ y: 0 }}
+              transition={{ type: 'spring', stiffness: 60, damping: 12 }}
+            >
+              <div className="absolute -inset-10 bg-[radial-gradient(ellipse_at_center,rgba(245,20,20,0.25),transparent_60%)] blur-2xl" />
+              <HeroDroplet3D />
+            </motion.div>
           </div>
         </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="relative z-20 text-center"
-          >
-            <motion.h1
-              variants={itemVariants}
-              className="max-w-5xl mx-auto text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-extrabold mb-4 md:mb-6 leading-[1.1] tracking-tight"
-            >
-              A Beating Promise to Save Lives
-              {/* Heartbeat line precisely between the two lines */}
-              <div className="relative h-8 md:h-10 my-1 md:my-2">
-                <svg
-                  viewBox="0 0 560 56"
-                  className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-[560px] max-w-full h-full opacity-80"
-                  fill="none"
-                >
-                  <defs>
-                    <filter id="centerGlowTitle" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur stdDeviation="3" result="blur" />
-                      <feMerge>
-                        <feMergeNode in="blur" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
-                  </defs>
-                  <motion.path
-                    d="M0 28 H100 L120 28 L130 18 L140 38 L150 28 H220 L240 28 L250 10 L260 46 L270 28 H340 L360 28 L370 18 L380 38 L390 28 H460 L560 28"
-                    stroke="rgba(245,20,20,0.8)"
-                    strokeWidth={3}
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    filter="url(#centerGlowTitle)"
-                    animate={{ opacity: [0.6, 1, 0.6], strokeWidth: [2.5, 3.5, 2.5] }}
-                    transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-                  />
-                </svg>
-              </div>
-              <span className="block mt-3 md:mt-4 text-white">Call For Blood Foundation</span>
-            </motion.h1>
-
-
-            <motion.div
-              variants={itemVariants}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            >
-              <button type="button">
-                <AnimatedButton
-                  size="xl"
-                  className="border-2 border-[#f51414] text-[#f51414] bg-transparent hover:bg-[#f51414]/10"
-                  onClick={() => {
-                    logger.ui('CLICK', 'NeedBloodNowButton', null, 'HOMEPAGE_HERO');
-                    navigateWithLoading('/emergency', { message: 'Opening emergency request...' });
-                  }}
-                >
-                  Need Blood Now
-                </AnimatedButton>
-              </button>
-              <button type="button">
-                <AnimatedButton
-                  variant="outline"
-                  size="xl"
-                  className="border-2 border-[#f51414] text-[#f51414] bg-transparent hover:bg-[#f51414]/10"
-                  onClick={() => {
-                    logger.ui('CLICK', 'BecomeDonorButton', null, 'HOMEPAGE_HERO');
-                    navigateWithLoading('/register', { message: 'Preparing registration...' });
-                  }}
-                >
-                  Become a Donor
-                </AnimatedButton>
-              </button>
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Floating elements */}
-        {/* Heart + heartbeat line visual (subtle animation) */}
-        <motion.div
-          className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center opacity-50"
-          animate={{ scale: [1, 1.06, 1] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <Heart className="h-[22rem] w-[22rem] text-[#f51414]/45" />
-        </motion.div>
-
-        {/* Removed extra centered heartbeat line to keep a single line between title rows */}
       </section>
 
       {/* Festival / Special Occasion Modal */}
