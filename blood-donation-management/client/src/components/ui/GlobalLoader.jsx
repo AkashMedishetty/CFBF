@@ -1,227 +1,137 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Activity, Award, Shield } from 'lucide-react';
+import React from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
-const GlobalLoader = ({ isLoading, message = "Loading..." }) => {
-  const [currentIcon, setCurrentIcon] = useState(0);
-  const icons = [Heart, Activity, Award, Shield];
-  
-  useEffect(() => {
-    if (!isLoading) return;
-    
-    const interval = setInterval(() => {
-      setCurrentIcon(prev => (prev + 1) % icons.length);
-    }, 800);
-    
-    return () => clearInterval(interval);
-  }, [isLoading, icons.length]);
+// Animated blood drop morph loader
+// - Gentle bob and subtle tilt
+// - Rising fill with gradient inside the drop
+// - Soft shadow pulse
+// Respects prefers-reduced-motion
+const GlobalLoader = ({ isLoading, message = 'Loading…' }) => {
+  const prefersReducedMotion = useReducedMotion();
 
   const overlayVariants = {
-    hidden: { 
-      opacity: 0,
-      backdropFilter: "blur(0px)"
-    },
-    visible: { 
-      opacity: 1,
-      backdropFilter: "blur(8px)",
-      transition: {
-        duration: 0.3,
-        ease: "easeOut"
-      }
-    },
-    exit: { 
-      opacity: 0,
-      backdropFilter: "blur(0px)",
-      transition: {
-        duration: 0.2,
-        ease: "easeIn"
-      }
-    }
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.25 } },
+    exit: { opacity: 0, transition: { duration: 0.2 } }
   };
 
-  const containerVariants = {
-    hidden: { 
-      scale: 0.8,
-      y: 20,
-      opacity: 0
-    },
-    visible: { 
-      scale: 1,
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-        delay: 0.1
-      }
-    },
-    exit: { 
-      scale: 0.8,
-      y: -20,
-      opacity: 0,
-      transition: {
-        duration: 0.2,
-        ease: "easeIn"
-      }
-    }
-  };
+  const bobAnimation = prefersReducedMotion
+    ? { y: 0, rotate: 0 }
+    : {
+        y: [0, -8, 0],
+        rotate: [-2, 2, -2],
+        transition: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }
+      };
 
-  const iconVariants = {
-    hidden: { 
-      scale: 0,
-      rotate: -180,
-      opacity: 0
-    },
-    visible: { 
-      scale: 1,
-      rotate: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    },
-    exit: { 
-      scale: 0,
-      rotate: 180,
-      opacity: 0,
-      transition: {
-        duration: 0.3,
-        ease: "easeIn"
-      }
-    }
-  };
+  const shadowAnimation = prefersReducedMotion
+    ? { scale: 1, opacity: 0.2 }
+    : {
+        scale: [1, 0.9, 1],
+        opacity: [0.2, 0.1, 0.2],
+        transition: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }
+      };
 
-  const pulseVariants = {
-    hidden: { scale: 0, opacity: 0 },
-    visible: { 
-      scale: [0, 1.5, 0],
-      opacity: [0, 0.3, 0],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const CurrentIcon = icons[currentIcon];
+  // Rising fill animation inside the clipPath
+  const fillAnimation = prefersReducedMotion
+    ? { y: 90, height: 70 }
+    : {
+        y: [110, 20, 110],
+        height: [50, 140, 50],
+        transition: { duration: 3.2, repeat: Infinity, ease: 'easeInOut' }
+      };
 
   return (
     <AnimatePresence>
       {isLoading && (
         <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 backdrop-blur-sm"
           variants={overlayVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/20"
-          style={{ backdropFilter: 'blur(8px)' }}
         >
+          <div className="relative flex flex-col items-center">
+            {/* Soft pulsing shadow */}
           <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="relative flex flex-col items-center justify-center"
-          >
-            {/* Background glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 via-yellow-400/20 to-red-500/20 rounded-full blur-3xl animate-pulse"></div>
-            
-            {/* Main loader container */}
-            <div className="relative bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20">
-              {/* Pulse rings */}
+              className="absolute -bottom-6 h-3 w-28 rounded-full bg-red-600/30 blur-md"
+              style={{ filter: 'blur(8px)' }}
+              animate={shadowAnimation}
+            />
+
+            {/* Loader card */}
+            <div className="relative rounded-3xl border border-white/30 bg-white/90 p-8 shadow-2xl backdrop-blur-md">
               <motion.div
-                variants={pulseVariants}
-                initial="hidden"
-                animate="visible"
-                className="absolute inset-0 border-2 border-red-400 rounded-3xl"
-              ></motion.div>
-              <motion.div
-                variants={pulseVariants}
-                initial="hidden"
-                animate="visible"
-                className="absolute inset-0 border-2 border-yellow-400 rounded-3xl"
-                style={{ animationDelay: '1s' }}
-              ></motion.div>
-              
-              {/* Icon container */}
-              <div className="relative flex flex-col items-center space-y-6">
-                {/* Rotating medical icons */}
-                <div className="relative">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={currentIcon}
-                      variants={iconVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full shadow-lg"
-                    >
-                      <CurrentIcon className="h-8 w-8 text-white" />
-                    </motion.div>
-                  </AnimatePresence>
-                  
-                  {/* Orbiting dots */}
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0"
-                  >
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-yellow-400 rounded-full"></div>
-                    <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-red-400 rounded-full"></div>
-                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <div className="absolute left-0 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-green-400 rounded-full"></div>
+                className="relative flex items-center justify-center"
+                animate={bobAnimation}
+              >
+                {/* Blood drop SVG */}
+                <svg width="140" height="180" viewBox="0 0 140 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="bloodGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#f51414" />
+                      <stop offset="100%" stopColor="#b50f0f" />
+                    </linearGradient>
+                    <clipPath id="dropClip">
+                      {/* Same path used for clip and outline */}
+                      <path d="M70 10 C70 10, 95 50, 110 80 C122 103, 125 120, 125 135 C125 160, 104 175, 70 175 C36 175, 15 160, 15 135 C15 120, 18 103, 30 80 C45 50, 70 10, 70 10 Z" />
+                    </clipPath>
+                  </defs>
+
+                  {/* Outline */}
+                  <path
+                    d="M70 10 C70 10, 95 50, 110 80 C122 103, 125 120, 125 135 C125 160, 104 175, 70 175 C36 175, 15 160, 15 135 C15 120, 18 103, 30 80 C45 50, 70 10, 70 10 Z"
+                    stroke="#f51414"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeLinejoin="round"
+                  />
+
+                  {/* Rising fill inside drop */}
+                  <g clipPath="url(#dropClip)">
+                    <motion.rect
+                      x="10"
+                      width="120"
+                      rx="6"
+                      fill="url(#bloodGrad)"
+                      animate={fillAnimation}
+                    />
+
+                    {/* Subtle highlight wave */}
+                    <motion.ellipse
+                      cx="55"
+                      cy="55"
+                      rx="16"
+                      ry="8"
+                      fill="white"
+                      fillOpacity="0.25"
+                      animate={
+                        prefersReducedMotion
+                          ? { opacity: 0.25 }
+                          : {
+                              opacity: [0.15, 0.35, 0.15],
+                              transition: { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }
+                            }
+                      }
+                    />
+                  </g>
+                </svg>
                   </motion.div>
-                </div>
-                
-                {/* Loading dots */}
-                <div className="flex space-x-2">
-                  {[0, 1, 2].map((index) => (
-                    <motion.div
-                      key={index}
-                      animate={{
-                        scale: [1, 1.2, 1],
-                        opacity: [0.4, 1, 0.4]
-                      }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        delay: index * 0.2,
-                        ease: "easeInOut"
-                      }}
-                      className="w-2 h-2 bg-red-500 rounded-full"
-                    ></motion.div>
-                  ))}
-                </div>
-                
-                {/* Loading text */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="text-center"
-                >
-                  <p className="text-gray-700 font-medium text-lg">{message}</p>
+
+              {/* Message */}
+              <div className="mt-5 text-center">
+                <p className="text-gray-800 text-base font-medium">{message}</p>
+                {!prefersReducedMotion && (
                   <motion.p 
+                    className="text-gray-500 text-sm"
                     animate={{ opacity: [0.5, 1, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="text-gray-500 text-sm mt-1"
+                    transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
                   >
-                    Please wait...
+                    Preparing your experience…
                   </motion.p>
-                </motion.div>
+                )}
               </div>
             </div>
-            
-            {/* Bottom progress indicator */}
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-red-500 via-yellow-400 to-red-500 rounded-full"
-            ></motion.div>
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
