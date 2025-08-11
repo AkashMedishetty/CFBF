@@ -6,19 +6,17 @@ import { Environment, ContactShadows, Lightformer } from '@react-three/drei';
 function DropletMesh() {
   const meshRef = useRef();
 
-  // Lathe profile tailored to the reference: sharp tip, full belly, tight round base
+  // Lathe profile tailored to studio reference: sharp tip, smooth belly, symmetric base
   const geometryArgs = useMemo(() => {
     const points = [];
-    const total = 64;
+    const total = 96;
     for (let i = 0; i <= total; i += 1) {
       const t = i / total; // 0..1 top->bottom
-      // Ease curves for radius
-      const sharpTip = Math.pow(t, 0.35); // slow start for sharp top
-      const belly = Math.sin(Math.PI * Math.min(1, t)) ** 1.25;
-      // Emphasize mid-bulge and tighten base
-      const radius = 0.02 + 1.02 * belly * (1 - 0.18 * t) * (0.75 + 0.25 * sharpTip);
-      // Height: slightly stretched near the top
-      const y = -1.28 + 2.56 * t + (t < 0.10 ? -0.22 * (1 - t / 0.10) : 0);
+      // Smooth teardrop: very sharp top, wide spherical lower half
+      const sharpTopEase = Math.pow(t, 0.28);
+      const belly = Math.sin(Math.PI * Math.min(1, t)) ** 1.1;
+      const radius = 0.015 + 0.98 * belly * (1 - 0.12 * t) * (0.75 + 0.25 * sharpTopEase);
+      const y = -1.26 + 2.52 * t + (t < 0.08 ? -0.24 * (1 - t / 0.08) : 0);
       points.push([radius, y]);
     }
     return { points };
@@ -31,7 +29,7 @@ function DropletMesh() {
   });
 
   return (
-    <mesh ref={meshRef} castShadow receiveShadow rotation={[0.03, 0.9, 0]} position={[0, 0.34, 0]}>
+    <mesh ref={meshRef} castShadow receiveShadow rotation={[0.02, 0.85, 0]} position={[0, 0.36, 0]}>
       <latheGeometry
         args={[
           geometryArgs.points.map(([x, y]) => new THREE.Vector2(x, y)),
@@ -39,16 +37,16 @@ function DropletMesh() {
         ]}
       />
       <meshPhysicalMaterial
-        color="#c51212"
-        roughness={0.06}
+        color="#d10f10"
+        roughness={0.045}
         metalness={0.0}
         clearcoat={1}
-        clearcoatRoughness={0.015}
+        clearcoatRoughness={0.01}
         transmission={0}
         thickness={0}
-        ior={1.4}
-        reflectivity={0.75}
-        envMapIntensity={1.2}
+        ior={1.5}
+        reflectivity={0.8}
+        envMapIntensity={1.05}
         attenuationColor="#f51414"
         attenuationDistance={2.2}
       />
@@ -88,24 +86,23 @@ function Scene() {
   return (
     <>
       {/* Key and rim lights for glossy look */}
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={0.45} />
       <directionalLight
-        position={[3, 5, 4]}
-        intensity={1.2}
+        position={[2.4, 3.8, 3.2]}
+        intensity={0.9}
         color={lightColor}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
       />
-      <directionalLight position={[-5, 3, -2]} intensity={0.45} color="#ffffff" />
-      <spotLight position={[0, 5, -4]} angle={0.35} penumbra={0.7} intensity={0.6} color="#ffd1d1" />
+      <directionalLight position={[-3.8, 2.6, -2.5]} intensity={0.35} color="#ffffff" />
 
       <DropletMesh />
 
       {/* Ground to catch a soft shadow only (no reflection) */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.05, 0]} receiveShadow>
-        <circleGeometry args={[2.6, 128]} />
-        <meshStandardMaterial color="#d9d9d9" roughness={1} metalness={0} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.06, 0]} receiveShadow>
+        <circleGeometry args={[2.2, 128]} />
+        <meshStandardMaterial color="#ebebeb" roughness={1} metalness={0} />
       </mesh>
 
       {/* Soft ground contact shadow */}
@@ -119,8 +116,10 @@ function Scene() {
 
       {/* Environment with studio lightformers for crisp speculars */}
       <Environment resolution={1024} preset="studio">
-        <Lightformer position={[2.2, 2.8, 3]} scale={[2.8, 1.2]} color="#ffffff" intensity={3.6} form="rect" />
-        <Lightformer position={[-2.4, 1.6, -2]} rotation={[0, Math.PI / 2.2, 0]} scale={[2.0, 0.9]} color="#ffffff" intensity={1.8} form="rect" />
+        {/* Primary softbox (front-right) to create the large square highlight */}
+        <Lightformer position={[1.8, 2.2, 2.3]} rotation={[0, 0.25, 0]} scale={[1.1, 1.1]} color="#ffffff" intensity={4.2} form="rect" />
+        {/* Secondary fill (rear-left) for gentle rim */}
+        <Lightformer position={[-2.2, 1.8, -1.6]} rotation={[0, Math.PI / 1.9, 0]} scale={[1.8, 0.8]} color="#ffffff" intensity={1.4} form="rect" />
       </Environment>
     </>
   );
