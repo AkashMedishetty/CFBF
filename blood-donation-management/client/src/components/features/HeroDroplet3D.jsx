@@ -56,31 +56,6 @@ function DropletMesh() {
 
 // Removed ripple rings / reflective pool to match the studio droplet reference
 
-function BackdropParticles({ count = 350 }) {
-  const points = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    for (let i = 0; i < count; i += 1) {
-      const r = 3 + Math.random() * 1.2; // radius ring around droplet
-      const theta = Math.random() * Math.PI * 2;
-      const phi = (Math.random() * 0.7 + 0.15) * Math.PI; // avoid poles
-      const x = r * Math.sin(phi) * Math.cos(theta);
-      const y = (Math.random() - 0.5) * 2.2; // vertical spread
-      const z = r * Math.sin(phi) * Math.sin(theta) - 0.6; // slightly behind
-      positions.set([x, y, z], i * 3);
-    }
-    return positions;
-  }, [count]);
-
-  return (
-    <points>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" array={points} count={points.length / 3} itemSize={3} />
-      </bufferGeometry>
-      <pointsMaterial color="#ffb3b3" size={0.02} transparent opacity={0.22} depthWrite={false} />
-    </points>
-  );
-}
-
 function Scene() {
   const lightColor = '#ff2a2a';
   return (
@@ -97,13 +72,15 @@ function Scene() {
       />
       <directionalLight position={[-3.8, 2.6, -2.5]} intensity={0.35} color="#ffffff" />
 
-      <DropletMesh />
+      <group scale={0.8}>
+        <DropletMesh />
 
-      {/* Ground to catch a soft shadow only (no reflection) */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.06, 0]} receiveShadow>
-        <circleGeometry args={[2.2, 128]} />
-        <meshStandardMaterial color="#ebebeb" roughness={1} metalness={0} />
-      </mesh>
+        {/* Ground to catch a soft shadow only (no reflection) */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.06, 0]} receiveShadow>
+          <circleGeometry args={[2.2, 128]} />
+          <meshStandardMaterial color="#ebebeb" roughness={1} metalness={0} />
+        </mesh>
+      </group>
 
       {/* Soft ground contact shadow */}
       <ContactShadows

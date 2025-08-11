@@ -185,7 +185,7 @@ const HomePage = () => {
               whileInView={{ y: 0 }}
               transition={{ type: 'spring', stiffness: 60, damping: 12 }}
             >
-              <div className="absolute -inset-10 bg-[radial-gradient(ellipse_at_center,rgba(245,20,20,0.25),transparent_60%)] blur-2xl" />
+              <div className="absolute -inset-8 bg-[radial-gradient(ellipse_at_center,rgba(245,20,20,0.22),transparent_60%)] blur-2xl" />
               <HeroDroplet3D />
             </motion.div>
           </div>
