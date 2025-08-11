@@ -26,7 +26,8 @@ function DropletMesh() {
 
   useFrame((_, delta) => {
     if (!meshRef.current) return;
-    meshRef.current.rotation.y += delta * 0.25;
+    // Slow anti-clockwise rotation (brain reference style)
+    meshRef.current.rotation.y -= delta * 0.18;
   });
 
   return (
@@ -72,6 +73,31 @@ function RippleRing({ delay = 0 }) {
       <ringGeometry args={[0.35, 0.37, 128]} />
       <meshBasicMaterial color="#ffb3b3" transparent opacity={0.3} />
     </mesh>
+  );
+}
+
+function BackdropParticles({ count = 350 }) {
+  const points = useMemo(() => {
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i += 1) {
+      const r = 3 + Math.random() * 1.2; // radius ring around droplet
+      const theta = Math.random() * Math.PI * 2;
+      const phi = (Math.random() * 0.7 + 0.15) * Math.PI; // avoid poles
+      const x = r * Math.sin(phi) * Math.cos(theta);
+      const y = (Math.random() - 0.5) * 2.2; // vertical spread
+      const z = r * Math.sin(phi) * Math.sin(theta) - 0.6; // slightly behind
+      positions.set([x, y, z], i * 3);
+    }
+    return positions;
+  }, [count]);
+
+  return (
+    <points>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" array={points} count={points.length / 3} itemSize={3} />
+      </bufferGeometry>
+      <pointsMaterial color="#ffb3b3" size={0.02} transparent opacity={0.22} depthWrite={false} />
+    </points>
   );
 }
 
@@ -129,6 +155,9 @@ function Scene() {
         <Lightformer position={[2, 2.5, 3]} scale={[3.2, 1.2]} color="#ffffff" intensity={3.5} form="rect" />
         <Lightformer position={[-3, 1.5, -2]} rotation={[0, Math.PI / 2.5, 0]} scale={[2.5, 0.9]} color="#ffbdbd" intensity={2.2} form="rect" />
       </Environment>
+
+      {/* Subtle particle field inspired by reference */}
+      <BackdropParticles />
     </>
   );
 }
