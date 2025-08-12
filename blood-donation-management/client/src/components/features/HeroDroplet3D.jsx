@@ -29,7 +29,7 @@ function DropletMesh() {
   });
 
   return (
-    <mesh ref={meshRef} castShadow receiveShadow rotation={[0.015, 0.85, 0]} position={[0, 0.36, 0]}>
+    <mesh ref={meshRef} castShadow receiveShadow rotation={[0.01, 0.82, 0]} position={[0, 0.36, 0]}>
       <latheGeometry
         args={[
           geometryArgs.points.map(([x, y]) => new THREE.Vector2(x, y)),
@@ -37,21 +37,18 @@ function DropletMesh() {
         ]}
       />
       <meshPhysicalMaterial
-        color="#cf1212"
-        roughness={0.04}
+        color="#c61a1a"
+        roughness={0.32}
         metalness={0.0}
-        clearcoat={1}
-        clearcoatRoughness={0.008}
+        clearcoat={0.25}
+        clearcoatRoughness={0.45}
         transmission={0}
         thickness={0}
-        ior={1.5}
-        reflectivity={0.85}
-        envMapIntensity={1.15}
-        sheen={0.25}
-        sheenRoughness={0.6}
-        sheenColor={new THREE.Color('#ffffff')}
-        attenuationColor="#f51414"
-        attenuationDistance={2.2}
+        ior={1.45}
+        reflectivity={0.12}
+        envMapIntensity={0.22}
+        attenuationColor="#d01818"
+        attenuationDistance={3.0}
       />
     </mesh>
   );
@@ -64,7 +61,7 @@ function Scene() {
   return (
     <>
       {/* Key and rim lights for glossy look */}
-      <ambientLight intensity={0.45} />
+      <ambientLight intensity={0.35} />
       <directionalLight
         position={[2.4, 3.8, 3.2]}
         intensity={0.9}
@@ -73,7 +70,7 @@ function Scene() {
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
       />
-      <directionalLight position={[-3.8, 2.6, -2.5]} intensity={0.35} color="#ffffff" />
+      <directionalLight position={[-3.8, 2.6, -2.5]} intensity={0.25} color="#ffffff" />
 
       <group scale={0.75}>
         <DropletMesh />
@@ -96,12 +93,10 @@ function Scene() {
 
       {/* Environment with studio lightformers for crisp speculars */}
       <Environment resolution={1024} preset="studio">
-        {/* Primary softbox (front-right) to create the large square highlight */}
-        <Lightformer position={[1.7, 2.5, 2.2]} rotation={[0, 0.22, 0]} scale={[1.3, 1.3]} color="#ffffff" intensity={4.6} form="rect" />
-        {/* Secondary fill (rear-left) for gentle rim */}
-        <Lightformer position={[-2.2, 1.7, -1.8]} rotation={[0, Math.PI / 2.0, 0]} scale={[1.8, 0.9]} color="#ffffff" intensity={1.2} form="rect" />
-        {/* Small kicker highlight */}
-        <Lightformer position={[0.2, 1.4, 2.8]} rotation={[0, 0, 0]} scale={[0.35, 0.35]} color="#ffffff" intensity={2.6} form="rect" />
+        {/* Primary softbox: larger but dimmer for matte highlight */}
+        <Lightformer position={[1.6, 2.4, 2.1]} rotation={[0, 0.2, 0]} scale={[1.6, 1.4]} color="#ffffff" intensity={2.1} form="rect" />
+        {/* Secondary fill: subtle */}
+        <Lightformer position={[-2.0, 1.6, -1.7]} rotation={[0, Math.PI / 2.0, 0]} scale={[1.6, 0.8]} color="#ffffff" intensity={0.8} form="rect" />
       </Environment>
     </>
   );
