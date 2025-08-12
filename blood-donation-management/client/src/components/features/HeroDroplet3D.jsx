@@ -29,7 +29,7 @@ function DropletMesh() {
   });
 
   return (
-    <mesh ref={meshRef} castShadow receiveShadow rotation={[0.02, 0.85, 0]} position={[0, 0.36, 0]}>
+    <mesh ref={meshRef} castShadow receiveShadow rotation={[0.015, 0.85, 0]} position={[0, 0.36, 0]}>
       <latheGeometry
         args={[
           geometryArgs.points.map(([x, y]) => new THREE.Vector2(x, y)),
@@ -37,16 +37,19 @@ function DropletMesh() {
         ]}
       />
       <meshPhysicalMaterial
-        color="#d10f10"
-        roughness={0.045}
+        color="#cf1212"
+        roughness={0.04}
         metalness={0.0}
         clearcoat={1}
-        clearcoatRoughness={0.01}
+        clearcoatRoughness={0.008}
         transmission={0}
         thickness={0}
         ior={1.5}
-        reflectivity={0.8}
-        envMapIntensity={1.05}
+        reflectivity={0.85}
+        envMapIntensity={1.15}
+        sheen={0.25}
+        sheenRoughness={0.6}
+        sheenColor={new THREE.Color('#ffffff')}
         attenuationColor="#f51414"
         attenuationDistance={2.2}
       />
@@ -72,7 +75,7 @@ function Scene() {
       />
       <directionalLight position={[-3.8, 2.6, -2.5]} intensity={0.35} color="#ffffff" />
 
-      <group scale={0.8}>
+      <group scale={0.75}>
         <DropletMesh />
 
         {/* Ground to catch a soft shadow only (no reflection) */}
@@ -94,9 +97,11 @@ function Scene() {
       {/* Environment with studio lightformers for crisp speculars */}
       <Environment resolution={1024} preset="studio">
         {/* Primary softbox (front-right) to create the large square highlight */}
-        <Lightformer position={[1.8, 2.2, 2.3]} rotation={[0, 0.25, 0]} scale={[1.1, 1.1]} color="#ffffff" intensity={4.2} form="rect" />
+        <Lightformer position={[1.7, 2.5, 2.2]} rotation={[0, 0.22, 0]} scale={[1.3, 1.3]} color="#ffffff" intensity={4.6} form="rect" />
         {/* Secondary fill (rear-left) for gentle rim */}
-        <Lightformer position={[-2.2, 1.8, -1.6]} rotation={[0, Math.PI / 1.9, 0]} scale={[1.8, 0.8]} color="#ffffff" intensity={1.4} form="rect" />
+        <Lightformer position={[-2.2, 1.7, -1.8]} rotation={[0, Math.PI / 2.0, 0]} scale={[1.8, 0.9]} color="#ffffff" intensity={1.2} form="rect" />
+        {/* Small kicker highlight */}
+        <Lightformer position={[0.2, 1.4, 2.8]} rotation={[0, 0, 0]} scale={[0.35, 0.35]} color="#ffffff" intensity={2.6} form="rect" />
       </Environment>
     </>
   );
