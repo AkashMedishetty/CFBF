@@ -56,6 +56,9 @@ const LanguageSwitcher = ({
           event.preventDefault();
           // Focus previous language option
           break;
+        default:
+          // No action needed for other keys
+          break;
       }
     };
 

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authApi } from '../utils/api';
 import sessionManager from '../utils/sessionManager';
 import logger from '../utils/logger';
@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
         };
     }, [checkAuthStatus]);
 
-    const checkAuthStatus = async () => {
+    const checkAuthStatus = useCallback(async () => {
         logger.debug('🔍 Starting enhanced auth status check', 'AUTH_CONTEXT');
         
         try {
@@ -121,7 +121,7 @@ export const AuthProvider = ({ children }) => {
             });
             setLoading(false);
         }
-    };
+    }, [isAuthenticated, user]);
 
     const login = async (userData, tokens) => {
         try {

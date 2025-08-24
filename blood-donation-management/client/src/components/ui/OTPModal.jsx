@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Shield, AlertCircle, CheckCircle } from 'lucide-react';
 
@@ -67,7 +67,7 @@ const OTPModal = ({
     };
   }, [isOpen, autoRequest, otpRequested, phoneNumber, purpose, requestOTP]);
 
-  const requestOTP = async () => {
+  const requestOTP = useCallback(async () => {
     if (!phoneNumber) {
       logger.error('No phone number provided for OTP request', 'OTP_MODAL');
       setError('Phone number is required');
@@ -124,7 +124,7 @@ const OTPModal = ({
     } finally {
       setIsRequesting(false);
     }
-  };
+  }, [phoneNumber, purpose, isRequesting, onVerificationError]);
 
   const verifyOTP = async (otpCode) => {
     // Prevent multiple verification attempts

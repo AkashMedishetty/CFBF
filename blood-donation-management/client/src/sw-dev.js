@@ -3,6 +3,8 @@
   This is a simplified version for development use only
 */
 
+/* eslint-disable no-restricted-globals */
+
 const CACHE_NAME = 'bdms-dev-v1';
 const urlsToCache = [
   '/',
@@ -42,6 +44,7 @@ self.addEventListener('activate', (event) => {
             console.log('[SW Dev] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
+          return null;
         })
       );
     })

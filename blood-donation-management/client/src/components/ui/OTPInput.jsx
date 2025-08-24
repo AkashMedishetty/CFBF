@@ -42,7 +42,7 @@ const OTPInput = ({
       setOtp(newOtp);
       logger.debug(`OTP value updated from props: ${value}`, 'OTP_INPUT');
     }
-  }, [value, length]);
+  }, [value, length, otp]);
 
   useEffect(() => {
     // Call onChange when OTP changes

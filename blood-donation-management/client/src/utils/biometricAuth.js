@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, no-restricted-globals */
 import logger from './logger';
 
 class BiometricAuth {

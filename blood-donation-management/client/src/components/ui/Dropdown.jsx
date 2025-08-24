@@ -34,7 +34,7 @@ const Dropdown = ({
     return () => {
       logger.componentUnmount('Dropdown');
     };
-  }, []);
+  }, [multiple, options.length, searchable]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

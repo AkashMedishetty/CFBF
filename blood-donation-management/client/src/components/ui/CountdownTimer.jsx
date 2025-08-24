@@ -22,7 +22,7 @@ const CountdownTimer = ({
     return () => {
       logger.componentUnmount('CountdownTimer');
     };
-  }, []);
+  }, [initialTime, showResendButton]);
 
   useEffect(() => {
     // Reset timer when initialTime changes (e.g., after resend)

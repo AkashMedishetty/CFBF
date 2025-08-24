@@ -3,6 +3,7 @@
  * Global test setup and configuration for Jest and React Testing Library
  */
 
+import React from 'react';
 import '@testing-library/jest-dom';
 import { setupTestEnvironment, cleanupUtils, customMatchers } from './utils/testUtils';
 

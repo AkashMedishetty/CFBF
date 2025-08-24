@@ -94,7 +94,7 @@ const Map = ({
       }
       logger.componentUnmount('Map');
     };
-  }, []);
+  }, [center, interactive, onLocationSelect, showControls, showCurrentLocation, zoom]);
 
   // Update markers when markers prop changes
   useEffect(() => {
@@ -120,7 +120,7 @@ const Map = ({
       const group = new L.featureGroup(markersRef.current);
       mapInstanceRef.current.fitBounds(group.getBounds().pad(0.1));
     }
-  }, [markers]);
+  }, [markers, createMarker]);
 
   // Update map center when center prop changes
   useEffect(() => {

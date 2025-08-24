@@ -3,6 +3,7 @@
  * Centralized error handling with logging, reporting, and user feedback
  */
 
+/* eslint-disable no-restricted-globals */
 import logger from './logger';
 
 class ErrorHandler {

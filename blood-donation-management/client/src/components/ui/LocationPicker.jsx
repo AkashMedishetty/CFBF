@@ -114,7 +114,6 @@ const LocationPicker = ({
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        const location = { latitude, longitude };
         
         // Auto-select current location
         await handleLocationSelect({ latitude, longitude });

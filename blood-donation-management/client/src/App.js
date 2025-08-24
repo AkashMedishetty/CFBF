@@ -9,7 +9,7 @@ import performanceMonitor from './utils/performanceMonitor';
 import preloadManager from './utils/preloadManager';
 import codeSplittingManager from './utils/codeSplitting';
 import browserCompatibility from './utils/browserCompatibility';
-import accessibilityManager from './utils/accessibilityManager';
+
 import i18n from './utils/i18n';
 
 // Context providers

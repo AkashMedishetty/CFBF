@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import logger from './logger';
 import offlineQueueManager from './offlineQueueManager';
 

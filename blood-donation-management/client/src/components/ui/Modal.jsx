@@ -45,7 +45,7 @@ const Modal = ({
     return () => {
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [isOpen, closeOnEscape, onClose, title]);
+  }, [isOpen, closeOnEscape, onClose, title, size]);
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget && closeOnOverlayClick) {
