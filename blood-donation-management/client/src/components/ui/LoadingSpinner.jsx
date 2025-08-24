@@ -13,10 +13,10 @@ const LoadingSpinner = ({
 }) => {
   
   React.useEffect(() => {
-    logger.ui('MOUNT', 'LoadingSpinner', { size, variant, color }, 'UI_LOADING_SPINNER');
+    logger.componentMount('LoadingSpinner');
     
     return () => {
-      logger.ui('UNMOUNT', 'LoadingSpinner', { size, variant, color }, 'UI_LOADING_SPINNER');
+      logger.componentUnmount('LoadingSpinner');
     };
   }, [size, variant, color]);
 
@@ -46,7 +46,7 @@ const LoadingSpinner = ({
   const animation = animationSystem.getAnimation('loadingStates', variant);
   const reducedMotionAnimation = animationSystem.getReducedMotionAnimation(animation);
 
-  logger.debug(`LoadingSpinner rendered with size: ${size}, variant: ${variant}, color: ${color}`, 'UI_LOADING_SPINNER');
+  logger.debug(`LoadingSpinner rendered with size: ${size}, variant: ${variant}, color: ${color}`);
 
   const renderSpinner = () => {
     switch (variant) {
@@ -139,7 +139,7 @@ export const SkeletonLoader = ({
   animated = true 
 }) => {
   React.useEffect(() => {
-    logger.ui('MOUNT', 'SkeletonLoader', { lines, animated }, 'UI_SKELETON_LOADER');
+    logger.componentMount('SkeletonLoader');
   }, [lines, animated]);
 
   const animation = animated ? animationSystem.getAnimation('loadingStates', 'skeleton') : {};
@@ -167,7 +167,7 @@ export const ProgressBar = ({
   color = 'primary'
 }) => {
   React.useEffect(() => {
-    logger.ui('MOUNT', 'ProgressBar', { progress, animated, color }, 'UI_PROGRESS_BAR');
+    logger.componentMount('ProgressBar');
   }, [progress, animated, color]);
 
   const colors = {

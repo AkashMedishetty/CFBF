@@ -17,28 +17,65 @@ export async function getVapidPublicKey() {
 }
 
 export async function subscribeUser(userId) {
-  if (!(await isPushSupported())) return { success: false, message: 'Push not supported' };
+  try {
+    console.log('🔔 Starting push subscription for user:', userId);
+    
+    if (!(await isPushSupported())) {
+      console.warn('Push not supported');
+      return { success: false, message: 'Push not supported' };
+    }
 
-  const permission = await askNotificationPermission();
-  if (permission !== 'granted') return { success: false, message: 'Permission denied' };
+    const permission = await askNotificationPermission();
+    if (permission !== 'granted') {
+      console.warn('Notification permission denied');
+      return { success: false, message: 'Permission denied' };
+    }
 
-  const registration = await navigator.serviceWorker.ready;
-  const vapidPublicKey = await getVapidPublicKey();
-  if (!vapidPublicKey) return { success: false, message: 'Missing VAPID key' };
+    const registration = await navigator.serviceWorker.ready;
+    const vapidPublicKey = await getVapidPublicKey();
+    if (!vapidPublicKey) {
+      console.warn('Missing VAPID key');
+      return { success: false, message: 'Missing VAPID key' };
+    }
 
-  const convertedKey = urlBase64ToUint8Array(vapidPublicKey);
-  const subscription = await registration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: convertedKey
-  });
+    const convertedKey = urlBase64ToUint8Array(vapidPublicKey);
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: convertedKey
+    });
 
-  const res = await fetch('/api/v1/push/subscribe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, subscription })
-  });
-  if (!res.ok) return { success: false, message: 'Failed to save subscription' };
-  return { success: true };
+    console.log('Push subscription created:', subscription.endpoint);
+
+    // Get auth token for the request
+    const token = localStorage.getItem('token');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+      console.log('Auth token added to request');
+    } else {
+      console.warn('No auth token found');
+    }
+
+    const res = await fetch('/api/v1/push/subscribe', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ userId, subscription })
+    });
+    
+    console.log('📡 Push subscription API response:', res.status, res.statusText);
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Push subscription failed:', res.status, errorText);
+      return { success: false, message: `Failed to save subscription: ${res.status} ${errorText}` };
+    }
+    
+    console.log('Push subscription saved successfully');
+    return { success: true };
+  } catch (error) {
+    console.error('💥 Push subscription error:', error);
+    return { success: false, message: error.message };
+  }
 }
 
 function urlBase64ToUint8Array(base64String) {

@@ -29,7 +29,7 @@ class MessageTemplateService {
           },
           {
             type: 'FOOTER',
-            text: 'Call For Blood Foundation'
+            text: 'CallforBlood Foundation'
           },
           {
             type: 'BUTTONS',

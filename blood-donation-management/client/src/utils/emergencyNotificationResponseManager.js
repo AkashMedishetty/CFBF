@@ -238,7 +238,7 @@ class EmergencyNotificationResponseManager {
   // Send push notification with action buttons
   async sendPushNotification(emergency, donor) {
     const notification = {
-      title: `🚨 ${emergency.bloodType} Blood Needed ${emergency.urgency === 'critical' ? 'URGENTLY' : ''}`,
+      title: `URGENT: ${emergency.bloodType} Blood Needed ${emergency.urgency === 'critical' ? 'CRITICALLY' : ''}`,
       body: `Emergency at ${emergency.hospital.name} - ${emergency.distance || 'Unknown'}km away`,
       icon: '/icons/emergency-blood.png',
       badge: '/icons/badge-emergency.png',
@@ -254,7 +254,7 @@ class EmergencyNotificationResponseManager {
       actions: [
         {
           action: 'accept_emergency',
-          title: '🚨 Accept Emergency',
+          title: 'Accept Emergency',
           icon: '/icons/accept-emergency.png'
         },
         {
@@ -269,7 +269,7 @@ class EmergencyNotificationResponseManager {
         },
         {
           action: 'decline_emergency',
-          title: '❌ Cannot Help',
+          title: 'Cannot Help',
           icon: '/icons/decline.png'
         }
       ]
@@ -288,7 +288,7 @@ class EmergencyNotificationResponseManager {
   // Send SMS notification as fallback
   async sendSMSNotification(emergency, donor) {
     try {
-      const message = `🚨 EMERGENCY: ${emergency.bloodType} blood needed at ${emergency.hospital.name}. Can you help? Reply YES to accept or call ${emergency.hospital.phone}. Emergency ID: ${emergency.id}`;
+      const message = `EMERGENCY: ${emergency.bloodType} blood needed at ${emergency.hospital.name}. Can you help? Reply YES to accept or call ${emergency.hospital.phone}. Emergency ID: ${emergency.id}`;
 
       const response = await fetch('/api/v1/notifications/sms', {
         method: 'POST',
@@ -321,7 +321,7 @@ class EmergencyNotificationResponseManager {
     try {
       const emailData = {
         to: donor.email,
-        subject: `🚨 Emergency Blood Request - ${emergency.bloodType} Needed`,
+        subject: `Emergency Blood Request - ${emergency.bloodType} Needed`,
         template: 'emergency_blood_request',
         data: {
           donorName: donor.name,

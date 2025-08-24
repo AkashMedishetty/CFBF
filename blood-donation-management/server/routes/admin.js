@@ -4,9 +4,13 @@ const rateLimit = require('express-rate-limit');
 const User = require('../models/User');
 const auditLogger = require('../utils/auditLogger');
 const logger = require('../utils/logger');
-const whatsappService = require('../services/whatsappService');
+const notificationService = require('../services/notificationService');
 
 const router = express.Router();
+const AuditLog = require('../models/AuditLog');
+const BloodRequest = require('../models/BloodRequest');
+const emailService = require('../services/emailService');
+const NotificationSettings = require('../models/NotificationSettings');
 
 // Rate limiting for admin actions
 const adminLimiter = rateLimit({
@@ -106,11 +110,17 @@ router.post('/donors/:donorId/approve', adminLimiter, async (req, res) => {
       });
     }
 
-    // Send WhatsApp notification to donor
+    // Notify donor via configured channels (push → email; escalate WhatsApp/SMS if enabled)
     try {
-      await whatsappService.sendApprovalNotification(donor.phoneNumber, {
-        name: donor.name,
-        approvedAt: new Date().toISOString()
+      await notificationService.sendNotification({
+        userId: donor._id,
+        phoneNumber: donor.phoneNumber,
+        email: donor.email,
+        type: 'registration_approved',
+        priority: 'normal',
+        channels: ['push', 'email'],
+        message: `Hi ${donor.name}, your donor registration has been approved. Thank you for volunteering!`,
+        metadata: { donorId: donor._id, approvedAt: new Date().toISOString() }
       });
       logger.success(`Approval notification sent to ${donor.phoneNumber}`, 'ADMIN_ROUTES');
     } catch (notificationError) {
@@ -197,12 +207,17 @@ router.post('/donors/:donorId/reject', adminLimiter, async (req, res) => {
       });
     }
 
-    // Send WhatsApp notification to donor
+    // Notify donor via configured channels
     try {
-      await whatsappService.sendRejectionNotification(donor.phoneNumber, {
-        name: donor.name,
-        reason: reason,
-        rejectedAt: new Date().toISOString()
+      await notificationService.sendNotification({
+        userId: donor._id,
+        phoneNumber: donor.phoneNumber,
+        email: donor.email,
+        type: 'registration_rejected',
+        priority: 'normal',
+        channels: ['push', 'email'],
+        message: `Hi ${donor.name}, your donor registration could not be approved. Reason: ${reason}. You may update your details and reapply.`,
+        metadata: { donorId: donor._id, rejectedAt: new Date().toISOString() }
       });
       logger.success(`Rejection notification sent to ${donor.phoneNumber}`, 'ADMIN_ROUTES');
     } catch (notificationError) {
@@ -408,9 +423,14 @@ router.post('/donors/bulk-approve', adminLimiter, async (req, res) => {
     // Send notifications (don't wait for completion)
     approvedDonors.forEach(async (donor) => {
       try {
-        await whatsappService.sendApprovalNotification(donor.phoneNumber, {
-          name: donor.name,
-          approvedAt: new Date().toISOString()
+        await notificationService.sendNotification({
+          userId: donor._id,
+          phoneNumber: donor.phoneNumber,
+          type: 'registration_approved',
+          priority: 'normal',
+          channels: ['push', 'email'],
+          message: `Hi ${donor.name}, your donor registration has been approved. Thank you for volunteering!`,
+          metadata: { donorId: donor._id, approvedAt: new Date().toISOString() }
         });
       } catch (error) {
         logger.warn(`Failed to send notification to ${donor.phoneNumber}`, 'ADMIN_ROUTES', error);
@@ -468,4 +488,123 @@ router.get('/health', (req, res) => {
   });
 });
 
+// Notification settings (admin)
+router.get('/notifications/settings', adminLimiter, async (req, res) => {
+  try {
+    if (req.user?.role !== 'admin') return res.status(403).json({ success: false, error: 'ACCESS_DENIED' });
+    const settings = await NotificationSettings.getSettings();
+    res.json({ success: true, data: settings });
+  } catch (e) {
+    logger.error('Failed to get notification settings', 'ADMIN_ROUTES', e);
+    res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+router.put('/notifications/settings', adminLimiter, async (req, res) => {
+  try {
+    if (req.user?.role !== 'admin') return res.status(403).json({ success: false, error: 'ACCESS_DENIED' });
+    const allowedKeys = ['channelOrder','enableWhatsApp','enableSMS','escalateToWhatsAppOnPriority','escalateToSMSOnPriority','escalateAfterMs'];
+    const payload = Object.fromEntries(Object.entries(req.body || {}).filter(([k]) => allowedKeys.includes(k)));
+    const settings = await NotificationSettings.getSettings();
+    Object.assign(settings, payload, { updatedBy: req.user.id });
+    await settings.save();
+    res.json({ success: true, data: settings });
+  } catch (e) {
+    logger.error('Failed to update notification settings', 'ADMIN_ROUTES', e);
+    res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+/**
+ * @route   GET /api/v1/admin/activity/recent
+ * @desc    Get recent system activity for admin dashboard
+ * @access  Private (Admin)
+ */
+router.get('/activity/recent', adminLimiter, async (req, res) => {
+  try {
+    const events = await AuditLog.getSystemStats(24);
+    const recent = await AuditLog.find().sort({ timestamp: -1 }).limit(25).lean();
+    res.status(200).json({ success: true, data: { events, recent } });
+  } catch (error) {
+    logger.error('Error fetching recent activity', 'ADMIN_ROUTES', error);
+    res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+/**
+ * @route   GET /api/v1/admin/requests/summary
+ * @desc    Get blood request summary for admin dashboard map/cards
+ * @access  Private (Admin)
+ */
+router.get('/requests/summary', adminLimiter, async (req, res) => {
+  try {
+    const summaryAgg = await BloodRequest.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          active: { $sum: { $cond: [{ $in: ['$status', ['pending','active','matched']] }, 1, 0] } },
+          fulfilled: { $sum: { $cond: [{ $eq: ['$status', 'fulfilled'] }, 1, 0] } },
+          critical: { $sum: { $cond: [{ $eq: ['$request.urgency', 'critical'] }, 1, 0] } }
+        }
+      }
+    ]);
+
+    const activeRequests = await BloodRequest.find({ status: { $in: ['pending','active','matched'] } })
+      .select('patient.bloodType request.urgency status location.hospital.name location.hospital.coordinates expiresAt')
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .lean();
+
+    res.json({
+      success: true,
+      data: {
+        overview: {
+          totalRequests: summaryAgg[0]?.total || 0,
+          activeRequests: summaryAgg[0]?.active || 0,
+          fulfilledRequests: summaryAgg[0]?.fulfilled || 0,
+          criticalRequests: summaryAgg[0]?.critical || 0
+        },
+        activeRequests
+      }
+    });
+  } catch (error) {
+    logger.error('Error fetching requests summary', 'ADMIN_ROUTES', error);
+    res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
 module.exports = router;
+
+/**
+ * Email diagnostics and status
+ */
+// @route   GET /api/v1/admin/email/status
+// @desc    Get email service configuration/status
+// @access  Private (Admin)
+router.get('/email/status', adminLimiter, async (req, res) => {
+  try {
+    const status = emailService.getStatus();
+    res.status(200).json({ success: true, data: status });
+  } catch (error) {
+    logger.error('Error fetching email status', 'ADMIN_ROUTES', error);
+    res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+// @route   POST /api/v1/admin/email/test
+// @desc    Send a test email to verify configuration
+// @access  Private (Admin)
+router.post('/email/test', adminLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, error: 'EMAIL_REQUIRED' });
+    }
+    const result = await emailService.testConfiguration(email);
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    logger.error('Error sending test email', 'ADMIN_ROUTES', error);
+    res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+  }
+});

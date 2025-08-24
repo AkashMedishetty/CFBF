@@ -13,7 +13,7 @@ class HospitalService {
       // Create admin user first
       const adminUser = new User({
         ...adminUserData,
-        role: 'hospital_admin',
+        role: 'hospital',
         isVerified: false
       });
       await adminUser.save();

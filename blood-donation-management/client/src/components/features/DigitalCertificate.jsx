@@ -143,7 +143,7 @@ const DigitalCertificate = ({
                 <div className="flex items-center justify-center space-x-2 mb-4">
                   <Heart className="h-8 w-8 text-red-600" />
                   <h1 className="text-2xl font-bold text-red-600 dark:text-red-400">
-                    Call For Blood Foundation
+                    CallforBlood Foundation
                   </h1>
                   <Heart className="h-8 w-8 text-red-600" />
                 </div>

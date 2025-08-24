@@ -35,7 +35,8 @@ const GeographicAnalytics = ({ className = '' }) => {
     setIsLoading(true);
     
     try {
-      // Mock data - in real app, this would be an API call
+      // Use admin requests summary to populate map markers
+      // and keep some placeholders for summary cards
       const mockData = {
         summary: {
           totalDonors: 1247,
@@ -116,6 +117,31 @@ const GeographicAnalytics = ({ className = '' }) => {
 
       setAnalyticsData(mockData);
       setHeatmapData(mockData.heatmapPoints);
+      try {
+        const { adminApi } = await import('../../utils/api');
+        const res = await adminApi.getRequestsSummary();
+        const active = res?.data?.activeRequests || [];
+        // augment regional markers with actual active request coordinates
+        const extra = active
+          .map((r) => ({
+            position: [
+              r.location?.hospital?.coordinates?.coordinates?.[1] || 0,
+              r.location?.hospital?.coordinates?.coordinates?.[0] || 0
+            ],
+            title: `${r.patient?.bloodType} • ${r.request?.urgency}`,
+            description: r.location?.hospital?.name || '',
+            type: 'request',
+            color: '#dc2626',
+            icon: '🩸'
+          }))
+          .filter(m => m.position[0] !== 0 || m.position[1] !== 0);
+        setHeatmapData((prev) => [
+          ...prev,
+          ...extra.map(e => ({ position: e.position, intensity: 0.8, type: 'high' }))
+        ]);
+      } catch (e) {
+        logger.warn('Failed to augment map with live requests', 'GEOGRAPHIC_ANALYTICS', e);
+      }
       
       logger.success('Analytics data loaded', 'GEOGRAPHIC_ANALYTICS');
     } catch (error) {
@@ -452,7 +478,7 @@ const GeographicAnalytics = ({ className = '' }) => {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200 dark:border-slate-700">
+                <tr className="border-b border-slate-200 dark:border-dark-border">
                   <th className="text-left py-3 px-4 font-medium text-slate-900 dark:text-white">
                     Region
                   </th>

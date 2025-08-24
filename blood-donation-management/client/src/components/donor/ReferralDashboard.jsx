@@ -40,7 +40,7 @@ const ReferralDashboard = ({ donorId, className = '' }) => {
 
     const fetchReferralData = async () => {
         try {
-            // Mock data - in real app, this would be an API call
+            // TODO: Replace with real referral API when available
             const mockData = {
                 referralCode: 'BLOOD2024RK',
                 referralLink: 'https://callforblood.org/join/BLOOD2024RK',
@@ -165,8 +165,8 @@ const ReferralDashboard = ({ donorId, className = '' }) => {
                 ]
             };
 
-            setReferralData(mockData);
-            logger.success('Referral data loaded', 'REFERRAL_DASHBOARD');
+            setReferralData(null);
+            logger.success('Referral data loaded (API placeholder)', 'REFERRAL_DASHBOARD');
         } catch (error) {
             logger.error('Error fetching referral data', 'REFERRAL_DASHBOARD', error);
         } finally {

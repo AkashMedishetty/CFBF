@@ -206,7 +206,7 @@ router.get('/featured', async (req, res) => {
 
     if (isDatabaseConnected()) {
       // Use database
-      featuredContent = await EducationalContent.findFeatured(parseInt(limit));
+     featuredContent = await EducationalContent.getFeatured(parseInt(limit));
     } else {
       // Use mock service
       logger.warn('Database not connected, using mock data', 'EDUCATION');
@@ -238,7 +238,7 @@ router.get('/popular', async (req, res) => {
 
     if (isDatabaseConnected()) {
       // Use database
-      popularContent = await EducationalContent.findPopular(parseInt(limit));
+     popularContent = await EducationalContent.getPopular(parseInt(limit));
     } else {
       // Use mock service
       logger.warn('Database not connected, using mock data', 'EDUCATION');

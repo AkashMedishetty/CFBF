@@ -118,7 +118,7 @@ const AboutUs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-dark-bg">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -219,7 +219,7 @@ const AboutUs = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
-                className="bg-white rounded-xl p-6 shadow-lg text-center"
+                className="bg-white dark:bg-dark-bg-secondary rounded-xl p-6 shadow-lg text-center"
               >
                 <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center mx-auto mb-4">
                   <value.icon className={`w-6 h-6 ${value.color}`} />
@@ -308,7 +308,7 @@ const AboutUs = () => {
                 } mb-12`}
               >
                 <div className={`w-1/2 ${index % 2 === 0 ? 'pr-8' : 'pl-8'}`}>
-                  <div className={`bg-white rounded-xl p-6 shadow-lg ${
+                  <div className={`bg-white dark:bg-dark-bg-secondary rounded-xl p-6 shadow-lg ${
                     index % 2 === 0 ? 'text-right' : 'text-left'
                   }`}>
                     <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-4">
@@ -357,7 +357,7 @@ const AboutUs = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-lg overflow-hidden"
+                className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-lg overflow-hidden"
               >
                 <div className="h-64 bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
                   <div className="w-24 h-24 bg-red-300 rounded-full flex items-center justify-center">

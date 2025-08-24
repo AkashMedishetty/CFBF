@@ -14,7 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Log server startup
-logger.info('🚀 Starting Call For Blood Foundation server...', 'STARTUP');
+logger.info('🚀 Starting CallforBlood Foundation server...', 'STARTUP');
 logger.debug(`Environment: ${process.env.NODE_ENV}`, 'STARTUP');
 logger.debug(`Port: ${PORT}`, 'STARTUP');
 
@@ -102,7 +102,7 @@ app.get('/health', (req, res) => {
   logger.info('Health check requested', 'HEALTH');
   const healthData = {
     status: 'OK',
-    message: 'Call For Blood Foundation API is running',
+    message: 'CallforBlood Foundation API is running',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
     uptime: process.uptime(),
@@ -128,7 +128,7 @@ logger.success('API routes configured', 'SERVER');
 app.get('/', (req, res) => {
   logger.info('Root endpoint accessed', 'ROOT');
   const welcomeData = {
-    message: 'Welcome to Call For Blood Foundation API',
+    message: 'Welcome to CallforBlood Foundation API',
     version: '1.0.0',
     documentation: '/api/docs',
     timestamp: new Date().toISOString()
@@ -153,7 +153,7 @@ app.use('*', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  logger.success(`Call For Blood Foundation server running on port ${PORT}`, 'SERVER');
+  logger.success(`CallforBlood Foundation server running on port ${PORT}`, 'SERVER');
   logger.info(`Environment: ${process.env.NODE_ENV}`, 'SERVER');
   logger.info(`Health check: http://localhost:${PORT}/health`, 'SERVER');
   logger.info(`API documentation: http://localhost:${PORT}/api/docs`, 'SERVER');

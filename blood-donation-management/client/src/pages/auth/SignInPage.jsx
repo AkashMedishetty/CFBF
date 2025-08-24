@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate, Link } from 'react-router-dom';
-import { Phone, ArrowRight, AlertCircle, Lock, MessageSquare, Key } from 'lucide-react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { Phone, ArrowRight, AlertCircle, Lock, MessageSquare, Key, CheckCircle } from 'lucide-react';
 
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -14,20 +14,32 @@ import logger from '../../utils/logger';
 
 const SignInPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
-  const [loginMethod, setLoginMethod] = useState('otp'); // 'otp' or 'password'
+  const [loginMethod, setLoginMethod] = useState('password'); // 'otp' or 'password' - defaulting to password
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     logger.componentMount('SignInPage');
+    
+    // Handle state from registration navigation
+    if (location.state?.justRegistered && location.state?.phoneNumber) {
+      setPhoneNumber(location.state.phoneNumber);
+      setSuccessMessage(location.state.message || 'Registration successful! Please log in with your credentials.');
+      
+      // Clear the state to prevent showing message on refresh
+      navigate(location.pathname, { replace: true });
+    }
+    
     return () => {
       logger.componentUnmount('SignInPage');
     };
-  }, []);
+  }, [location.state, navigate, location.pathname]);
 
   const validatePhoneNumber = (number) => {
     if (!number) return 'Phone number is required';
@@ -96,8 +108,18 @@ const SignInPage = () => {
             error: loginResult.error
           });
           
-          // Check if user has completed onboarding
-          const hasCompletedOnboarding = user?.hasCompletedOnboarding;
+          // Check if user has completed onboarding (fallback to server status endpoint)
+          let hasCompletedOnboarding = user?.hasCompletedOnboarding;
+          try {
+            if (hasCompletedOnboarding === undefined && user?.id) {
+              const statusRes = await fetch(`/api/v1/users/${user.id}/onboarding-status`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+              if (statusRes.ok) {
+                const statusJson = await statusRes.json();
+                const s = statusJson?.data?.completedSteps;
+                hasCompletedOnboarding = !!(s?.documents && s?.questionnaire);
+              }
+            }
+          } catch (e) {}
           
           // Determine redirect path
           let redirectPath = '/donor/dashboard';
@@ -138,7 +160,7 @@ const SignInPage = () => {
 
   const handleOTPSuccess = async (data) => {
     try {
-      logger.info('🎉 OTP verification successful', 'SIGN_IN', { 
+      logger.info('OTP verification successful', 'SIGN_IN', { 
         phoneNumber,
         hasData: !!data,
         dataKeys: data ? Object.keys(data) : 'null',
@@ -192,8 +214,18 @@ const SignInPage = () => {
           error: loginResult.error
         });
         
-        // Check if user has completed onboarding
-        const hasCompletedOnboarding = user?.hasCompletedOnboarding;
+        // Check if user has completed onboarding (fallback to server status endpoint)
+        let hasCompletedOnboarding = user?.hasCompletedOnboarding;
+        try {
+          if (hasCompletedOnboarding === undefined && user?.id) {
+            const statusRes = await fetch(`/api/v1/users/${user.id}/onboarding-status`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+            if (statusRes.ok) {
+              const statusJson = await statusRes.json();
+              const s = statusJson?.data?.completedSteps;
+              hasCompletedOnboarding = !!(s?.documents && s?.questionnaire);
+            }
+          }
+        } catch (e) {}
         
         // Determine redirect path
         let redirectPath = '/donor/dashboard';
@@ -208,26 +240,44 @@ const SignInPage = () => {
         
         logger.info('Navigating after login', 'SIGN_IN', { redirectPath });
         
-        // Add a small delay to allow the modal to close smoothly
-        setTimeout(() => {
-          navigate(redirectPath, { 
-            state: { 
-              message,
-              user: user,
-              justVerified: true
-            },
-            replace: true
-          });
-        }, 500);
+        // Close OTP modal immediately before navigation
+        setShowOTPModal(false);
+        
+        // Navigate immediately without delay
+        logger.debug('🚀 Initiating navigation', 'SIGN_IN', { 
+          redirectPath, 
+          hasMessage: !!message,
+          hasUser: !!user 
+        });
+        
+        navigate(redirectPath, { 
+          state: { 
+            message,
+            user: user,
+            justVerified: true
+          },
+          replace: true
+        });
+        
+        logger.success('✅ Navigation completed', 'SIGN_IN', { redirectPath });
       } else {
         throw new Error(loginResponse.error?.message || loginResponse.message || 'Login failed');
       }
     } catch (error) {
-      logger.error('Login error', 'SIGN_IN', error);
+      logger.error('❌ Login error occurred', 'SIGN_IN', {
+        error: error.message,
+        stack: error.stack,
+        response: error.response?.data
+      });
+      
+      // Ensure modal is closed on error
+      setShowOTPModal(false);
+      
       setErrors({ 
         submit: error.response?.data?.error?.message || error.message || 'Failed to sign in. Please try again.' 
       });
-      setShowOTPModal(false);
+      
+      logger.debug('🔄 Modal closed due to error', 'SIGN_IN');
     }
   };
 
@@ -245,7 +295,7 @@ const SignInPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-red-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-red-50 dark:from-dark-bg dark:via-dark-bg-secondary dark:to-dark-bg py-12 px-4">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <motion.div
@@ -261,45 +311,25 @@ const SignInPage = () => {
           </p>
         </motion.div>
 
+        {/* Success Message */}
+        {successMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg"
+          >
+            <div className="flex items-center space-x-2">
+              <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <p className="text-green-800 dark:text-green-200 font-medium">
+                {successMessage}
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Sign In Card */}
         <Card className="p-8">
-          {/* Login Method Toggle */}
-          <div className="mb-6">
-            <div className="flex items-center justify-center space-x-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setLoginMethod('otp');
-                  setErrors({});
-                  setPassword('');
-                }}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                  loginMethod === 'otp'
-                    ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
-              >
-                <MessageSquare className="h-4 w-4" />
-                <span>OTP Login</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setLoginMethod('password');
-                  setErrors({});
-                  setShowOTPModal(false);
-                }}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                  loginMethod === 'password'
-                    ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                }`}
-              >
-                <Key className="h-4 w-4" />
-                <span>Password Login</span>
-              </button>
-            </div>
-          </div>
+          {/* Login Method Toggle - Hidden for password-only login */}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Phone Number Input */}

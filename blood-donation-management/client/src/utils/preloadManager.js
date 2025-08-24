@@ -17,7 +17,7 @@ class PreloadManager {
       '/': {
         priority: 1,
         components: ['HomePage'],
-        assets: ['/logo192.png', '/hero-image.jpg']
+        assets: ['/logo192.png']
       },
       '/emergency': {
         priority: 1,
@@ -141,13 +141,13 @@ class PreloadManager {
   // Get component path based on name
   getComponentPath(componentName) {
     const componentPaths = {
-      'HomePage': '../pages/public/HomePage',
+      'HomePage': '../pages/public/HomePage.jsx',
       'EmergencyRequestPage': '../pages/public/EmergencyRequestPage.jsx',
       'GuestEmergencyRequest': '../components/features/GuestEmergencyRequest.jsx',
-      'SignInPage': '../pages/auth/SignInPage',
-      'RegisterPage': '../pages/auth/RegisterPage',
-      'DonorDashboardPage': '../pages/donor/DashboardPage',
-      'DonorOnboardingPage': '../pages/donor/OnboardingPage'
+      'SignInPage': '../pages/auth/SignInPage.jsx',
+      'RegisterPage': '../pages/auth/RegisterPage.jsx',
+      'DonorDashboardPage': '../pages/donor/DashboardPage.jsx',
+      'DonorOnboardingPage': '../pages/donor/OnboardingPage.jsx'
     };
     
     return componentPaths[componentName];
@@ -312,11 +312,7 @@ class PreloadManager {
 
   // Preload emergency assets for critical situations
   async preloadEmergencyAssets() {
-    const emergencyAssets = [
-      '/icons/emergency.png',
-      '/sounds/emergency-alert.mp3',
-      '/images/blood-types.png'
-    ];
+    const emergencyAssets = ['/logo192.png'];
     
     await this.preloadAssets(emergencyAssets);
     console.log('[PreloadManager] Emergency assets preloaded');

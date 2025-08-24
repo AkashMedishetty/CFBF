@@ -140,7 +140,7 @@ export const useEmergencyNotificationResponse = () => {
         throw new Error('Emergency not found');
       }
       
-      const shareText = `🚨 URGENT: ${emergency.bloodType} blood needed at ${emergency.hospital.name}. Can you help or share with someone who can? #BloodDonation #SaveLives`;
+      const shareText = `URGENT: ${emergency.bloodType} blood needed at ${emergency.hospital.name}. Can you help or share with someone who can? #BloodDonation #SaveLives`;
       const shareUrl = `${window.location.origin}/emergency/${emergencyId}`;
       
       if (navigator.share) {

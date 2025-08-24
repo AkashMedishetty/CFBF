@@ -342,7 +342,7 @@ const MobileFirstDesignDemo = () => {
                 className={`flex flex-col items-center space-y-2 p-4 rounded-lg border transition-colors touch-manipulation ${
                   activeDemo === demo.id
                     ? 'bg-primary-50 border-primary-200 text-primary-700 dark:bg-primary-900/20 dark:border-primary-800 dark:text-primary-400'
-                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700'
+                    : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 dark:bg-dark-bg-secondary dark:border-dark-border dark:text-slate-300 dark:hover:bg-dark-bg-tertiary'
                 }`}
               >
                 <IconComponent className="w-6 h-6" />

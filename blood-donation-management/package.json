@@ -34,7 +34,7 @@
     "whatsapp-integration",
     "donor-matching"
   ],
-  "author": "Call For Blood Foundation",
+  "author": "CallforBlood Foundation",
   "license": "PROPRIETARY",
   "devDependencies": {
     "concurrently": "^8.2.2"

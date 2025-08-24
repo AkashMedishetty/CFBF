@@ -154,7 +154,7 @@ const PartnershipInquiry = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-dark-bg">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -200,7 +200,7 @@ const PartnershipInquiry = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
-                className="bg-white rounded-xl p-6 shadow-lg text-center"
+                className="bg-white dark:bg-dark-bg-secondary rounded-xl p-6 shadow-lg text-center"
               >
                 <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center mx-auto mb-4">
                   <benefit.icon className={`w-6 h-6 ${benefit.color}`} />
@@ -238,7 +238,7 @@ const PartnershipInquiry = () => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="bg-white rounded-xl shadow-lg p-8"
+            className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-lg p-8"
           >
             {submitStatus === 'success' && (
               <div className="mb-6 p-4 bg-green-100 border border-green-200 rounded-lg flex items-center space-x-3">

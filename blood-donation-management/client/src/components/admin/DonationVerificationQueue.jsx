@@ -60,185 +60,54 @@ const DonationVerificationQueue = ({ className = '' }) => {
   const fetchPendingDonations = async () => {
     setIsLoading(true);
     try {
-      // Mock data - in real app, this would be an API call
-      const mockDonations = [
-        {
-          id: 'PD001',
-          submissionId: 'SUB-2024-001',
+      const res = await fetch('/api/v1/documents/pending', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = await res.json();
+      if (result.success) {
+        const items = (result.data || []).map((doc) => ({
+          id: doc._id,
+          submissionId: doc.filename,
           donor: {
-            id: 'D001',
-            name: 'Rajesh Kumar',
-            phone: '+91-9876543210',
-            email: 'rajesh.kumar@email.com',
-            bloodType: 'O+',
+            id: doc.userId?._id || doc.userId,
+            name: doc.userId?.name || 'Unknown Donor',
+            phone: doc.userId?.phoneNumber || '',
+            email: '',
+            bloodType: '',
             profilePicture: null,
-            totalDonations: 11,
-            lastDonation: '2023-12-20T00:00:00Z',
-            verificationStatus: 'verified'
+            totalDonations: 0,
+            lastDonation: null,
+            verificationStatus: doc.verified ? 'verified' : 'pending'
           },
           donationDetails: {
-            date: '2024-01-15T10:30:00Z',
-            time: '10:30',
-            location: {
-              name: 'AIIMS Blood Bank',
-              address: 'Ansari Nagar, New Delhi',
-              coordinates: [28.5672, 77.2100]
-            },
-            bloodType: 'O+',
-            unitsContributed: 1,
-            donationType: 'whole_blood'
+            date: doc.uploadedAt,
+            time: '',
+            location: { name: '—', address: '—', coordinates: [0, 0] },
+            bloodType: '',
+            unitsContributed: 0,
+            donationType: 'document'
           },
-          photos: [
-            {
-              id: 1,
-              url: '/images/donation-001-1.jpg',
-              caption: 'Pre-donation health check',
-              timestamp: '2024-01-15T10:15:00Z'
-            },
-            {
-              id: 2,
-              url: '/images/donation-001-2.jpg',
-              caption: 'During donation process',
-              timestamp: '2024-01-15T10:45:00Z'
-            }
-          ],
-          healthStatus: {
-            predonationFeeling: 'excellent',
-            postDonationFeeling: 'good',
-            anyComplications: false,
-            complications: null,
-            followUpNeeded: false
-          },
-          experience: {
-            rating: 5,
-            staffRating: 5,
-            facilityRating: 4,
-            feedback: 'Excellent experience. Staff was very professional and caring.'
-          },
-          submittedAt: '2024-01-15T11:00:00Z',
+          photos: [],
+          healthStatus: { anyComplications: false },
+          experience: { rating: 0, staffRating: 0, facilityRating: 0, feedback: '' },
+          submittedAt: doc.uploadedAt,
           status: 'pending',
           priority: 'normal',
           flags: [],
           adminNotes: null
-        },
-        {
-          id: 'PD002',
-          submissionId: 'SUB-2024-002',
-          donor: {
-            id: 'D002',
-            name: 'Priya Sharma',
-            phone: '+91-9876543211',
-            email: 'priya.sharma@email.com',
-            bloodType: 'A+',
-            profilePicture: null,
-            totalDonations: 3,
-            lastDonation: '2023-11-10T00:00:00Z',
-            verificationStatus: 'verified'
-          },
-          donationDetails: {
-            date: '2024-01-14T14:15:00Z',
-            time: '14:15',
-            location: {
-              name: 'Max Hospital Blood Bank',
-              address: 'Saket, New Delhi',
-              coordinates: [28.5244, 77.2066]
-            },
-            bloodType: 'A+',
-            unitsContributed: 1,
-            donationType: 'whole_blood'
-          },
-          photos: [
-            {
-              id: 3,
-              url: '/images/donation-002-1.jpg',
-              caption: 'Donation certificate',
-              timestamp: '2024-01-14T15:00:00Z'
-            }
-          ],
-          healthStatus: {
-            predonationFeeling: 'good',
-            postDonationFeeling: 'slightly_tired',
-            anyComplications: true,
-            complications: 'Felt dizzy for about 10 minutes after donation',
-            followUpNeeded: true
-          },
-          experience: {
-            rating: 4,
-            staffRating: 5,
-            facilityRating: 3,
-            feedback: 'Good overall experience, but the waiting area could be improved.'
-          },
-          submittedAt: '2024-01-14T15:30:00Z',
-          status: 'pending',
-          priority: 'high',
-          flags: ['health_concern'],
-          adminNotes: null
-        },
-        {
-          id: 'PD003',
-          submissionId: 'SUB-2024-003',
-          donor: {
-            id: 'D003',
-            name: 'Amit Singh',
-            phone: '+91-9876543212',
-            email: 'amit.singh@email.com',
-            bloodType: 'B-',
-            profilePicture: null,
-            totalDonations: 1,
-            lastDonation: null,
-            verificationStatus: 'verified'
-          },
-          donationDetails: {
-            date: '2024-01-13T09:45:00Z',
-            time: '09:45',
-            location: {
-              name: 'Red Cross Blood Bank',
-              address: 'CP, New Delhi',
-              coordinates: [28.6315, 77.2167]
-            },
-            bloodType: 'B-',
-            unitsContributed: 1,
-            donationType: 'whole_blood'
-          },
-          photos: [
-            {
-              id: 4,
-              url: '/images/donation-003-1.jpg',
-              caption: 'First time donor certificate',
-              timestamp: '2024-01-13T10:30:00Z'
-            },
-            {
-              id: 5,
-              url: '/images/donation-003-2.jpg',
-              caption: 'With donation team',
-              timestamp: '2024-01-13T10:35:00Z'
-            }
-          ],
-          healthStatus: {
-            predonationFeeling: 'nervous',
-            postDonationFeeling: 'proud',
-            anyComplications: false,
-            complications: null,
-            followUpNeeded: false
-          },
-          experience: {
-            rating: 5,
-            staffRating: 5,
-            facilityRating: 5,
-            feedback: 'Amazing first experience! The team made me feel comfortable and explained everything clearly.'
-          },
-          submittedAt: '2024-01-13T11:00:00Z',
-          status: 'pending',
-          priority: 'normal',
-          flags: ['first_time_donor'],
-          adminNotes: null
-        }
-      ];
-
-      setDonations(mockDonations);
-      logger.success('Pending donations loaded', 'DONATION_VERIFICATION');
+        }));
+        setDonations(items);
+        logger.success('Pending documents loaded into verification queue', 'DONATION_VERIFICATION');
+      } else {
+        setDonations([]);
+        logger.warn('Failed to load pending documents', 'DONATION_VERIFICATION', result.error);
+      }
     } catch (error) {
-      logger.error('Error fetching pending donations', 'DONATION_VERIFICATION', error);
+      logger.error('Error fetching pending documents', 'DONATION_VERIFICATION', error);
+      setDonations([]);
     } finally {
       setIsLoading(false);
     }

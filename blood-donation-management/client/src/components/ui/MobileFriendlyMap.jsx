@@ -30,34 +30,51 @@ const MobileFriendlyMap = ({
     console.log('Map initialized with center:', mapCenter, 'zoom:', mapZoom);
   }, [mapCenter, mapZoom]);
 
-  // Get user's current location
+  // Get user's current location with high accuracy and fallback
   const getCurrentLocation = async () => {
     setIsLocating(true);
     
     try {
       if ('geolocation' in navigator) {
-        const position = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 300000 // 5 minutes
+        let position;
+        
+        try {
+          // First attempt with high accuracy
+          position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: true,
+              timeout: 10000,
+              maximumAge: 300000 // 5 minutes
+            });
           });
-        });
+        } catch (highAccuracyError) {
+          console.warn('High accuracy location failed, trying fallback:', highAccuracyError);
+          
+          // Fallback with lower accuracy
+          position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: false,
+              timeout: 15000,
+              maximumAge: 600000 // 10 minutes
+            });
+          });
+        }
         
         const location = {
           lat: position.coords.latitude,
-          lng: position.coords.longitude
+          lng: position.coords.longitude,
+          accuracy: position.coords.accuracy
         };
         
         setCurrentLocation(location);
         setMapCenter(location);
-        console.log('Current location:', location);
+        console.log('Current location obtained with accuracy:', position.coords.accuracy + 'm', location);
       } else {
         throw new Error('Geolocation not supported');
       }
     } catch (error) {
       console.error('Failed to get location:', error);
-      alert('Unable to get your location. Please check your location settings.');
+      alert('Unable to get your location. Please check your location settings and try again.');
     } finally {
       setIsLocating(false);
     }
@@ -249,7 +266,7 @@ const MobileFriendlyMap = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 z-40"
+            className="absolute bottom-0 left-0 right-0 bg-white dark:bg-dark-bg-secondary border-t border-slate-200 dark:border-dark-border p-4 z-40"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">

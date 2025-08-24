@@ -84,7 +84,7 @@ const Select = ({
           onClick={handleToggle}
           disabled={disabled}
           className={`
-            relative w-full px-4 py-3 text-left bg-white dark:bg-slate-800 border rounded-lg
+            relative w-full px-4 py-3 text-left bg-white dark:bg-dark-bg-secondary border rounded-lg
             transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
             ${error 
               ? 'border-red-500 focus:ring-red-500' 
@@ -122,7 +122,7 @@ const Select = ({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg shadow-lg max-h-60 overflow-hidden"
+              className="absolute z-50 w-full mt-2 bg-white dark:bg-dark-bg-secondary border border-slate-300 dark:border-dark-border rounded-lg shadow-lg max-h-60 overflow-hidden"
             >
               {/* Search Input */}
               {options.length > 5 && (

@@ -316,7 +316,7 @@ const Map = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`relative ${isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-slate-900' : ''} ${className}`}
+      className={`relative ${isFullscreen ? 'fixed inset-0 z-50 bg-white dark:bg-dark-bg' : ''} ${className}`}
       style={style}
     >
       {/* Search Bar */}
@@ -331,7 +331,7 @@ const Map = ({
                 setSearchQuery(e.target.value);
                 handleSearch(e.target.value);
               }}
-              className="bg-white dark:bg-slate-800 shadow-lg"
+              className="bg-white dark:bg-dark-bg-secondary shadow-lg"
               loading={isSearching}
             />
             

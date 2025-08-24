@@ -24,6 +24,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Avatar from '../../components/ui/Avatar';
 import logger from '../../utils/logger';
+import { authApi, userApi } from '../../utils/api';
 
 const DashboardPage = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -43,144 +44,73 @@ const DashboardPage = () => {
     setIsLoading(true);
     
     try {
-      // Mock data - in real app, this would be an API call
-      const mockData = {
+      // Ensure current user is available
+      const me = await authApi.getCurrentUser();
+      const user = me?.data?.user || me?.data;
+      const uid = user?._id || user?.id;
+      if (!uid) throw new Error('USER_ID_NOT_AVAILABLE');
+
+      const [statsRes, donationsRes, activityRes] = await Promise.all([
+        userApi.getUserStats(uid),
+        userApi.getDonations(uid),
+        userApi.getActivity(uid)
+      ]);
+
+      const stats = statsRes?.data || {};
+      const donations = donationsRes?.data?.donations || [];
+      const activity = (activityRes?.data?.activity || []).map((a, idx) => ({
+        id: a._id || idx,
+        type: a.category || 'activity',
+        title: a.event || a.action || 'Activity',
+        description: a.details || a.message || '',
+        date: a.timestamp || a.createdAt || new Date().toISOString(),
+        color: 'blue'
+      }));
+
+      const lastDonation = donations.find(d => d.status === 'completed');
+      const nextEligible = lastDonation?.postDonationInfo?.nextEligibleDate || stats?.eligibility?.nextEligibleDate;
+
+      const assembled = {
         user: {
-          name: 'John Doe',
-          bloodType: 'O+',
-          profilePicture: null,
-          joinedDate: '2023-06-15',
-          location: 'New Delhi, India',
-          donorId: 'BD2023001234'
+          name: user?.name || 'Donor',
+          bloodType: user?.bloodType,
+          profilePicture: user?.avatarUrl || null,
+          joinedDate: user?.createdAt,
+          location: user?.address?.city || '',
+          donorId: user?._id
         },
         stats: {
-          totalDonations: 8,
-          totalUnitsContributed: 12,
-          livesImpacted: 24,
-          responseRate: 92,
-          averageResponseTime: 15, // minutes
-          lastDonationDate: '2024-01-15',
-          nextEligibleDate: '2024-04-15',
-          totalPoints: 2400,
-          currentStreak: 3
+          totalDonations: stats?.donations?.totalDonations || donations.filter(d => d.status === 'completed').length || 0,
+          totalUnitsContributed: stats?.donations?.totalUnitsContributed || donations.reduce((s, d) => s + (d.unitsDonated || 0), 0),
+          livesImpacted: (stats?.donations?.totalUnitsContributed || 0) * 2,
+          responseRate: stats?.activity?.responseRate || 0,
+          averageResponseTime: stats?.activity?.averageResponseTime || 0,
+          lastDonationDate: lastDonation?.donationDate || null,
+          nextEligibleDate: nextEligible || null,
+          totalPoints: user?.rewards?.points || 0,
+          currentStreak: user?.rewards?.streak || 0
         },
-        recentActivity: [
-          {
-            id: 1,
-            type: 'donation',
-            title: 'Blood Donation Completed',
-            description: 'Donated 450ml at AIIMS Hospital',
-            date: '2024-01-15',
-            icon: 'droplet',
-            color: 'red'
-          },
-          {
-            id: 2,
-            type: 'request_response',
-            title: 'Responded to Emergency Request',
-            description: 'Confirmed availability for O+ blood request',
-            date: '2024-01-10',
-            icon: 'heart',
-            color: 'green'
-          },
-          {
-            id: 3,
-            type: 'achievement',
-            title: 'Achievement Unlocked',
-            description: 'Earned "Life Saver" badge for 5+ donations',
-            date: '2024-01-08',
-            icon: 'award',
-            color: 'yellow'
-          },
-          {
-            id: 4,
-            type: 'certificate',
-            title: 'Certificate Generated',
-            description: 'Digital certificate for December donation',
-            date: '2024-01-05',
-            icon: 'star',
-            color: 'blue'
-          }
-        ],
-        upcomingEvents: [
-          {
-            id: 1,
-            title: 'Blood Donation Camp',
-            location: 'Red Cross Society, CP',
-            date: '2024-02-15',
-            time: '10:00 AM - 4:00 PM',
-            type: 'camp'
-          },
-          {
-            id: 2,
-            title: 'Health Checkup Reminder',
-            location: 'Your registered clinic',
-            date: '2024-02-20',
-            time: '2:00 PM',
-            type: 'checkup'
-          }
-        ],
-        achievements: [
-          {
-            id: 1,
-            name: 'First Drop',
-            description: 'Completed your first donation',
-            icon: '🩸',
-            earned: true,
-            earnedDate: '2023-06-20'
-          },
-          {
-            id: 2,
-            name: 'Life Saver',
-            description: 'Completed 5 donations',
-            icon: '❤️',
-            earned: true,
-            earnedDate: '2024-01-08'
-          },
-          {
-            id: 3,
-            name: 'Hero',
-            description: 'Completed 10 donations',
-            icon: '🦸',
-            earned: false,
-            progress: 80
-          },
-          {
-            id: 4,
-            name: 'Quick Responder',
-            description: 'Respond to requests within 5 minutes',
-            icon: '⚡',
-            earned: true,
-            earnedDate: '2023-12-10'
-          },
-          {
-            id: 5,
-            name: 'Community Champion',
-            description: 'Refer 10 new donors',
-            icon: '👥',
-            earned: false,
-            progress: 30
-          },
-          {
-            id: 6,
-            name: 'Streak Master',
-            description: 'Maintain 6-month donation streak',
-            icon: '🔥',
-            earned: false,
-            progress: 50
-          }
-        ],
+        recentActivity: activity.slice(0, 10),
+        upcomingEvents: [],
+        achievements: (user?.rewards?.badges || []).map((b, i) => ({
+          id: i,
+          name: b,
+          description: '',
+          icon: '🏅',
+          earned: true,
+          earnedDate: user?.updatedAt
+        })),
         impactMetrics: {
-          livesImpacted: 24,
-          hospitalsHelped: 6,
-          emergencyResponses: 12,
-          communityRank: 15,
-          totalCommunityDonors: 1247
+          livesImpacted: (stats?.donations?.totalUnitsContributed || 0) * 2,
+          hospitalsHelped: 0,
+          emergencyResponses: 0,
+          communityRank: 0,
+          totalCommunityDonors: 0
         }
       };
 
-      setDashboardData(mockData);
-      logger.success('Dashboard data loaded', 'DONOR_DASHBOARD');
+      setDashboardData(assembled);
+      logger.success('Dashboard data loaded (API)', 'DONOR_DASHBOARD');
     } catch (error) {
       logger.error('Error fetching dashboard data', 'DONOR_DASHBOARD', error);
     } finally {
@@ -217,7 +147,7 @@ const DashboardPage = () => {
   };
 
   const shareAchievement = (achievement) => {
-    const text = `🎉 I just earned the "${achievement.name}" badge on Call For Blood Foundation! ${achievement.description} #BloodDonation #LifeSaver`;
+    const text = `🎉 I just earned the "${achievement.name}" badge on CallforBlood Foundation! ${achievement.description} #BloodDonation #LifeSaver`;
     
     if (navigator.share) {
       navigator.share({

@@ -1,3 +1,5 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
@@ -6,8 +8,10 @@ const logger = require('../utils/logger');
 async function seedAdmin({ phone, email, password, name = 'System Admin' }) {
   try {
     const mongoUri = process.env.MONGODB_URI || process.env.MONGODB_ATLAS_URI || 'mongodb://localhost:27017/bdms';
-    await mongoose.connect(mongoUri);
+    console.log('[SEED_ADMIN] Connecting to MongoDB:', mongoUri.replace(/:\/\/[\w+:-]+@/, '://<redacted>@'));
+    await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 15000 });
     logger.info('Connected to MongoDB for admin seeding', 'SEED_ADMIN');
+    console.log('[SEED_ADMIN] Connected to MongoDB');
 
     let admin = await User.findOne({ role: 'admin', phoneNumber: phone });
     if (admin) {
@@ -44,14 +48,17 @@ async function seedAdmin({ phone, email, password, name = 'System Admin' }) {
       });
       await admin.save();
       logger.success('Admin user created', 'SEED_ADMIN');
+      console.log('[SEED_ADMIN] Admin user created');
     }
 
-    console.log('Admin seeded:', { phone: admin.phoneNumber, email: admin.email });
+    console.log('[SEED_ADMIN] Admin seeded:', { phone: admin.phoneNumber, email: admin.email });
   } catch (error) {
     logger.error('Failed to seed admin', 'SEED_ADMIN', error);
+    console.error('[SEED_ADMIN] Error:', error?.message || error);
     throw error;
   } finally {
     await mongoose.disconnect();
+    console.log('[SEED_ADMIN] Disconnected from MongoDB');
   }
 }
 
@@ -61,7 +68,7 @@ if (require.main === module) {
   const password = process.env.SEED_ADMIN_PASSWORD || 'Admin#123';
   seedAdmin({ phone, email, password })
     .then(() => process.exit(0))
-    .catch(() => process.exit(1));
+    .catch((err) => { console.error('[SEED_ADMIN] Fatal:', err?.message || err); process.exit(1); });
 }
 
 module.exports = { seedAdmin };

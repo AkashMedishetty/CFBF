@@ -177,6 +177,24 @@ router.post('/register', hospitalRegistrationValidation, hospitalController.regi
 // Protected routes (require authentication)
 router.use(auth);
 
+// Get current hospital profile for logged-in hospital admin
+router.get('/me', 
+  hospitalOnly,
+  async (req, res) => {
+    try {
+      const hospital = await require('../models/Hospital').findOne({ adminUser: req.user.id })
+        .populate('adminUser', 'name email phoneNumber')
+        .lean();
+      if (!hospital) {
+        return res.status(404).json({ success: false, error: 'HOSPITAL_NOT_FOUND', message: 'No hospital found for this admin' });
+      }
+      res.json({ success: true, data: hospital });
+    } catch (e) {
+      res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
+);
+
 // Hospital admin routes
 router.put('/:hospitalId', 
   hospitalIdValidation, 

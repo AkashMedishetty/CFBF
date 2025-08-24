@@ -134,7 +134,7 @@ const LanguageSwitcher = ({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
               transition={{ duration: 0.15 }}
-              className="absolute top-full right-0 mt-1 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 min-w-[120px]"
+              className="absolute top-full right-0 mt-1 py-1 bg-white dark:bg-dark-bg-secondary border border-slate-200 dark:border-dark-border rounded-lg shadow-lg z-50 min-w-[120px]"
               role="listbox"
             >
               {supported.map((language) => (
@@ -175,7 +175,7 @@ const LanguageSwitcher = ({
         className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border transition-colors ${
           isOpen
             ? 'border-primary-300 bg-primary-50 text-primary-700 dark:border-primary-700 dark:bg-primary-900/20 dark:text-primary-400'
-            : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+            : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-dark-border dark:bg-dark-bg-secondary dark:text-slate-300 dark:hover:bg-dark-bg-tertiary'
         } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
         aria-label={t('common.changeLanguage')}
         aria-expanded={isOpen}
@@ -200,7 +200,7 @@ const LanguageSwitcher = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 mt-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 min-w-full"
+            className="absolute top-full left-0 mt-2 py-2 bg-white dark:bg-dark-bg-secondary border border-slate-200 dark:border-dark-border rounded-lg shadow-lg z-50 min-w-full"
             role="listbox"
           >
             {supported.map((language) => (

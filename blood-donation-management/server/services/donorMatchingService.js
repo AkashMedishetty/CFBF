@@ -457,7 +457,7 @@ Reply YES to donate or NO if unavailable.
 
 Your quick response can make the difference!
 
-Call For Blood Foundation`;
+CallforBlood Foundation`;
   }
 
   /**

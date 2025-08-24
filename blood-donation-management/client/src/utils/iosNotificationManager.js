@@ -172,7 +172,7 @@ class IOSNotificationManager {
     }
 
     try {
-      const notification = new Notification(`🚨 CRITICAL: ${bloodRequest.bloodType} Blood Needed NOW`, {
+      const notification = new Notification(`CRITICAL: ${bloodRequest.bloodType} Blood Needed NOW`, {
         body: `Life-threatening emergency at ${bloodRequest.hospital.name}\nPatient needs ${bloodRequest.bloodType} blood immediately`,
         icon: '/icons/emergency-critical.png',
         badge: '/icons/badge-critical.png',
@@ -193,7 +193,7 @@ class IOSNotificationManager {
         actions: [
           {
             action: 'accept_critical',
-            title: '🚨 Accept Emergency',
+            title: 'Accept Emergency',
             icon: '/icons/accept-critical.png'
           },
           {
@@ -235,7 +235,7 @@ class IOSNotificationManager {
       const isEmergency = bloodRequest.urgency === 'critical' || bloodRequest.urgency === 'urgent';
       
       const notification = new Notification(
-        `🩸 ${bloodRequest.bloodType} Blood ${isEmergency ? 'URGENTLY' : ''} Needed`,
+        `${bloodRequest.bloodType} Blood ${isEmergency ? 'URGENTLY' : ''} Needed`,
         {
           body: `${isEmergency ? 'Emergency' : 'Request'} at ${bloodRequest.hospital.name}\n${bloodRequest.distance}km away`,
           icon: isEmergency ? '/icons/emergency-blood.png' : '/icons/blood-request.png',
@@ -256,12 +256,12 @@ class IOSNotificationManager {
           actions: [
             {
               action: 'accept',
-              title: isEmergency ? '🚨 Accept Emergency' : '✅ Accept',
+              title: isEmergency ? 'Accept Emergency' : 'Accept',
               icon: '/icons/accept.png'
             },
             {
               action: 'decline',
-              title: '❌ Cannot Help',
+              title: 'Cannot Help',
               icon: '/icons/decline.png'
             },
             {
@@ -477,14 +477,14 @@ class IOSNotificationManager {
         animation: slideUp 0.3s ease-out;
       ">
         <div style="display: flex; align-items: center; margin-bottom: 12px;">
-          <div style="font-size: 24px; margin-right: 12px;">🩸</div>
+          <div style="font-size: 24px; margin-right: 12px; color: #dc2626;">●</div>
           <div>
             <div style="font-weight: 600; font-size: 16px;">Add to Home Screen</div>
             <div style="font-size: 14px; opacity: 0.9;">Get instant access to emergency blood requests</div>
           </div>
         </div>
         <div style="font-size: 14px; margin-bottom: 16px; opacity: 0.9;">
-          Tap <strong>Share</strong> <span style="font-size: 18px;">⬆️</span> then <strong>"Add to Home Screen"</strong> for quick emergency access
+          Tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong> for quick emergency access
         </div>
         <div style="display: flex; gap: 12px;">
           <button onclick="document.getElementById('ios-a2hs-prompt').remove(); localStorage.setItem('ios_a2hs_prompted', 'true'); localStorage.setItem('ios_a2hs_last_prompt', Date.now());" 

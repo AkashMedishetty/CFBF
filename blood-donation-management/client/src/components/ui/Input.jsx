@@ -80,7 +80,7 @@ const Input = forwardRef(({
             disabled={disabled}
             rows={rows}
             className={`
-              w-full px-4 py-3 bg-white dark:bg-slate-800 border rounded-lg
+              w-full px-4 py-3 bg-white dark:bg-dark-bg-secondary border rounded-lg
               transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
               placeholder-slate-400 dark:placeholder-slate-500
               text-slate-900 dark:text-white

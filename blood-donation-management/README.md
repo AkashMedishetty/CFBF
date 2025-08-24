@@ -1,4 +1,4 @@
-# Call For Blood Foundation - Blood Donation Management System
+# CallforBlood Foundation - Blood Donation Management System
 
 A revolutionary digital platform designed to bridge the critical gap between blood donors and recipients through intelligent automation, real-time communication, and comprehensive data management.
 
@@ -134,4 +134,4 @@ All components include:
 
 ## License
 
-© Call For Blood Foundation. All rights reserved.
+© CallforBlood Foundation. All rights reserved.

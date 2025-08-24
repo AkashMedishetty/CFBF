@@ -430,7 +430,7 @@ const CrossBrowserCompatibilityDemo = () => {
             {testResults && (
               <>
                 {/* Summary */}
-                <div className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700">
+                <div className="bg-white dark:bg-dark-bg-secondary rounded-lg p-6 border border-slate-200 dark:border-dark-border">
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-4">
                     Test Results Summary
                   </h4>

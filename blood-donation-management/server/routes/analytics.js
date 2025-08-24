@@ -60,6 +60,54 @@ router.get('/dashboard',
   }
 );
 
+// Inventory analytics (admin)
+router.get('/inventory/overview', auth, requireAdmin, async (req, res) => {
+  try {
+    const BloodRequest = require('../models/BloodRequest');
+    const overviewAgg = await BloodRequest.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          active: { $sum: { $cond: [{ $in: ['$status', ['pending','active','matched']] }, 1, 0] } },
+          fulfilled: { $sum: { $cond: [{ $eq: ['$status', 'fulfilled'] }, 1, 0] } },
+          critical: { $sum: { $cond: [{ $eq: ['$request.urgency', 'critical'] }, 1, 0] } }
+        }
+      }
+    ]);
+    res.json({ success: true, data: { overview: overviewAgg[0] || { total: 0, active: 0, fulfilled: 0, critical: 0 } } });
+  } catch (error) {
+    logger.error('Error fetching inventory overview', 'ANALYTICS_API', error);
+    res.status(500).json({ success: false, error: 'INTERNAL_ERROR' });
+  }
+});
+
+// Low-stock and expiry alerts (admin)
+router.get('/inventory/alerts', auth, requireAdmin, async (req, res) => {
+  try {
+    const Hospital = require('../models/Hospital');
+    const hospitals = await Hospital.find({ isActive: true }).select('name inventory address contactInfo');
+    const lowStock = [];
+    const expiringSoon = [];
+    const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    hospitals.forEach(h => {
+      h.inventory.forEach(item => {
+        if (item.unitsAvailable <= item.minimumThreshold) {
+          lowStock.push({ hospital: { id: h._id, name: h.name }, bloodType: item.bloodType, unitsAvailable: item.unitsAvailable, minimumThreshold: item.minimumThreshold, lastUpdated: item.lastUpdated });
+        }
+        const soon = (item.expirationDates || []).filter(d => new Date(d) <= sevenDaysFromNow).length;
+        if (soon > 0) {
+          expiringSoon.push({ hospital: { id: h._id, name: h.name }, bloodType: item.bloodType, expiringSoonCount: soon });
+        }
+      });
+    });
+    res.json({ success: true, data: { lowStock, expiringSoon } });
+  } catch (error) {
+    logger.error('Error fetching inventory alerts', 'ANALYTICS_API', error);
+    res.status(500).json({ success: false, error: 'INTERNAL_ERROR' });
+  }
+});
+
 // Get donor engagement metrics
 router.get('/donors/engagement',
   auth,

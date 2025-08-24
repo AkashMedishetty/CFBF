@@ -204,7 +204,7 @@ class BackgroundNotificationManager {
         
         // Also queue for background processing
         const notification = {
-          title: `🚨 ${bloodRequest.bloodType} Blood Needed URGENTLY`,
+          title: `URGENT: ${bloodRequest.bloodType} Blood Needed CRITICALLY`,
           body: `Emergency at ${bloodRequest.hospital.name} - ${bloodRequest.distance}km away`,
           icon: '/icons/emergency-blood.png',
           image: bloodRequest.hospital.image || '/images/emergency-banner.png',
@@ -233,7 +233,7 @@ class BackgroundNotificationManager {
 
     // Regular notification for non-iOS or fallback
     const notification = {
-      title: `🚨 ${bloodRequest.bloodType} Blood Needed URGENTLY`,
+      title: `URGENT: ${bloodRequest.bloodType} Blood Needed CRITICALLY`,
       body: `Emergency at ${bloodRequest.hospital.name} - ${bloodRequest.distance}km away`,
       icon: '/icons/emergency-blood.png',
       image: bloodRequest.hospital.image || '/images/emergency-banner.png',
@@ -266,7 +266,7 @@ class BackgroundNotificationManager {
         
         // Also queue for background processing
         const notification = {
-          title: `🩸 ${bloodRequest.bloodType} Blood Needed`,
+          title: `${bloodRequest.bloodType} Blood Needed`,
           body: `Urgent request at ${bloodRequest.hospital.name} - Can you help?`,
           icon: '/icons/blood-request.png',
           type: 'blood_request_urgent',
@@ -293,7 +293,7 @@ class BackgroundNotificationManager {
 
     // Regular notification for non-iOS or fallback
     const notification = {
-      title: `🩸 ${bloodRequest.bloodType} Blood Needed`,
+      title: `${bloodRequest.bloodType} Blood Needed`,
       body: `Urgent request at ${bloodRequest.hospital.name} - Can you help?`,
       icon: '/icons/blood-request.png',
       type: 'blood_request_urgent',
@@ -338,7 +338,7 @@ class BackgroundNotificationManager {
   // Create response confirmation notification
   async createResponseConfirmation(responseData) {
     const notification = {
-      title: '✅ Response Confirmed',
+      title: 'Response Confirmed',
       body: `Thank you for responding to the ${responseData.bloodType} blood request`,
       icon: '/icons/confirmation.png',
       type: 'response_confirmation',

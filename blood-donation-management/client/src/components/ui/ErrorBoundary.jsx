@@ -190,7 +190,7 @@ class ErrorBoundary extends React.Component {
             </div>
 
             {/* Additional Info */}
-            <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <div className="mt-6 pt-4 border-t border-slate-200 dark:border-dark-border">
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 If this problem persists, please contact our support team.
               </p>

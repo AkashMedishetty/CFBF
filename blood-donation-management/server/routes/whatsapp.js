@@ -487,7 +487,7 @@ We're connecting you with the requester. You'll receive location and contact det
 
 Your generosity can save a life! ❤️
 
-*Call For Blood Foundation*`
+*Callforblood Foundation*`
   );
 }
 

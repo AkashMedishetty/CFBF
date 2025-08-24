@@ -41,7 +41,7 @@ import MultiLanguageDemo from '../../components/features/MultiLanguageDemo';
 import I18nDemo from '../../components/features/I18nDemo';
 import SecurityDemo from '../../components/features/SecurityDemo';
 import MonitoringDashboard from '../../components/features/MonitoringDashboard';
-import IOSPWADemo from '../../components/features/IOSPWADemo';
+
 
 const ComponentsPage = () => {
   const [selectedBloodType, setSelectedBloodType] = useState('');
@@ -692,7 +692,7 @@ const [showOTPModal, setShowOTPModal] = useState(false);
         {/* iOS PWA Demo */}
         <FadeInWhenVisible>
           <div className="mt-8">
-            <IOSPWADemo />
+            
           </div>
         </FadeInWhenVisible>
 
@@ -703,7 +703,7 @@ const [showOTPModal, setShowOTPModal] = useState(false);
               <Heart className="h-6 w-6 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-semibold text-primary-900 dark:text-primary-100 mb-2">
-                  Built for Call For Blood Foundation
+                  Built for CallforBlood Foundation
                 </h3>
                 <p className="text-primary-800 dark:text-primary-200 text-sm">
                   This premium component library is specifically designed for the Blood Donation Management System. 

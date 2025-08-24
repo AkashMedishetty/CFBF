@@ -4,7 +4,7 @@
  */
 
 module.exports = async () => {
-  console.log('🚀 Starting BDMS Test Suite...');
+  console.log('Starting BDMS Test Suite...');
   
   // Set test environment variables
   process.env.NODE_ENV = 'test';
@@ -21,5 +21,5 @@ module.exports = async () => {
     global.performance.mark('test-suite-start');
   }
   
-  console.log('✅ Global test setup completed');
+  console.log('Global test setup completed');
 };

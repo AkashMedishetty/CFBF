@@ -27,7 +27,7 @@ class NotificationService {
       message,
       type = 'general',
       priority = 'normal',
-      channels = ['whatsapp', 'sms', 'email'],
+      channels = ['push', 'email'],
       templateName = null,
       templateParams = [],
       userPreferences = {},
@@ -47,8 +47,8 @@ class NotificationService {
       timestamp: new Date().toISOString()
     };
 
-    // Determine channel order based on user preferences and priority
-    const orderedChannels = this.getChannelOrder(channels, userPreferences, priority);
+    // Determine channel order using admin-configured settings with fallback
+    const orderedChannels = await this.getAdminChannelOrder(channels, userPreferences, priority, metadata?.urgency);
 
     // Try each channel in order until success
     for (const channel of orderedChannels) {
@@ -109,6 +109,25 @@ class NotificationService {
     this.logNotificationAttempt(notification, result);
 
     return result;
+  }
+
+  async getAdminChannelOrder(defaultChannels, userPreferences, priority, urgency) {
+    try {
+      const NotificationSettings = require('../models/NotificationSettings');
+      const settings = await NotificationSettings.getSettings();
+      let order = [...(settings.channelOrder || defaultChannels)];
+      // Append WhatsApp/SMS for escalation by urgency
+      if (settings.enableWhatsApp && settings.escalateToWhatsAppOnPriority?.includes(urgency)) {
+        if (!order.includes('whatsapp')) order.push('whatsapp');
+      }
+      if (settings.enableSMS && settings.escalateToSMSOnPriority?.includes(urgency)) {
+        if (!order.includes('sms')) order.push('sms');
+      }
+      return this.getChannelOrder(order, userPreferences, priority);
+    } catch (e) {
+      logger.warn('Falling back to default channel order', 'NOTIFICATION_SERVICE', e);
+      return this.getChannelOrder(defaultChannels, userPreferences, priority);
+    }
   }
 
   async sendWebPushNotification(notification) {
@@ -413,7 +432,7 @@ class NotificationService {
       'appointment_reminder': '⏰ Blood Donation Appointment Reminder',
       'registration_approved': '🎉 Blood Donor Registration Approved',
       'registration_rejected': '❌ Blood Donor Registration Update',
-      'otp_verification': '🔐 Verification Code - Call For Blood Foundation',
+      'otp_verification': '🔐 Verification Code - CallforBlood Foundation',
       'general': '📢 Call For Blood Foundation Notification'
     };
 

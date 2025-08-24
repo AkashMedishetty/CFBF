@@ -23,7 +23,7 @@ import Input from '../../components/ui/Input';
 import Select from '../../components/ui/Select';
 import PasswordInput from '../../components/ui/PasswordInput';
 import PasswordConfirmInput from '../../components/ui/PasswordConfirmInput';
-import OTPModal from '../../components/ui/OTPModal';
+// Removed OTPModal import as mobile verification is disabled
 import LocationPicker from '../../components/ui/LocationPicker';
 import { authApi } from '../../utils/api';
 import logger from '../../utils/logger';
@@ -32,7 +32,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [showOTPModal, setShowOTPModal] = useState(false);
+  // Removed OTP modal state as mobile verification is disabled
   const [errors, setErrors] = useState({});
   const [validationState, setValidationState] = useState({
     email: { checking: false, available: null, lastChecked: null },
@@ -94,7 +94,7 @@ const RegisterPage = () => {
   useEffect(() => {
     logger.componentMount('RegisterPage');
     
-    // Get user's location
+    // Get user's location with high accuracy
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -105,10 +105,38 @@ const RegisterPage = () => {
               coordinates: [position.coords.longitude, position.coords.latitude]
             }
           }));
-          logger.info('User location obtained', 'REGISTER_PAGE');
+          logger.info('User location obtained with accuracy: ' + position.coords.accuracy + 'm', 'REGISTER_PAGE');
         },
         (error) => {
           logger.warn('Failed to get user location', 'REGISTER_PAGE', error);
+          // Fallback: try again with lower accuracy if high accuracy fails
+          if (error.code === error.TIMEOUT || error.code === error.POSITION_UNAVAILABLE) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                setFormData(prev => ({
+                  ...prev,
+                  location: {
+                    type: 'Point',
+                    coordinates: [position.coords.longitude, position.coords.latitude]
+                  }
+                }));
+                logger.info('User location obtained (fallback) with accuracy: ' + position.coords.accuracy + 'm', 'REGISTER_PAGE');
+              },
+              (fallbackError) => {
+                logger.error('Failed to get user location even with fallback', 'REGISTER_PAGE', fallbackError);
+              },
+              {
+                enableHighAccuracy: false,
+                timeout: 15000,
+                maximumAge: 600000 // 10 minutes
+              }
+            );
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000 // 5 minutes
         }
       );
     }
@@ -268,14 +296,21 @@ const RegisterPage = () => {
   const handleInputChange = (field, value) => {
     setFormData(prev => {
       if (field.includes('.')) {
-        const [parent, child] = field.split('.');
-        return {
-          ...prev,
-          [parent]: {
-            ...prev[parent],
-            [child]: value
-          }
-        };
+        const fieldParts = field.split('.');
+        let updatedData = { ...prev };
+        let current = updatedData;
+        
+        // Navigate to the parent object
+        for (let i = 0; i < fieldParts.length - 1; i++) {
+          const part = fieldParts[i];
+          current[part] = { ...current[part] };
+          current = current[part];
+        }
+        
+        // Set the final value
+        current[fieldParts[fieldParts.length - 1]] = value;
+        
+        return updatedData;
       }
       return {
         ...prev,
@@ -311,11 +346,42 @@ const RegisterPage = () => {
     const stepErrors = {};
     const currentStepFields = steps[step - 1].fields;
     
+    // DEBUG: Log validation attempt
+    console.log('🔍 VALIDATION DEBUG - Step:', step);
+    console.log('🔍 Required fields:', currentStepFields);
+    console.log('🔍 Current form data:', {
+      name: formData.name,
+      phoneNumber: formData.phoneNumber,
+      email: formData.email,
+      password: formData.password ? '[SET]' : '[EMPTY]',
+      confirmPassword: formData.confirmPassword ? '[SET]' : '[EMPTY]',
+      dateOfBirth: formData.dateOfBirth,
+      gender: formData.gender
+    });
+    console.log('🔍 DETAILED FIELD CHECK:');
+    currentStepFields.forEach(field => {
+      const value = formData[field];
+      const isEmpty = !value || (typeof value === 'string' && !value.trim());
+      console.log(`  - ${field}: "${value}" (empty: ${isEmpty})`);
+    });
+    console.log('🔍 Validation state:', validationState);
+    console.log('🔍 Email validation:', {
+      checking: validationState.email.checking,
+      available: validationState.email.available,
+      lastChecked: validationState.email.lastChecked
+    });
+    console.log('🔍 Phone validation:', {
+      checking: validationState.phoneNumber.checking,
+      available: validationState.phoneNumber.available,
+      lastChecked: validationState.phoneNumber.lastChecked
+    });
+    
     // Check if email/phone validation is in progress
     if (
       (currentStepFields.includes('email') && validationState.email.checking) ||
       (currentStepFields.includes('phoneNumber') && validationState.phoneNumber.checking)
     ) {
+      console.log('🚫 VALIDATION FAILED: Email or phone validation in progress');
       return false;
     }
     
@@ -377,6 +443,15 @@ const RegisterPage = () => {
         }
         
         // Specific validations
+        if (field === 'name' && formData[field]) {
+          // Validate that name contains at least 2 words (first and last name)
+          const nameParts = formData[field].trim().split(/\s+/);
+          if (nameParts.length < 2) {
+            stepErrors[field] = 'Please enter both first and last name';
+          } else if (nameParts.some(part => part.length < 1)) {
+            stepErrors[field] = 'Please enter valid first and last name';
+          }
+        }
         if (field === 'phoneNumber' && formData[field] && !/^[6-9]\d{9}$/.test(formData[field])) {
           stepErrors[field] = 'Invalid phone number format';
         }
@@ -404,7 +479,45 @@ const RegisterPage = () => {
     });
     
     setErrors(stepErrors);
-    return Object.keys(stepErrors).length === 0;
+    const isValid = Object.keys(stepErrors).length === 0;
+    
+    // Additional validations based on step
+    if (step === 1) {
+      // Validate email format
+      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        console.log('🚫 VALIDATION FAILED: Invalid email format:', formData.email);
+        return false;
+      }
+      
+      // Validate phone number format
+      if (formData.phoneNumber && !/^[6-9]\d{9}$/.test(formData.phoneNumber)) {
+        console.log('🚫 VALIDATION FAILED: Invalid phone format:', formData.phoneNumber);
+        return false;
+      }
+      
+      // Validate password match
+      if (formData.password !== formData.confirmPassword) {
+        console.log('🚫 VALIDATION FAILED: Passwords do not match');
+        return false;
+      }
+      
+      // Validate password strength
+      if (formData.password && formData.password.length < 8) {
+        console.log('🚫 VALIDATION FAILED: Password too short:', formData.password.length);
+        return false;
+      }
+    }
+    
+    // DEBUG: Log validation result
+    console.log('🔍 Validation errors found:', stepErrors);
+    console.log('🔍 Validation result:', isValid ? '✅ PASSED' : '❌ FAILED');
+    if (!isValid) {
+      console.log('🔍 Missing/invalid fields:', Object.keys(stepErrors));
+    } else {
+      console.log('✅ VALIDATION PASSED: All checks successful for step', step);
+    }
+    
+    return isValid;
   };
 
   const handleNext = () => {
@@ -427,12 +540,19 @@ const RegisterPage = () => {
       return;
     }
     
+    // Additional validation for name before submission
+    const nameParts = formData.name.trim().split(/\s+/);
+    if (nameParts.length < 2) {
+      setErrors({ name: 'Please enter both first and last name' });
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
       // Split full name into first and last name
-      const [firstName, ...lastNameParts] = formData.name.split(' ');
-      const lastName = lastNameParts.join(' ') || ' '; // Ensure last name is not empty
+      const [firstName, ...lastNameParts] = formData.name.trim().split(/\s+/);
+      const lastName = lastNameParts.join(' '); // No fallback to space - validation ensures this exists
       
       // Format the registration data according to backend schema
       const registrationData = {
@@ -465,8 +585,17 @@ const RegisterPage = () => {
       const data = await authApi.register(registrationData);
       
       if (data.success) {
-        logger.success('User registration successful', 'REGISTER_PAGE');
-        setShowOTPModal(true);
+        logger.success('User registration successful - skipping mobile verification', 'REGISTER_PAGE');
+        
+        // Skip mobile verification and navigate directly to login
+        navigate('/login', { 
+          state: { 
+            message: 'Registration successful! Please log in with your credentials.',
+            phoneNumber: formData.phoneNumber,
+            justRegistered: true
+          },
+          replace: true
+        });
       } else {
         logger.error('Registration failed', 'REGISTER_PAGE');
         setErrors({ submit: data.message || 'Registration failed' });
@@ -481,53 +610,7 @@ const RegisterPage = () => {
     }
   };
 
-  const handleOTPSuccess = async (verificationData) => {
-    try {
-      logger.success('Phone verification successful', 'REGISTER_PAGE');
-      
-      // Get the user data from verification response or fetch it if not available
-      let userData = verificationData.user;
-      
-      if (!userData) {
-        // If user data is not in the verification response, fetch it
-        const response = await authApi.getCurrentUser();
-        if (response.success) {
-          userData = response.data;
-        }
-      }
-      
-      // Store the authentication token if available
-      if (verificationData.token) {
-        localStorage.setItem('token', verificationData.token);
-      }
-      
-      // Navigate to onboarding with user data
-      navigate('/donor/onboarding', { 
-        state: { 
-          message: 'Phone verified! Please complete your donor profile.',
-          user: userData,
-          step: 'documents',
-          fromRegistration: true
-        },
-        replace: true // Replace the current entry in the history stack
-      });
-      
-    } catch (error) {
-      logger.error('Error after OTP verification', 'REGISTER_PAGE', error);
-      setErrors({ 
-        submit: 'Verification successful but encountered an error. Please log in to continue.' 
-      });
-      // Redirect to login if there's an error after verification
-      setTimeout(() => {
-        navigate('/login');
-      }, 3000);
-    }
-  };
-
-  const handleOTPError = (error) => {
-    logger.error('Phone verification failed', 'REGISTER_PAGE', error);
-    setErrors({ otp: error.message || 'Phone verification failed' });
-  };
+  // Removed OTP success and error handlers as mobile verification is disabled
 
   // Helper to render validation status icon
   const renderValidationStatus = (field) => {
@@ -670,7 +753,7 @@ const RegisterPage = () => {
               </div>
 
               {/* Password Section */}
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+              <div className="pt-4 border-t border-slate-200 dark:border-dark-border">
                 <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
                   Create Your Password
                 </h4>
@@ -964,7 +1047,7 @@ const RegisterPage = () => {
                           ? 'bg-green-500 border-green-500 text-white'
                           : isActive
                           ? 'bg-primary-500 border-primary-500 text-white'
-                          : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600'
+                          : 'bg-white border-slate-300 text-slate-400 dark:bg-dark-bg-secondary dark:border-dark-border'
                       }`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -1016,6 +1099,30 @@ const RegisterPage = () => {
             </motion.div>
           )}
           
+          {/* Validation Summary */}
+          {Object.keys(errors).length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg"
+            >
+              <div className="flex items-center space-x-2 mb-2">
+                <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                <span className="text-sm font-medium text-red-700 dark:text-red-300">
+                  Please fix the following issues:
+                </span>
+              </div>
+              <ul className="text-sm text-red-600 dark:text-red-400 space-y-1">
+                {Object.entries(errors).map(([field, error]) => (
+                  <li key={field} className="flex items-center space-x-2">
+                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span>{error}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          )}
+          
           {/* Navigation Buttons */}
           <div className="flex justify-between mt-8">
             <Button
@@ -1049,15 +1156,7 @@ const RegisterPage = () => {
           </div>
         </Card>
 
-        {/* OTP Modal */}
-        <OTPModal
-          isOpen={showOTPModal}
-          onClose={() => setShowOTPModal(false)}
-          phoneNumber={formData.phoneNumber}
-          purpose="registration"
-          onVerificationSuccess={handleOTPSuccess}
-          onVerificationError={handleOTPError}
-        />
+        {/* OTP Modal removed - mobile verification disabled */}
       </div>
     </div>
   );

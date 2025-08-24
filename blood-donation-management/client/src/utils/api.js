@@ -61,7 +61,7 @@ class ApiClient {
 
     try {
       logger.api('REQUEST', `${options.method || 'GET'} ${endpoint}`, 'API_CLIENT');
-      logger.debug('🚀 Making API request', 'API_CLIENT', {
+      logger.debug('Making API request', 'API_CLIENT', {
         url,
         method: options.method || 'GET',
         hasToken: !!token,
@@ -123,16 +123,19 @@ class ApiClient {
 
   // GET request
   async get(endpoint, params = {}) {
-    const url = new URL(this.buildUrl(endpoint));
-    
+    // Build a safe URL even in development with relative paths
+    const built = this.buildUrl(endpoint);
+    const base = typeof window !== 'undefined' ? window.location.origin : this.baseURL;
+    const urlObj = new URL(built.startsWith('http') ? built : (built.startsWith('/') ? built : `/${built}`), base);
+
     // Add query parameters
     Object.keys(params).forEach(key => {
       if (params[key] !== undefined && params[key] !== null) {
-        url.searchParams.append(key, params[key]);
+        urlObj.searchParams.append(key, params[key]);
       }
     });
-    
-    return this.request(url.pathname + url.search, { method: 'GET' });
+
+    return this.request(urlObj.pathname + urlObj.search, { method: 'GET' });
   }
 
   // POST request
@@ -236,6 +239,40 @@ export const authApi = {
   
   // Reset password
   resetPassword: (resetData) => apiClient.post('api/v1/auth/reset-password', resetData)
+};
+
+// User/Dashboard API endpoints
+export const userApi = {
+  getUserStats: (userId) => apiClient.get(`api/v1/users/${userId}/stats`),
+  getUserProfile: (userId) => apiClient.get(`api/v1/users/${userId}`),
+  getDonations: (userId) => apiClient.get(`api/v1/users/${userId}/donations`),
+  getActivity: (userId) => apiClient.get(`api/v1/users/${userId}/activity`),
+  getOnboardingStatus: (userId) => apiClient.get(`api/v1/users/${userId}/onboarding-status`),
+};
+
+// Admin dashboard API
+export const adminApi = {
+  getPendingDonors: () => apiClient.get('api/v1/admin/donors/pending'),
+  getDonorStats: () => apiClient.get('api/v1/admin/donors/stats'),
+  getRecentActivity: () => apiClient.get('api/v1/admin/activity/recent'),
+  getRequestsSummary: () => apiClient.get('api/v1/admin/requests/summary'),
+  getAnalyticsOverview: (timeRange = '30d') => apiClient.get('api/v1/analytics/dashboard', { timeRange }),
+  // Donor details
+  getDonorDetails: (donorId) => apiClient.get(`api/v1/admin/donors/${donorId}/details`),
+  // Documents (admin)
+  getUserDocuments: (userId) => apiClient.get('api/v1/documents/list', { userId }),
+  verifyDocument: (documentId, { verified, rejectionReason } = { verified: true }) =>
+    apiClient.put(`api/v1/documents/${documentId}/verify`, { verified, rejectionReason }),
+  // Email diagnostics
+  getEmailStatus: () => apiClient.get('api/v1/admin/email/status'),
+  sendTestEmail: (email) => apiClient.post('api/v1/admin/email/test', { email }),
+  // Requests management
+  getBloodRequests: (params = {}) => apiClient.get('api/v1/blood-requests', params),
+  updateRequestStatus: (requestId, status, notes = '') => apiClient.put(`api/v1/blood-requests/${requestId}/status`, { status, notes })
+  ,
+  // Notification settings
+  getNotificationSettings: () => apiClient.get('api/v1/admin/notifications/settings'),
+  updateNotificationSettings: (payload) => apiClient.put('api/v1/admin/notifications/settings', payload)
 };
 
 // Blood Request API endpoints

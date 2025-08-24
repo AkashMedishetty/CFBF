@@ -475,7 +475,7 @@ const InventoryManagement = ({ hospitalId, className = '' }) => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-700">
+              <tr className="border-b border-slate-200 dark:border-dark-border">
                 <th className="text-left py-3 px-4 font-medium text-slate-700 dark:text-slate-300">
                   Blood Type
                 </th>
@@ -514,7 +514,7 @@ const InventoryManagement = ({ hospitalId, className = '' }) => {
                 const isEditing = editingThresholds[bloodType];
                 
                 return (
-                  <tr key={bloodType} className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
+                  <tr key={bloodType} className="border-b border-slate-100 dark:border-dark-border hover:bg-slate-50 dark:hover:bg-dark-bg-tertiary">
                     <td className="py-4 px-4">
                       <div className="flex items-center space-x-2">
                         <div className="w-8 h-8 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">

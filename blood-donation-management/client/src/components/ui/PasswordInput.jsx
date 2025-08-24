@@ -150,7 +150,7 @@ const PasswordInput = ({
             transition-colors duration-200
             ${error 
               ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20' 
-              : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800'
+              : 'border-slate-300 dark:border-dark-border bg-white dark:bg-dark-bg-secondary'
             }
             text-slate-900 dark:text-white
             placeholder-slate-500 dark:placeholder-slate-400

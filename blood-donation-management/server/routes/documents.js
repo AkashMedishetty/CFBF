@@ -5,6 +5,7 @@ const fs = require('fs').promises;
 const { auth } = require('../middleware/auth');
 const Document = require('../models/Document');
 const logger = require('../utils/logger');
+const User = require('../models/User');
 
 const router = express.Router();
 
@@ -223,8 +224,10 @@ router.get('/list', auth, async (req, res) => {
     try {
         logger.api('GET', '/api/v1/documents/list', null, null, 'DOCUMENTS_ROUTES');
 
-        // Fetch user's documents from database
-        const documents = await Document.findByUser(req.user.id);
+        // Admin may request another user's documents via query param
+        const { userId } = req.query;
+        const targetUserId = (req.user.role === 'admin' && userId) ? userId : req.user.id;
+        const documents = await Document.findByUser(targetUserId);
 
         res.status(200).json({
             success: true,
@@ -357,6 +360,25 @@ router.put('/:documentId/verify', auth, async (req, res) => {
             }
             await document.reject(rejectionReason, req.user.id);
             logger.info(`Document rejected: ${documentId} by admin ${req.user.id}`, 'DOCUMENTS_ROUTES');
+        }
+
+        // After updating a document, recompute user's documentsVerified flag
+        // Documents are now optional, so we'll mark as verified if any document is verified
+        try {
+            // const requiredTypes = ['id_proof', 'address_proof']; // No longer required
+            const verifiedDocs = await Document.find({
+                userId: document.userId,
+                verified: true
+            }).select('type');
+
+            // Mark as verified if user has any verified documents (optional verification)
+            const hasAnyVerified = verifiedDocs.length > 0;
+            await User.findByIdAndUpdate(document.userId, {
+                'verification.documentsVerified': hasAnyVerified,
+                updatedBy: req.user.id
+            });
+        } catch (recalcError) {
+            logger.warn('Failed to recalculate user documentsVerified status', 'DOCUMENTS_ROUTES', recalcError);
         }
 
         res.status(200).json({

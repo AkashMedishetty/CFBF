@@ -46,7 +46,17 @@ const InventoryAnalytics = ({ className = '' }) => {
   const fetchAnalyticsData = async () => {
     setIsLoading(true);
     try {
-      // Mock analytics data - in real app, this would be API calls
+      // Use requests summary to seed overview while inventory API is built
+      let overviewFromRequests = null;
+      try {
+        const res = await fetch('/api/v1/admin/requests/summary', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+        });
+        const data = await res.json();
+        overviewFromRequests = data?.data?.overview || null;
+      } catch (e) {
+        logger.warn('Failed to fetch requests summary for inventory overview', 'INVENTORY_ANALYTICS', e);
+      }
       const mockData = {
         overview: {
           totalHospitals: 45,
@@ -54,7 +64,10 @@ const InventoryAnalytics = ({ className = '' }) => {
           averageStockLevel: 63.2,
           criticalStockHospitals: 8,
           expiringUnitsNext7Days: 156,
-          redistributionsPastMonth: 23
+          redistributionsPastMonth: 23,
+          activeRequests: overviewFromRequests?.activeRequests || 0,
+          fulfilledRequests: overviewFromRequests?.fulfilledRequests || 0,
+          criticalRequests: overviewFromRequests?.criticalRequests || 0
         },
         bloodTypeDistribution: [
           { type: 'O+', totalUnits: 892, hospitals: 42, avgUnits: 21.2, status: 'adequate' },
@@ -111,47 +124,36 @@ const InventoryAnalytics = ({ className = '' }) => {
 
   const fetchAlerts = async () => {
     try {
-      // Mock alert data - in real app, these would be separate API calls
-      const mockLowStockAlerts = [
-        {
-          hospital: {
-            id: 'H001',
-            name: 'Delhi Heart Institute',
-            contactInfo: { phone: '+91-9876543210' }
-          },
-          lowStockItems: [
-            { bloodType: 'O-', unitsAvailable: 2, minimumThreshold: 10 },
-            { bloodType: 'AB-', unitsAvailable: 1, minimumThreshold: 5 }
-          ]
-        },
-        {
-          hospital: {
-            id: 'H002',
-            name: 'Metro Hospital',
-            contactInfo: { phone: '+91-9876543211' }
-          },
-          lowStockItems: [
-            { bloodType: 'B-', unitsAvailable: 3, minimumThreshold: 8 }
-          ]
-        }
-      ];
-
-      const mockExpiryAlerts = [
-        {
-          hospital: {
-            id: 'H003',
-            name: 'City Hospital',
-            contactInfo: { phone: '+91-9876543212' }
-          },
-          expiringSoonItems: [
-            { bloodType: 'A+', expiringSoonCount: 5, daysUntilExpiry: 3 },
-            { bloodType: 'O+', expiringSoonCount: 8, daysUntilExpiry: 5 }
-          ]
-        }
-      ];
-
-      setLowStockAlerts(mockLowStockAlerts);
-      setExpiryAlerts(mockExpiryAlerts);
+      const res = await fetch('/api/v1/analytics/inventory/alerts', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const low = (data?.data?.lowStock || []).reduce((acc, curr) => {
+          const found = acc.find(x => x.hospital.id === curr.hospital.id);
+          if (found) {
+            found.lowStockItems.push({
+              bloodType: curr.bloodType,
+              unitsAvailable: curr.unitsAvailable,
+              minimumThreshold: curr.minimumThreshold
+            });
+          } else {
+            acc.push({ hospital: curr.hospital, lowStockItems: [{ bloodType: curr.bloodType, unitsAvailable: curr.unitsAvailable, minimumThreshold: curr.minimumThreshold }] });
+          }
+          return acc;
+        }, []);
+        const exp = (data?.data?.expiringSoon || []).reduce((acc, curr) => {
+          const found = acc.find(x => x.hospital.id === curr.hospital.id);
+          if (found) {
+            found.expiringSoonItems.push({ bloodType: curr.bloodType, expiringSoonCount: curr.expiringSoonCount });
+          } else {
+            acc.push({ hospital: curr.hospital, expiringSoonItems: [{ bloodType: curr.bloodType, expiringSoonCount: curr.expiringSoonCount }] });
+          }
+          return acc;
+        }, []);
+        setLowStockAlerts(low);
+        setExpiryAlerts(exp);
+      }
     } catch (error) {
       logger.error('Error fetching alerts:', error);
     }

@@ -359,11 +359,11 @@ class IOSPWAManager {
       installPrompt.className = 'ios-install-prompt';
       installPrompt.innerHTML = `
         <div class="ios-install-content">
-          <div class="ios-install-icon">📱</div>
+          <div class="ios-install-icon" style="color: #007AFF;">●</div>
           <h3>Install Call For Blood</h3>
           <p>Add this app to your home screen for quick access to emergency blood requests.</p>
           <div class="ios-install-steps">
-            <p>1. Tap the share button <span class="share-icon">⬆️</span></p>
+            <p>1. Tap the share button</p>
             <p>2. Select "Add to Home Screen"</p>
             <p>3. Tap "Add" to install</p>
           </div>

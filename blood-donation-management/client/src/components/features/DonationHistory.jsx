@@ -22,6 +22,7 @@ import Input from '../ui/Input';
 import Select from '../ui/Select';
 import Badge from '../ui/Badge';
 import logger from '../../utils/logger';
+import { authApi, userApi } from '../../utils/api';
 
 const DonationHistory = ({ className = '' }) => {
   const [donations, setDonations] = useState([]);
@@ -43,54 +44,35 @@ const DonationHistory = ({ className = '' }) => {
     setIsLoading(true);
     
     try {
-      // Mock data - in real app, this would be an API call
-      const mockDonations = [
-        {
-          id: 1,
-          date: '2024-01-15',
-          time: '10:30 AM',
-          location: {
-            name: 'AIIMS Hospital',
-            address: 'Ansari Nagar, New Delhi',
-            coordinates: [28.5672, 77.2100]
-          },
-          bloodType: 'O+',
-          unitsContributed: 1,
-          status: 'completed',
-          certificateId: 'CERT-2024-001',
-          photos: ['/api/donations/1/photo1.jpg'],
-          notes: 'Smooth donation process, felt great afterwards',
-          verifiedBy: 'Dr. Sarah Johnson',
-          verificationDate: '2024-01-15',
-          impactStory: 'Your donation helped save a 7-year-old child during emergency surgery.',
-          points: 100,
-          milestones: ['5th Donation', 'Life Saver Badge']
+      const me = await authApi.getCurrentUser();
+      const user = me?.data?.user || me?.data;
+      const uid = user?._id || user?.id;
+      if (!uid) throw new Error('USER_ID_NOT_AVAILABLE');
+      const res = await userApi.getDonations(uid);
+      const items = (res?.data?.donations || []).map((d) => ({
+        id: d._id || d.donationId,
+        date: d.donationDate,
+        time: '',
+        location: {
+          name: d.location?.hospital,
+          address: `${d.location?.address?.street || ''}, ${d.location?.address?.city || ''}`,
+          coordinates: d.location?.coordinates
         },
-        {
-          id: 2,
-          date: '2023-10-20',
-          time: '2:15 PM',
-          location: {
-            name: 'Red Cross Blood Bank',
-            address: 'Red Cross Road, New Delhi',
-            coordinates: [28.6139, 77.2090]
-          },
-          bloodType: 'O+',
-          unitsContributed: 1,
-          status: 'completed',
-          certificateId: 'CERT-2023-045',
-          photos: ['/api/donations/2/photo1.jpg', '/api/donations/2/photo2.jpg'],
-          notes: 'Quick and efficient process',
-          verifiedBy: 'Nurse Mary Wilson',
-          verificationDate: '2023-10-20',
-          impactStory: 'Helped a cancer patient during chemotherapy treatment.',
-          points: 100,
-          milestones: []
-        }
-      ];
+        bloodType: d.bloodType,
+        unitsContributed: d.unitsDonated,
+        status: d.status,
+        certificateId: d.postDonationInfo?.certificateId,
+        photos: [],
+        notes: d.postDonationInfo?.notes,
+        verifiedBy: d.postDonationInfo?.verifiedBy,
+        verificationDate: d.postDonationInfo?.verifiedAt,
+        impactStory: '',
+        points: 0,
+        milestones: []
+      }));
 
-      setDonations(mockDonations);
-      logger.success('Donation history loaded', 'DONATION_HISTORY');
+      setDonations(items);
+      logger.success('Donation history loaded (API)', 'DONATION_HISTORY');
     } catch (error) {
       logger.error('Error fetching donation history', 'DONATION_HISTORY', error);
     } finally {

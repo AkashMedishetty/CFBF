@@ -3,6 +3,7 @@ const User = require('../models/User');
 const notificationService = require('../services/notificationService');
 const logger = require('../utils/logger');
 const auditLogger = require('../utils/auditLogger');
+const donorMatchingService = require('../services/donorMatchingService');
 
 /**
  * Create a new blood request
@@ -88,6 +89,48 @@ const createBloodRequest = async (req, res) => {
       error: 'INTERNAL_SERVER_ERROR',
       message: 'Failed to create blood request'
     });
+  }
+};
+
+/**
+ * Get suggested donor matches for a blood request
+ * @route GET /api/v1/blood-requests/:requestId/matches
+ */
+const getDonorMatches = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    const bloodRequest = await BloodRequest.findOne({ requestId }).lean();
+    if (!bloodRequest) {
+      return res.status(404).json({ success: false, error: 'REQUEST_NOT_FOUND', message: 'Blood request not found' });
+    }
+
+    // Permissions: admin or owner
+    const canView = req.user?.role === 'admin' || req.user?.id === bloodRequest.createdBy?.toString();
+    if (!canView) {
+      return res.status(403).json({ success: false, error: 'ACCESS_DENIED', message: 'Not authorized' });
+    }
+
+    const compatible = BloodRequest.hydrate(bloodRequest).getCompatibleBloodTypes();
+    const radius = bloodRequest.matching?.currentRadius || bloodRequest.location?.searchRadius || 15;
+
+    const eligible = await donorMatchingService.findEligibleDonors(bloodRequest, compatible, radius);
+    const scored = await donorMatchingService.scoreDonors(eligible, BloodRequest.hydrate(bloodRequest));
+
+    const topMatches = scored.slice(0, 10).map(d => ({
+      donorId: d._id,
+      name: d.name,
+      phoneNumber: d.phoneNumber,
+      email: d.email,
+      bloodType: d.bloodType,
+      distance: d.distance,
+      score: d.score
+    }));
+
+    return res.status(200).json({ success: true, data: { matches: topMatches, total: scored.length } });
+  } catch (error) {
+    logger.error('Error fetching donor matches', 'BLOOD_REQUEST_CONTROLLER', error);
+    return res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR', message: 'Failed to fetch matches' });
   }
 };
 
@@ -478,7 +521,7 @@ Units Needed: ${bloodRequest.request.unitsNeeded}
 Can you help save a life?
 Reply YES to donate or NO if unavailable.
 
-Call For Blood Foundation`;
+CallforBlood Foundation`;
 }
 
 module.exports = {
@@ -487,5 +530,6 @@ module.exports = {
   getBloodRequests,
   updateRequestStatus,
   addDonorResponse,
-  getNearbyRequests
+  getNearbyRequests,
+  getDonorMatches
 };

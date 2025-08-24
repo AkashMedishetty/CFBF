@@ -52,23 +52,12 @@ const LandingPage = () => {
           responseTime: data.averageResponseTime || 18
         });
       } else {
-        // Fallback to mock data
-        animateStats({
-          totalDonors: 15420,
-          livesImpacted: 137040,
-          totalDonations: 45680,
-          responseTime: 18
-        });
+        // Keep zeros if API fails
+        animateStats({ totalDonors: 0, livesImpacted: 0, totalDonations: 0, responseTime: 0 });
       }
     } catch (error) {
       logger.error('Error fetching stats', 'LANDING_PAGE', error);
-      // Fallback to mock data
-      animateStats({
-        totalDonors: 15420,
-        livesImpacted: 137040,
-        totalDonations: 45680,
-        responseTime: 18
-      });
+      animateStats({ totalDonors: 0, livesImpacted: 0, totalDonations: 0, responseTime: 0 });
     } finally {
       setIsLoadingStats(false);
     }
@@ -205,7 +194,7 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-dark-bg">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -334,7 +323,7 @@ const LandingPage = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
-                className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+                className="bg-white dark:bg-dark-bg-secondary rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
               >
                 <div className={`w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center mb-4`}>
                   <feature.icon className={`w-6 h-6 ${feature.color}`} />
@@ -376,7 +365,7 @@ const LandingPage = () => {
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+                  className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
                 >
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-4">
@@ -467,7 +456,7 @@ const LandingPage = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
-                className="bg-white rounded-xl p-6 shadow-lg"
+                className="bg-white dark:bg-dark-bg-secondary rounded-xl p-6 shadow-lg"
               >
                 <div className="flex items-center mb-4">
                   <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">

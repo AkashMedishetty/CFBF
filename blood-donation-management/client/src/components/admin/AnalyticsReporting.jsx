@@ -217,7 +217,7 @@ const AnalyticsReporting = ({ className = '' }) => {
         ]
       };
 
-      setAnalyticsData(mockData);
+      setAnalyticsData(result.data || null);
       logger.success('Analytics data loaded', 'ANALYTICS_REPORTING');
     } catch (error) {
       logger.error('Error fetching analytics data', 'ANALYTICS_REPORTING', error);

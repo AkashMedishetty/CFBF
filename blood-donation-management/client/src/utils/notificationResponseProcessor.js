@@ -309,10 +309,10 @@ class NotificationResponseProcessor {
 
       // Prepare enhanced share data
       const urgencyText = {
-        critical: '🚨 CRITICAL',
-        urgent: '⚡ URGENT',
-        high: '🩸 HIGH PRIORITY',
-        normal: '🩸 Blood Needed'
+        critical: 'CRITICAL',
+  urgent: 'URGENT',
+  high: 'HIGH PRIORITY',
+  normal: 'Blood Needed'
       };
 
       const shareData = {
@@ -529,7 +529,7 @@ class NotificationResponseProcessor {
   async showResponseConfirmation(action, notificationData) {
     try {
       const messages = {
-        accept: '✅ Thank you! Your response has been recorded. Opening dashboard...',
+        accept: 'Thank you! Your response has been recorded. Opening dashboard...',
         decline: '📝 Response recorded. Thank you for letting us know.'
       };
 
@@ -557,9 +557,9 @@ class NotificationResponseProcessor {
   async showOfflineConfirmation(action) {
     try {
       const messages = {
-        accept: '📱 Your acceptance has been saved offline. Will sync when connection is restored.',
-        decline: '📱 Your response has been saved offline. Will sync when connection is restored.',
-        default: '📱 Response saved offline. Will sync when connection is restored.'
+        accept: 'Your acceptance has been saved offline. Will sync when connection is restored.',
+    decline: 'Your response has been saved offline. Will sync when connection is restored.',
+    default: 'Response saved offline. Will sync when connection is restored.'
       };
 
       const message = messages[action] || messages.default;
@@ -829,13 +829,13 @@ class NotificationResponseProcessor {
   async showResponseConfirmation(action, notificationData) {
     try {
       const messages = {
-        accept: '✅ Thank you! Your response has been recorded. Opening dashboard...',
+        accept: 'Thank you! Your response has been recorded. Opening dashboard...',
         decline: '📝 Response recorded. Thank you for letting us know.',
         remind_later: '⏰ Reminder set! We\'ll notify you again in a week.',
         share: '📤 Thank you for helping spread the word!',
         schedule: '📅 Opening scheduling page...',
         find_requests: '🔍 Opening blood requests...',
-        view_details: '👁️ Opening request details...',
+        view_details: 'Opening request details...',
         call_hospital: '📞 Opening phone dialer...'
       };
 

@@ -57,7 +57,7 @@ class BiometricAuth {
         publicKey: {
           challenge: challenge,
           rp: {
-            name: "Call For Blood Foundation",
+            name: "CallforBlood Foundation",
             id: window.location.hostname,
           },
           user: {

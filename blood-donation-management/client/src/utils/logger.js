@@ -143,19 +143,19 @@ class ClientLogger {
 
         switch (level.toLowerCase()) {
             case 'error':
-                emoji = '❌';
+                emoji = '[ERROR]';
                 style = 'color: #dc2626; font-weight: bold;';
                 break;
             case 'warn':
-                emoji = '⚠️';
+                emoji = '[WARN]';
                 style = 'color: #f59e0b; font-weight: bold;';
                 break;
             case 'info':
-                emoji = 'ℹ️';
+                emoji = '[INFO]';
                 style = 'color: #2563eb;';
                 break;
             case 'success':
-                emoji = '✅';
+                emoji = '[SUCCESS]';
                 style = 'color: #16a34a; font-weight: bold;';
                 break;
             case 'debug':
@@ -292,13 +292,13 @@ class ClientLogger {
     // Performance logging
     startTimer(label) {
         if (this.isDevelopment) {
-            console.time(`⏱️  ${label}`);
+            console.time(`[TIMER] ${label}`);
         }
     }
 
     endTimer(label) {
         if (this.isDevelopment) {
-            console.timeEnd(`⏱️  ${label}`);
+            console.timeEnd(`[TIMER] ${label}`);
         }
     }
 

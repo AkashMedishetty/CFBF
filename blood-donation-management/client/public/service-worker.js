@@ -3,7 +3,7 @@
   intelligent caching, background sync, and emergency notification handling
 */
 
-const APP_VERSION = (self && self.location && self.location.search && new URLSearchParams(self.location.search).get('v')) || 'v2.0';
+const APP_VERSION = 'v2.0-dev'; // This will be replaced during build
 const CACHE_VERSION = `cfb-cache-${APP_VERSION}`;
 const RUNTIME_CACHE = `cfb-runtime-${APP_VERSION}`;
 const EMERGENCY_CACHE = `cfb-emergency-${APP_VERSION}`;
@@ -302,25 +302,8 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Only handle GET requests
+  // Do not intercept non-GET requests at all (avoid interfering with uploads/API writes)
   if (request.method !== 'GET') {
-    // For non-GET requests, add to background sync queue if offline
-    if (request.method === 'POST' || request.method === 'PUT' || request.method === 'DELETE') {
-      event.respondWith(
-        fetch(request).catch(async (error) => {
-          // Add to background sync queue
-          await addToBackgroundSyncQueue(request);
-          return new Response(JSON.stringify({
-            success: false,
-            error: 'Request queued for background sync',
-            queued: true
-          }), {
-            status: 202,
-            headers: { 'Content-Type': 'application/json' }
-          });
-        })
-      );
-    }
     return;
   }
 
@@ -629,39 +612,15 @@ self.addEventListener('push', (event) => {
         // Add action buttons based on notification type
         if (data.type === 'blood_request_urgent' || data.type === 'blood_request_critical') {
           options.actions = [
-            {
-              action: 'accept',
-              title: '✓ Accept',
-              icon: '/icons/accept.png'
-            },
-            {
-              action: 'decline',
-              title: '✗ Decline',
-              icon: '/icons/decline.png'
-            },
-            {
-              action: 'view_details',
-              title: '👁 View Details',
-              icon: '/icons/view.png'
-            },
-            {
-              action: 'call_hospital',
-              title: '📞 Call Hospital',
-              icon: '/icons/call.png'
-            }
+            { action: 'accept', title: 'Accept' },
+            { action: 'decline', title: 'Decline' },
+            { action: 'view_details', title: 'View Details' },
+            { action: 'call_hospital', title: 'Call Hospital' }
           ];
         } else if (data.type === 'donation_reminder') {
           options.actions = [
-            {
-              action: 'schedule',
-              title: '📅 Schedule',
-              icon: '/icons/schedule.png'
-            },
-            {
-              action: 'remind_later',
-              title: '⏰ Remind Later',
-              icon: '/icons/remind.png'
-            }
+            { action: 'schedule', title: 'Schedule' },
+            { action: 'remind_later', title: 'Remind Later' }
           ];
         }
 
@@ -784,16 +743,16 @@ async function handleEmergencyResponse(data, response) {
 
       // Show confirmation notification
       await self.registration.showNotification(
-        response === 'accept' ? '✅ Response Confirmed' : '📝 Response Recorded',
-        {
-          body: response === 'accept'
-            ? 'Thank you for accepting! Hospital has been notified.'
-            : 'Thank you for your response.',
-          icon: '/icons/confirmation.png',
-          tag: 'response-confirmation',
-          requireInteraction: false
-        }
-      );
+          response === 'accept' ? 'Response Confirmed' : 'Response Recorded',
+          {
+            body: response === 'accept'
+              ? 'Thank you for accepting! Hospital has been notified.'
+              : 'Thank you for your response.',
+            icon: '/icons/confirmation.png',
+            tag: 'response-confirmation',
+            requireInteraction: false
+          }
+        );
 
     } else {
       throw new Error('Response failed');
@@ -836,7 +795,7 @@ async function trackHospitalContact(data) {
 // Handle emergency sharing
 async function handleEmergencyShare(data) {
   try {
-    const shareText = `🚨 URGENT: ${data.bloodType || 'Blood'} needed at ${data.hospitalName || 'hospital'}. Can you help or share with someone who can? #BloodDonation #SaveLives`;
+    const shareText = `URGENT: ${data.bloodType || 'Blood'} needed at ${data.hospitalName || 'hospital'}. Can you help or share with someone who can? #BloodDonation #SaveLives`;
     const shareUrl = `${self.location.origin}/emergency/${data.emergencyId || data.requestId}`;
 
     // Try to use Web Share API
@@ -1135,53 +1094,25 @@ function buildNotificationOptions(notification, priority) {
   // Add action buttons based on notification type
   if (notification.type === 'blood_request_urgent' || notification.type === 'blood_request_critical') {
     options.actions = [
-      {
-        action: 'accept',
-        title: '✓ Accept Emergency',
-        icon: '/icons/accept.png'
-      },
-      {
-        action: 'decline',
-        title: '✗ Decline',
-        icon: '/icons/decline.png'
-      },
-      {
-        action: 'view_details',
-        title: '👁 View Details',
-        icon: '/icons/view.png'
-      },
-      {
-        action: 'call_hospital',
-        title: '📞 Call Hospital',
-        icon: '/icons/call.png'
-      }
+      { action: 'accept', title: 'Accept Emergency' },
+      { action: 'decline', title: 'Decline' },
+      { action: 'view_details', title: 'View Details' },
+      { action: 'call_hospital', title: 'Call Hospital' }
     ];
   } else if (notification.type === 'donation_reminder') {
     options.actions = [
-      {
-        action: 'schedule',
-        title: '📅 Schedule Donation',
-        icon: '/icons/schedule.png'
-      },
-      {
-        action: 'remind_later',
-        title: '⏰ Remind Later',
-        icon: '/icons/remind.png'
-      }
+      { action: 'schedule', title: 'Schedule Donation' },
+      { action: 'remind_later', title: 'Remind Later' }
     ];
   } else if (notification.type === 'response_confirmation') {
     options.actions = [
-      {
-        action: 'view_dashboard',
-        title: '📊 View Dashboard',
-        icon: '/icons/dashboard.png'
-      }
+      { action: 'view_dashboard', title: 'View Dashboard' }
     ];
   }
 
   // Add emergency-specific styling
   if (isEmergency) {
-    options.image = notification.image || '/images/emergency-banner.png';
+    options.image = notification.image || undefined;
     options.renotify = true;
     options.timestamp = Date.now();
   }

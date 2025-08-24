@@ -7,7 +7,8 @@ const {
   getBloodRequests,
   updateRequestStatus,
   addDonorResponse,
-  getNearbyRequests
+  getNearbyRequests,
+  getDonorMatches
 } = require('../controllers/bloodRequestController');
 
 const { auth } = require('../middleware/auth');
@@ -160,6 +161,17 @@ router.get('/:requestId',
   generalLimiter,
   auth,
   getBloodRequest
+);
+
+/**
+ * @route   GET /api/v1/blood-requests/:requestId/matches
+ * @desc    Get suggested donor matches for a blood request
+ * @access  Private (Admin or Request Owner)
+ */
+router.get('/:requestId/matches',
+  generalLimiter,
+  auth,
+  getDonorMatches
 );
 
 /**

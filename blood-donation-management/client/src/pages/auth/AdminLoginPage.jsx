@@ -358,7 +358,7 @@ const AdminLoginPage = () => {
           transition={{ delay: 0.4 }}
           className="mt-8 text-center text-xs text-slate-500"
         >
-          <p>Call For Blood Foundation - Administrator Portal</p>
+          <p>CallforBlood Foundation - Administrator Portal</p>
           <p className="mt-1">Unauthorized access is prohibited and will be prosecuted.</p>
         </motion.div>
       </div>

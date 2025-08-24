@@ -34,7 +34,11 @@ const ReferralNetwork = ({ donorId, className = '' }) => {
 
   const fetchNetworkData = async () => {
     try {
-      // Mock data - in real app, this would be an API call
+      // Load referrals from current user profile if available
+      const { authApi } = await import('../../utils/api');
+      const me = await authApi.getCurrentUser();
+      const user = me?.data?.user || me?.data;
+      const referred = user?.referral?.referredUsers || [];
       const mockData = {
         totalReferrals: 24,
         activeReferrals: 18,
@@ -142,7 +146,7 @@ const ReferralNetwork = ({ donorId, className = '' }) => {
         ]
       };
 
-      setNetworkData(mockData);
+      setNetworkData({ ...mockData, directReferrals: referred.length ? referred : mockData.directReferrals });
       logger.success('Network data loaded', 'REFERRAL_NETWORK');
     } catch (error) {
       logger.error('Error fetching network data', 'REFERRAL_NETWORK', error);

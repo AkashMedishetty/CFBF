@@ -11,7 +11,7 @@ module.exports = {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       colors: {
-        // Call For Blood Foundation brand colors
+        // CallforBlood Foundation brand colors
         primary: {
           50: '#fef2f2',
           100: '#fee2e2',
@@ -34,9 +34,9 @@ module.exports = {
           500: '#64748b',
           600: '#475569',
           700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
+          800: '#21211f',
+          900: '#21211f',
+          950: '#1a1a18',
         },
         success: {
           50: '#f0fdf4',
@@ -73,6 +73,13 @@ module.exports = {
           700: '#b91c1c',
           800: '#991b1b',
           900: '#7f1d1d',
+        },
+        dark: {
+          bg: '#21211f',
+          'bg-secondary': '#2a2a28',
+          'bg-tertiary': '#333331',
+          border: '#3a3a38',
+          'border-light': '#4a4a48',
         }
       },
       animation: {

@@ -28,41 +28,42 @@ const DocumentUpload = ({ onComplete, initialDocuments = [] }) => {
 
   const documentTypes = [
     {
-      id: 'id_proof',
-      label: 'ID Proof',
-      description: 'Aadhaar Card, PAN Card, Passport, or Driving License',
-      icon: CreditCard,
-      required: true,
-      maxSize: 5 * 1024 * 1024, // 5MB
-      acceptedFormats: ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
-    },
-    {
-      id: 'address_proof',
-      label: 'Address Proof',
-      description: 'Utility bill, Bank statement, or Rental agreement',
-      icon: MapPin,
-      required: true,
-      maxSize: 5 * 1024 * 1024,
-      acceptedFormats: ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
-    },
-    {
-      id: 'medical_certificate',
-      label: 'Medical Certificate',
-      description: 'Recent health checkup report (optional)',
-      icon: FileText,
-      required: false,
-      maxSize: 10 * 1024 * 1024, // 10MB
-      acceptedFormats: ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
-    },
-    {
       id: 'photo',
       label: 'Profile Photo',
-      description: 'Clear photo of yourself',
+      description: 'Clear photo of yourself (optional)',
       icon: User,
-      required: true,
+      required: false,
       maxSize: 2 * 1024 * 1024, // 2MB
       acceptedFormats: ['image/jpeg', 'image/png', 'image/jpg']
     }
+    // Other document types removed for simplified onboarding
+    // {
+    //   id: 'id_proof',
+    //   label: 'ID Proof',
+    //   description: 'Aadhaar Card, PAN Card, Passport, or Driving License',
+    //   icon: CreditCard,
+    //   required: true,
+    //   maxSize: 5 * 1024 * 1024, // 5MB
+    //   acceptedFormats: ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
+    // },
+    // {
+    //   id: 'address_proof',
+    //   label: 'Address Proof',
+    //   description: 'Utility bill, Bank statement, or Rental agreement',
+    //   icon: MapPin,
+    //   required: true,
+    //   maxSize: 5 * 1024 * 1024,
+    //   acceptedFormats: ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
+    // },
+    // {
+    //   id: 'medical_certificate',
+    //   label: 'Medical Certificate',
+    //   description: 'Recent health checkup report (optional)',
+    //   icon: FileText,
+    //   required: false,
+    //   maxSize: 10 * 1024 * 1024, // 10MB
+    //   acceptedFormats: ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
+    // }
   ];
 
   const handleDrag = useCallback((e) => {
@@ -316,7 +317,7 @@ const DocumentUpload = ({ onComplete, initialDocuments = [] }) => {
           Document Verification
         </h2>
         <p className="text-slate-600 dark:text-slate-400">
-          Upload required documents to verify your identity and complete registration
+          Upload documents to verify your identity (optional - you can skip this step)
         </p>
       </div>
 

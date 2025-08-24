@@ -10,6 +10,9 @@ const logger = require('../utils/logger');
 const router = express.Router();
 const User = require('../models/User');
 const Document = require('../models/Document');
+const AuditLog = require('../models/AuditLog');
+const Donation = require('../models/Donation');
+const { auth } = require('../middleware/auth');
 
 // Rate limiting for user registration
 const registrationLimiter = rateLimit({
@@ -223,6 +226,100 @@ router.get('/:userId/stats',
     next();
   },
   userController.getUserStats
+);
+
+/**
+ * @route   GET /api/v1/users/:userId/donations
+ * @desc    Get donation history for a user
+ * @access  Private (owner or admin)
+ */
+router.get('/:userId/donations',
+  auth,
+  userIdValidation,
+  validateRequest,
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const requesterId = req.user?.id;
+
+      if (requesterId !== userId && req.user?.role !== 'admin') {
+        return res.status(403).json({ success: false, error: 'ACCESS_DENIED' });
+      }
+
+      const history = await Donation.getDonorHistory(userId, 25);
+      return res.json({ success: true, data: { donations: history } });
+    } catch (error) {
+      logger.error('Failed to get user donations', 'USER_ROUTES', error);
+      return res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
+);
+
+/**
+ * @route   GET /api/v1/users/:userId/activity
+ * @desc    Get recent activity for a user
+ * @access  Private (owner or admin)
+ */
+router.get('/:userId/activity',
+  auth,
+  userIdValidation,
+  validateRequest,
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const requesterId = req.user?.id;
+
+      if (requesterId !== userId && req.user?.role !== 'admin') {
+        return res.status(403).json({ success: false, error: 'ACCESS_DENIED' });
+      }
+
+      const activity = await AuditLog.getUserActivity(userId, 50);
+      return res.json({ success: true, data: { activity } });
+    } catch (error) {
+      logger.error('Failed to get user activity', 'USER_ROUTES', error);
+      return res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
+);
+
+/**
+ * @route   POST /api/v1/users/:userId/questionnaire
+ * @desc    Save donor health questionnaire
+ * @access  Private (owner or admin)
+ */
+router.post('/:userId/questionnaire',
+  auth,
+  userIdValidation,
+  validateRequest,
+  async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const requesterId = req.user?.id;
+
+      // Only the owner or admin can update questionnaire
+      if (requesterId !== userId && req.user?.role !== 'admin') {
+        return res.status(403).json({ success: false, error: 'ACCESS_DENIED' });
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ success: false, error: 'USER_NOT_FOUND' });
+      }
+
+      const questionnaire = {
+        ...(req.body || {}),
+        completedAt: new Date()
+      };
+
+      user.questionnaire = questionnaire;
+      await user.save();
+
+      return res.json({ success: true, message: 'Questionnaire saved', data: { questionnaire } });
+    } catch (error) {
+      logger.error('Failed to save questionnaire', 'USER_ROUTES', error);
+      return res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+    }
+  }
 );
 
 /**

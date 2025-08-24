@@ -30,7 +30,7 @@ const EmergencyRequestTracker = ({ trackingId: initialTrackingId }) => {
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  // Mock data for demonstration - in real app, this would come from API
+  // Example shape for UI
   const mockRequestData = {
     trackingId: 'ER12345678',
     status: 'active',
@@ -120,21 +120,45 @@ const EmergencyRequestTracker = ({ trackingId: initialTrackingId }) => {
     setError(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // In real app, make API call here
-      // const response = await fetch(`/api/v1/emergency/track/${trackingId}`);
-      // const data = await response.json();
-      
-      // For demo, use mock data
+      // First, try real API by requestId
+      const res = await fetch(`/api/v1/blood-requests/${encodeURIComponent(trackingId)}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token') || ''}` }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const br = json?.data?.bloodRequest;
+        if (br) {
+          setRequestData({
+            trackingId: br.requestId,
+            status: br.status,
+            patientName: br.patient?.name,
+            bloodType: br.patient?.bloodType,
+            unitsNeeded: br.request?.unitsNeeded,
+            urgencyLevel: br.request?.urgency,
+            hospitalName: br.location?.hospital?.name,
+            hospitalAddress: `${br.location?.hospital?.address?.street}, ${br.location?.hospital?.address?.city}`,
+            city: br.location?.hospital?.address?.city,
+            contactName: br.requester?.name,
+            contactPhone: br.requester?.phoneNumber,
+            submittedAt: br.createdAt,
+            lastUpdated: br.updatedAt,
+            donorsNotified: br.matching?.totalNotified || 0,
+            donorsResponded: br.matching?.totalResponded || 0,
+            donorsAccepted: br.matching?.positiveResponses || 0,
+            estimatedFulfillment: br.expiresAt,
+            timeline: []
+          });
+          setLastUpdated(new Date().toISOString());
+          return;
+        }
+      }
+      // Fallback to mock
       if (trackingId.toUpperCase() === 'ER12345678' || trackingId === mockRequestData.trackingId) {
         setRequestData(mockRequestData);
         setLastUpdated(new Date().toISOString());
       } else {
         throw new Error('Request not found');
       }
-      
     } catch (err) {
       setError(err.message || 'Failed to track request. Please check your tracking ID.');
       setRequestData(null);

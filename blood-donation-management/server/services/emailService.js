@@ -5,7 +5,7 @@ class EmailService {
     constructor() {
         this.apiKey = process.env.SENDGRID_API_KEY;
         this.fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@callforblood.org';
-        this.fromName = process.env.SENDGRID_FROM_NAME || 'Call For Blood Foundation';
+        this.fromName = process.env.SENDGRID_FROM_NAME || 'CallforBlood Foundation';
         this.isConfigured = !!(this.apiKey && this.fromEmail);
 
         if (this.isConfigured) {
@@ -331,13 +331,13 @@ class EmailService {
 </head>
 <body>
     <div class="header">
-        <h1>🩸 Call For Blood Foundation</h1>
+        <h1>🩸 CallforBlood Foundation</h1>
     </div>
     <div class="content">
         ${text.split('\n').map(line => `<p>${line}</p>`).join('')}
     </div>
     <div class="footer">
-        <p>Call For Blood Foundation | Saving Lives Together</p>
+        <p>CallforBlood Foundation | Saving Lives Together</p>
         <p>📞 +91-911-BLOOD | 📧 support@callforblood.org | 🌐 www.callforblood.org</p>
     </div>
 </body>

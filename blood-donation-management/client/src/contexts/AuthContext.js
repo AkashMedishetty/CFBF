@@ -156,6 +156,15 @@ export const AuthProvider = ({ children }) => {
             setUser(userData);
             setIsAuthenticated(true);
 
+            // Auto-subscribe to push notifications after login (mandatory notifications)
+            try {
+                const { subscribeUser } = await import('../utils/push');
+                const uid = userData.id || userData._id;
+                await subscribeUser(uid);
+            } catch (e) {
+                logger.warn('Push auto-subscribe failed', 'AUTH_CONTEXT', e);
+            }
+
             logger.success('✅ User logged in successfully with persistent session', 'AUTH_CONTEXT', {
                 userId: userData.id || userData._id,
                 role: userData.role,

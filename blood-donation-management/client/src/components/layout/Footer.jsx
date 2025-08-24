@@ -51,7 +51,7 @@ const Footer = () => {
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
               <div className="flex items-center justify-center w-10 h-10 bg-primary-600 rounded-lg">
-                <Heart className="h-6 w-6 text-white fill-current" />
+                <img src="/Logo/android-chrome-192x192.png" alt="CallforBlood Logo" className="h-6 w-6" />
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-bold">Call For Blood</span>
@@ -65,10 +65,6 @@ const Footer = () => {
             
             {/* Contact info */}
             <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-sm">
-                <Phone className="h-4 w-4 text-primary-400" />
-                <span className="text-slate-300">+91-911-BLOOD (24/7)</span>
-              </div>
               <div className="flex items-center space-x-3 text-sm">
                 <Mail className="h-4 w-4 text-primary-400" />
                 <span className="text-slate-300">help@callforblood.org</span>
@@ -100,20 +96,20 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Emergency banner */}
-        <div className="mt-12 p-6 bg-red-600 rounded-xl">
+        {/* Privacy-focused banner */}
+        <div className="mt-12 p-6 bg-primary-600 rounded-xl">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="mb-4 md:mb-0">
-              <h3 className="text-xl font-bold mb-2">Need Blood Urgently?</h3>
-              <p className="text-red-100">
-                Our 24/7 emergency response team is ready to help you find donors immediately.
+              <h3 className="text-xl font-bold mb-2">Join India's First Privacy-Protected Platform</h3>
+              <p className="text-primary-100">
+                Register as a donor with complete privacy protection and 3-month hiding after donation.
               </p>
             </div>
             <Link
-              to="/emergency"
-              className="bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-red-50 transition-colors duration-200"
+              to="/register"
+              className="bg-white text-primary-600 px-6 py-3 rounded-lg font-semibold hover:bg-primary-50 transition-colors duration-200"
             >
-              Request Blood Now
+              Register as Donor
             </Link>
           </div>
         </div>
@@ -124,7 +120,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="text-slate-400 text-sm mb-4 md:mb-0">
-              © {currentYear} Call For Blood Foundation. All rights reserved.
+              © {currentYear} CallforBlood Foundation. All rights reserved.
             </div>
             
             {/* Social links */}

@@ -1,41 +1,54 @@
 {
   "short_name": "Call For Blood",
-  "name": "Call For Blood Foundation - Blood Donation Management",
-  "description": "Emergency blood donation management system connecting donors with those in need. Save lives through instant blood request notifications and donor coordination.",
+  "name": "Call For Blood Foundation - India's First Privacy-Focused Blood Donation Platform",
+  "description": "India's first unique donor privacy concept - connecting blood donors and recipients with complete privacy protection and intelligent automation.",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "Logo/favicon-16x16.png",
+      "type": "image/png",
+      "sizes": "16x16"
     },
     {
-      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAwCAYAAABtG3WwAAAACXBIWXMAAAsSAAALEgHS3X78AAAAGXRFWHRTb2Z0d2FyZQBQbGFjZWhvbGRlciBQTkcgdjEAAABYSURBVHicY2AYBaOBlYGBgYGJgQGJmYGBgQGxgZGBwT8GJgZGBkYmBgYGBkYGBgYGJ4Z8DAwMDw9E0EwMDQ0NDg8MDAwMDw8DAwMDw4GBAUKYwQw0AAACUdQ8/65o5gAAAAASUVORK5CYII=",
+      "src": "Logo/favicon-32x32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "Logo/android-chrome-192x192.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAAICAYAAABq3t2EAAAACXBIWXMAAAsSAAALEgHS3X78AAAAGXRFWHRTb2Z0d2FyZQBQbGFjZWhvbGRlciBQTkcgdjEAAABpSURBVHicY2AYBaOBlYGBgYGJgQGJmYGBgQGxgZGBwT8GJgZGBkYmBgYGBkYGBgYGJ4Z8DAwMDw9E0EwMDQ0NDg8MDAwMDw8DAwMDw4GBAX8GJgYGBgYGBiYGBgYGAA0gQEDAhQY0gQEDAhQY0gQEDAhQY0gQEDAhQY8AE8gA6y+EC3gAAAABJRU5ErkJggg==",
+      "src": "Logo/android-chrome-512x512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "apple-touch-icon.png",
+      "src": "Logo/apple-touch-icon.png",
       "type": "image/png",
-      "sizes": "180x180",
-      "purpose": "any"
+      "sizes": "180x180"
     }
   ],
-  "start_url": "/?source=pwa",
+  "start_url": "/?source=pwa&dev=true",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait-primary",
   "theme_color": "#dc2626",
   "background_color": "#ffffff",
   "prefer_related_applications": false,
-  "categories": ["health", "medical", "social", "utilities"],
+  "categories": [
+    "health",
+    "medical",
+    "social",
+    "utilities"
+  ],
   "lang": "en-US",
   "dir": "ltr",
   "shortcuts": [
@@ -128,8 +141,16 @@
     {
       "action": "/handle-files",
       "accept": {
-        "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
-        "application/pdf": [".pdf"]
+        "image/*": [
+          ".png",
+          ".jpg",
+          ".jpeg",
+          ".gif",
+          ".webp"
+        ],
+        "application/pdf": [
+          ".pdf"
+        ]
       }
     }
   ],

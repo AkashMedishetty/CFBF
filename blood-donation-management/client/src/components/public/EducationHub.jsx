@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { educationApi } from '../../utils/api';
 import logger from '../../utils/logger';
+import EducationModal from './EducationModal';
 
 const EducationHub = () => {
   const [activeTab, setActiveTab] = useState('articles');
@@ -28,6 +29,8 @@ const EducationHub = () => {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedContent, setSelectedContent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const tabs = [
     { id: 'articles', label: 'Articles & Guides', icon: BookOpen },
@@ -47,6 +50,16 @@ const EducationHub = () => {
     community_stories: 'Community Stories',
     medical_info: 'Medical Information',
     safety: 'Safety'
+  };
+
+  const handleReadMore = (item) => {
+    setSelectedContent(item);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedContent(null);
   };
 
   useEffect(() => {
@@ -448,7 +461,10 @@ const EducationHub = () => {
                               <User className="w-4 h-4 mr-1" />
                               {item.author.name}
                             </div>
-                            <button className="text-red-600 hover:text-red-700 font-medium text-sm flex items-center">
+                            <button 
+                              onClick={() => handleReadMore(item)}
+                              className="text-red-600 hover:text-red-700 font-medium text-sm flex items-center"
+                            >
                               Read More
                               <ChevronRight className="w-4 h-4 ml-1" />
                             </button>
@@ -541,7 +557,10 @@ const EducationHub = () => {
                                 <Eye className="w-4 h-4 mr-1" />
                                 {item.views}
                               </div>
-                              <button className="text-red-600 hover:text-red-700 font-medium text-sm flex items-center">
+                              <button 
+                                onClick={() => handleReadMore(item)}
+                                className="text-red-600 hover:text-red-700 font-medium text-sm flex items-center"
+                              >
                                 Read More
                                 <ChevronRight className="w-4 h-4 ml-1" />
                               </button>
@@ -598,6 +617,13 @@ const EducationHub = () => {
           </div>
         </div>
       </div>
+      
+      {/* Education Modal */}
+      <EducationModal 
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        content={selectedContent}
+      />
     </div>
   );
 };

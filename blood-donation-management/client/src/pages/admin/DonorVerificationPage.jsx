@@ -26,6 +26,7 @@ import Select from '../../components/ui/Select';
 import Avatar from '../../components/ui/Avatar';
 import Tabs from '../../components/ui/Tabs';
 import logger from '../../utils/logger';
+import { adminApi } from '../../utils/api';
 
 const DonorVerificationPage = () => {
   const [pendingDonors, setPendingDonors] = useState([]);
@@ -68,9 +69,26 @@ const DonorVerificationPage = () => {
     }
   };
 
-  const handleDonorSelect = (donor) => {
+  const handleDonorSelect = async (donor) => {
     logger.ui('CLICK', 'SelectDonor', { donorId: donor._id }, 'DONOR_VERIFICATION');
     setSelectedDonor(donor);
+    try {
+      const [detailsRes, docsRes] = await Promise.all([
+        adminApi.getDonorDetails(donor._id),
+        adminApi.getUserDocuments(donor._id)
+      ]);
+      const details = detailsRes?.data?.donor || donor;
+      const documents = (docsRes?.data || []).map((d) => ({
+        _id: d._id,
+        type: d.type,
+        originalName: d.originalName,
+        url: d.url,
+        verified: d.verified
+      }));
+      setSelectedDonor({ ...details, documents });
+    } catch (e) {
+      logger.warn('Failed to load donor details/documents', 'DONOR_VERIFICATION', e);
+    }
   };
 
   const handleApprove = async (donorId, notes = '') => {
@@ -146,7 +164,7 @@ const DonorVerificationPage = () => {
 
     const completed = steps.filter(step => {
       if (step.key === 'phoneVerified') return donor.verification?.phoneVerified;
-      if (step.key === 'documentsUploaded') return donor.documents?.length > 0;
+      if (step.key === 'documentsUploaded') return (donor.verification?.documentsVerified) || (donor.documents?.length >= 2);
       if (step.key === 'questionnaireCompleted') return donor.questionnaire?.completedAt;
       return false;
     });
@@ -348,6 +366,7 @@ const DonorVerificationPage = () => {
                 onApprove={handleApprove}
                 onReject={handleReject}
                 isProcessing={isProcessing}
+                onUpdateDonor={(updated) => setSelectedDonor(updated)}
               />
             ) : (
               <Card className="p-12 text-center">
@@ -368,7 +387,7 @@ const DonorVerificationPage = () => {
 };
 
 // Donor Details Panel Component
-const DonorDetailsPanel = ({ donor, onApprove, onReject, isProcessing }) => {
+const DonorDetailsPanel = ({ donor, onApprove, onReject, isProcessing, onUpdateDonor }) => {
   const [activeTab, setActiveTab] = useState('profile');
   const [approvalNotes, setApprovalNotes] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
@@ -527,20 +546,72 @@ const DonorDetailsPanel = ({ donor, onApprove, onReject, isProcessing }) => {
           >
             {donor.documents?.length > 0 ? (
               donor.documents.map((doc, index) => (
-                <div key={index} className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                <div key={doc._id || index} className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-slate-900 dark:text-white">{doc.type}</p>
                       <p className="text-sm text-slate-600 dark:text-slate-400">{doc.originalName}</p>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => window.open(doc.url, '_blank')}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(doc.url, '_blank')}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        View
+                      </Button>
+                      {doc.verified ? (
+                        <Badge variant="green">Verified</Badge>
+                      ) : (
+                        <Button
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                          await adminApi.verifyDocument(doc._id, { verified: true });
+                              // Refresh selected donor documents
+                              const docsRes = await adminApi.getUserDocuments(donor._id);
+                              const documents = (docsRes?.data || []).map((d) => ({
+                                _id: d._id, type: d.type, originalName: d.originalName, url: d.url, verified: d.verified
+                              }));
+                              if (onUpdateDonor) {
+                                onUpdateDonor({ ...donor, documents });
+                              }
+                              logger.success('Document verified', 'DONOR_VERIFICATION');
+                            } catch (e) {
+                              logger.error('Failed to verify document', 'DONOR_VERIFICATION', e);
+                            }
+                          }}
+                        >
+                          Verify
+                        </Button>
+                      )}
+                      {!doc.verified && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={async () => {
+                            const reason = window.prompt('Enter rejection reason');
+                            if (!reason) return;
+                            try {
+                              await adminApi.verifyDocument(doc._id, { verified: false, rejectionReason: reason });
+                              const docsRes = await adminApi.getUserDocuments(donor._id);
+                              const documents = (docsRes?.data || []).map((d) => ({
+                                _id: d._id, type: d.type, originalName: d.originalName, url: d.url, verified: d.verified
+                              }));
+                              if (onUpdateDonor) {
+                                onUpdateDonor({ ...donor, documents });
+                              }
+                              logger.info('Document rejected', 'DONOR_VERIFICATION');
+                            } catch (e) {
+                              logger.error('Failed to reject document', 'DONOR_VERIFICATION', e);
+                            }
+                          }}
+                        >
+                          Reject
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))

@@ -118,7 +118,7 @@ const ResetPasswordPage = () => {
   // Show success state
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-red-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 px-4">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-red-50 dark:from-dark-bg dark:via-dark-bg-secondary dark:to-dark-bg py-12 px-4">
         <div className="max-w-md mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -162,7 +162,7 @@ const ResetPasswordPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-red-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-red-50 dark:from-dark-bg dark:via-dark-bg-secondary dark:to-dark-bg py-12 px-4">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <motion.div

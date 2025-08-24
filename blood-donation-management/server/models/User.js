@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     sparse: true, // Allow null but enforce uniqueness when present
     trim: true,
     lowercase: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Invalid email format']
+    match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Invalid email format']
   },
   
   password: {
@@ -345,6 +345,12 @@ const userSchema = new mongoose.Schema({
       default: false
     }
   }],
+  
+  // Onboarding questionnaire
+  questionnaire: {
+    data: mongoose.Schema.Types.Mixed,
+    completedAt: Date
+  },
   
   // Statistics
   stats: {

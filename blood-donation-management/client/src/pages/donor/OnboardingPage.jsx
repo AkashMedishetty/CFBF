@@ -19,12 +19,19 @@ import Badge from '../../components/ui/Badge';
 import DocumentUpload from '../../components/donor/DocumentUpload';
 import DonorQuestionnaire from '../../components/donor/DonorQuestionnaire';
 import logger from '../../utils/logger';
+import { authApi } from '../../utils/api';
 
 const OnboardingPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const [user, setUser] = useState(location.state?.user || null);
+  const [user, setUser] = useState(() => {
+    const u = location.state?.user || null;
+    if (u && !u._id && u.id) {
+      return { ...u, _id: u.id };
+    }
+    return u;
+  });
   const [completedSteps, setCompletedSteps] = useState({
     documents: false,
     questionnaire: false
@@ -43,22 +50,36 @@ const OnboardingPage = () => {
       hasLocationUser: !!location.state?.user
     });
     
-    // Redirect if no user data
-    if (!user) {
+    // Ensure we have a user with an ID; if not, fetch current user
+    const ensureUser = async () => {
+      if (user && (user._id || user.id)) return true;
+      try {
+        const resp = await authApi.getCurrentUser();
+        if (resp.success && resp.data?.user) {
+          const u = resp.data.user;
+          setUser(u._id ? u : { ...u, _id: u.id });
+          return true;
+        }
+      } catch (e) {
+        logger.warn('Failed to fetch current user for onboarding', 'ONBOARDING_PAGE', e);
+      }
       logger.warn('❌ No user data found, redirecting to register', 'ONBOARDING_PAGE');
       navigate('/register');
-      return;
-    }
+      return false;
+    };
 
-    // Set initial step based on state
-    if (location.state?.step === 'documents') {
-      setCurrentStep(1);
-    } else if (location.state?.step === 'questionnaire') {
-      setCurrentStep(2);
-    }
-
-    // Check existing completion status
-    checkCompletionStatus();
+    (async () => {
+      const ok = await ensureUser();
+      if (!ok) return;
+      // Set initial step based on state
+      if (location.state?.step === 'documents') {
+        setCurrentStep(1);
+      } else if (location.state?.step === 'questionnaire') {
+        setCurrentStep(2);
+      }
+      // Check existing completion status
+      checkCompletionStatus();
+    })();
     
     return () => {
       logger.componentUnmount('OnboardingPage');
@@ -66,10 +87,11 @@ const OnboardingPage = () => {
   }, [user, navigate, location.state]);
 
   const checkCompletionStatus = async () => {
-    if (!user?._id) return;
+    const uid = user?._id || user?.id;
+    if (!uid) return;
 
     try {
-      const response = await fetch(`/api/v1/users/${user._id}/onboarding-status`, {
+      const response = await fetch(`/api/v1/users/${uid}/onboarding-status`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -141,7 +163,9 @@ const OnboardingPage = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch(`/api/v1/users/${user._id}/questionnaire`, {
+      const uid = user?._id || user?.id;
+      if (!uid) throw new Error('Missing user ID');
+      const response = await fetch(`/api/v1/users/${uid}/questionnaire`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -300,7 +324,7 @@ const OnboardingPage = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-dark-bg flex items-center justify-center">
         <Card className="p-8 text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
@@ -318,7 +342,7 @@ const OnboardingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-red-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-red-50 dark:from-dark-bg dark:via-dark-bg-secondary dark:to-dark-bg py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div
@@ -357,7 +381,7 @@ const OnboardingPage = () => {
                           ? 'bg-green-500 border-green-500 text-white'
                           : isActive
                           ? 'bg-blue-500 border-blue-500 text-white'
-                          : 'bg-white border-slate-300 text-slate-400 dark:bg-slate-800 dark:border-slate-600'
+                          : 'bg-white border-slate-300 text-slate-400 dark:bg-dark-bg-secondary dark:border-dark-border'
                       }`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}

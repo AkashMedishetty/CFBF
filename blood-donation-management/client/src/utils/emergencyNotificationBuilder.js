@@ -70,7 +70,7 @@ class EmergencyNotificationBuilder {
       // Build notification options
       const options = {
         body,
-        icon: '/logo192.png',
+        icon: '/Logo/android-chrome-192x192.png',
         badge: '/badge-urgent.png',
         image: hospitalInfo?.image || '/images/hospital-default.jpg',
         data: {
@@ -130,10 +130,10 @@ class EmergencyNotificationBuilder {
   // Build notification title
   buildTitle(urgency, bloodType, patientInfo) {
     const urgencyText = {
-      critical: '🚨 CRITICAL',
-      urgent: '⚡ URGENT',
-      high: '🩸 HIGH PRIORITY',
-      normal: '🩸 Blood Needed'
+      critical: 'CRITICAL',
+  urgent: 'URGENT',
+  high: 'HIGH PRIORITY',
+  normal: 'Blood Needed'
     };
 
     const baseTitle = urgencyText[urgency] || urgencyText.normal;
@@ -160,7 +160,7 @@ class EmergencyNotificationBuilder {
 
     // Hospital information
     if (hospitalInfo?.name) {
-      message += `🏥 ${hospitalInfo.name}`;
+      message += `Hospital: ${hospitalInfo.name}`;
       if (location?.distance) {
         message += ` (${location.distance}km away)`;
       }
@@ -202,14 +202,14 @@ class EmergencyNotificationBuilder {
     // Primary action - Accept
     actions.push({
       action: 'accept',
-      title: '✅ I Can Help',
+      title: 'I Can Help',
       icon: '/icons/accept.png'
     });
 
     // Secondary action - Decline
     actions.push({
       action: 'decline',
-      title: '❌ Can\'t Help',
+      title: 'Cannot Help',
       icon: '/icons/decline.png'
     });
 
@@ -218,7 +218,7 @@ class EmergencyNotificationBuilder {
       // View details
       actions.push({
         action: 'view_details',
-        title: '👁️ Details',
+        title: 'View Details',
         icon: '/icons/view.png'
       });
 
@@ -274,7 +274,7 @@ class EmergencyNotificationBuilder {
         ? Math.floor((Date.now() - new Date(lastDonation).getTime()) / (24 * 60 * 60 * 1000))
         : null;
 
-      const title = '🩸 Ready to Donate Again?';
+      const title = 'Ready to Donate Again?';
       
       let body = `Hi ${donorName}! `;
       
@@ -294,7 +294,7 @@ class EmergencyNotificationBuilder {
 
       const options = {
         body,
-        icon: '/logo192.png',
+        icon: '/Logo/android-chrome-192x192.png',
         badge: '/badge-reminder.png',
         data: {
           type: 'donation_reminder',
@@ -357,7 +357,7 @@ class EmergencyNotificationBuilder {
 
       const options = {
         body: message,
-        icon: '/logo192.png',
+        icon: '/Logo/android-chrome-192x192.png',
         badge: '/badge-system.png',
         data: {
           type: 'system_notification',
@@ -399,10 +399,10 @@ class EmergencyNotificationBuilder {
     logger.warn('Building fallback notification', 'EMERGENCY_NOTIFICATION');
 
     return {
-      title: '🩸 Blood Donation Request',
+      title: 'Blood Donation Request',
       options: {
         body: 'A blood donation request needs your attention. Tap to view details.',
-        icon: '/logo192.png',
+        icon: '/Logo/android-chrome-192x192.png',
         badge: '/badge-urgent.png',
         data: {
           type: 'fallback',

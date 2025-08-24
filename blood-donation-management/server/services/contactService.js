@@ -129,7 +129,7 @@ class ContactService {
      * @returns {Promise<Object>} Email send result
      */
     async sendUserConfirmation(contactData) {
-        const subject = '✅ We received your message - Call For Blood Foundation';
+        const subject = '✅ We received your message - CallforBlood Foundation';
         const content = this.formatUserConfirmationEmail(contactData);
 
         return await emailService.sendEmail(contactData.email, subject, content, {
@@ -180,7 +180,7 @@ RESPONSE REQUIRED BY: ${this.getResponseDeadline(contactData.priority)}
 Please respond to this inquiry within the expected timeframe.
 
 ---
-Call For Blood Foundation - Contact Management System`;
+CallforBlood Foundation - Contact Management System`;
     }
 
     /**
@@ -191,7 +191,7 @@ Call For Blood Foundation - Contact Management System`;
     formatUserConfirmationEmail(contactData) {
         const responseTime = this.getEstimatedResponseTime(contactData.priority, contactData.category);
 
-        return `Thank you for contacting Call For Blood Foundation!
+        return `Thank you for contacting CallforBlood Foundation!
 
 Dear ${contactData.name},
 
@@ -221,7 +221,7 @@ YOUR MESSAGE:
 Thank you for being part of our life-saving community!
 
 Best regards,
-Call For Blood Foundation Support Team
+CallforBlood Foundation Support Team
 
 ---
 Need help? Visit www.callforblood.org or call 1800-BLOOD-1`;

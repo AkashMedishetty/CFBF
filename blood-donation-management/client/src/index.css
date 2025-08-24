@@ -26,17 +26,52 @@
   --color-primary-foreground: 255 255 255;
   --color-secondary: 71 85 105; /* slate-600 */
   --color-secondary-foreground: 255 255 255;
-  --color-background: 2 6 23; /* slate-950 */
+  --color-background: 33 33 31; /* #21211f */
   --color-foreground: 248 250 252; /* slate-50 */
-  --color-muted: 15 23 42; /* slate-900 */
+  --color-muted: 40 40 38; /* darker muted for #21211f background */
   --color-muted-foreground: 148 163 184; /* slate-400 */
-  --color-border: 30 41 59; /* slate-800 */
-  --color-input: 30 41 59; /* slate-800 */
+  --color-border: 55 55 53; /* darker border for #21211f background */
+  --color-input: 40 40 38; /* darker input for #21211f background */
   --color-ring: 239 68 68; /* red-500 */
 }
 
+/* View Transition API styles for smooth theme switching */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 999;
+}
+
 /* Base styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Reset default browser styles that might cause unwanted borders */
 * {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+}
+
+/* Apply border colors only to elements that should have borders */
+input,
+button,
+select,
+textarea,
+.border,
+[class*="border-"] {
   border-color: rgb(var(--color-border));
 }
 
@@ -47,6 +82,12 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode specific styles */
+.dark body {
+  background-color: #21211f;
 }
 
 /* Custom scrollbar */
@@ -88,9 +129,9 @@ body {
 }
 
 .card {
-  @apply bg-white dark:bg-slate-800 rounded-xl shadow-soft border border-slate-200 dark:border-slate-700 p-6;
+  @apply bg-white dark:bg-dark-bg-secondary rounded-xl shadow-soft border border-slate-200 dark:border-dark-border p-6;
 }
 
 .input-field {
-  @apply w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus-ring;
+  @apply w-full px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg-secondary text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus-ring;
 }

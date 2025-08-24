@@ -21,6 +21,7 @@ import Badge from '../../components/ui/Badge';
 import Select from '../../components/ui/Select';
 import Map from '../../components/ui/Map';
 import logger from '../../utils/logger';
+import { adminApi } from '../../utils/api';
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -31,10 +32,69 @@ const AdminDashboard = () => {
     pendingRequests: 0,
     systemHealth: 100
   });
+  const [emailStatus, setEmailStatus] = useState(null);
+  const [testEmail, setTestEmail] = useState('');
+  const [notifSettings, setNotifSettings] = useState(null);
+  const [channelOrder, setChannelOrder] = useState(['push','email']);
+  const [escalateWhatsApp, setEscalateWhatsApp] = useState([]);
+  const [escalateSMS, setEscalateSMS] = useState([]);
+  const [escalateAfterMs, setEscalateAfterMs] = useState(0);
+
+  const fetchNotificationSettings = async () => {
+    try {
+      const res = await adminApi.getNotificationSettings();
+      const s = res?.data || null;
+      setNotifSettings(s);
+      if (s) {
+        setChannelOrder(s.channelOrder || ['push','email']);
+        setEscalateWhatsApp(s.escalateToWhatsAppOnPriority || []);
+        setEscalateSMS(s.escalateToSMSOnPriority || []);
+        setEscalateAfterMs(s.escalateAfterMs || 0);
+      }
+    } catch (e) {
+      logger.warn('Failed to fetch notification settings', 'ADMIN_DASHBOARD', e);
+    }
+  };
+
+  const handleToggleWhatsApp = async () => {
+    try {
+      const updated = await adminApi.updateNotificationSettings({ enableWhatsApp: !(notifSettings?.enableWhatsApp) });
+      setNotifSettings(updated?.data || notifSettings);
+    } catch (e) {
+      logger.error('Failed to update notification settings', 'ADMIN_DASHBOARD', e);
+    }
+  };
+
+  const handleToggleSMS = async () => {
+    try {
+      const updated = await adminApi.updateNotificationSettings({ enableSMS: !(notifSettings?.enableSMS) });
+      setNotifSettings(updated?.data || notifSettings);
+    } catch (e) {
+      logger.error('Failed to update notification settings', 'ADMIN_DASHBOARD', e);
+    }
+  };
+
+  const handleSaveNotificationSettings = async () => {
+    try {
+      const payload = {
+        channelOrder,
+        escalateToWhatsAppOnPriority: escalateWhatsApp,
+        escalateToSMSOnPriority: escalateSMS,
+        escalateAfterMs
+      };
+      const updated = await adminApi.updateNotificationSettings(payload);
+      setNotifSettings(updated?.data || notifSettings);
+      logger.success('Notification settings updated', 'ADMIN_DASHBOARD');
+    } catch (e) {
+      logger.error('Failed to save notification settings', 'ADMIN_DASHBOARD', e);
+    }
+  };
 
   useEffect(() => {
     logger.componentMount('AdminDashboard');
     fetchDashboardData();
+    fetchEmailStatus();
+    fetchNotificationSettings();
     
     // Set up real-time updates
     const interval = setInterval(updateRealTimeData, 5000);
@@ -44,134 +104,92 @@ const AdminDashboard = () => {
       logger.componentUnmount('AdminDashboard');
     };
   }, [selectedTimeRange]);
+  const fetchEmailStatus = async () => {
+    try {
+      const res = await adminApi.getEmailStatus();
+      setEmailStatus(res?.data || null);
+    } catch (e) {
+      logger.warn('Failed to fetch email status', 'ADMIN_DASHBOARD', e);
+    }
+  };
+
+  const handleSendTestEmail = async () => {
+    if (!testEmail) return;
+    try {
+      const res = await adminApi.sendTestEmail(testEmail);
+      if (res?.data?.success) {
+        logger.success('Test email sent', 'ADMIN_DASHBOARD');
+      } else {
+        logger.warn('Test email request did not succeed', 'ADMIN_DASHBOARD', res);
+      }
+    } catch (e) {
+      logger.error('Failed to send test email', 'ADMIN_DASHBOARD', e);
+    }
+  };
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
     
     try {
-      // Mock data - in real app, this would be API calls
-      const mockData = {
-        overview: {
-          totalDonors: 1247,
-          activeDonors: 892,
-          pendingVerifications: 23,
-          totalRequests: 156,
-          activeRequests: 12,
-          fulfilledRequests: 134,
-          criticalRequests: 3,
-          systemUptime: 99.9,
-          responseTime: 180 // ms
-        },
-        recentActivity: [
-          {
-            id: 1,
-            type: 'new_donor',
-            title: 'New Donor Registration',
-            description: 'John Smith registered as O+ donor',
-            timestamp: '2024-01-20T10:30:00Z',
-            priority: 'normal',
-            location: 'New Delhi'
-          },
-          {
-            id: 2,
-            type: 'urgent_request',
-            title: 'Critical Blood Request',
-            description: 'AB- blood needed at AIIMS Hospital',
-            timestamp: '2024-01-20T10:25:00Z',
-            priority: 'critical',
-            location: 'AIIMS, Delhi'
-          },
-          {
-            id: 3,
-            type: 'donation_completed',
-            title: 'Donation Completed',
-            description: 'Sarah Johnson completed O+ donation',
-            timestamp: '2024-01-20T10:20:00Z',
-            priority: 'normal',
-            location: 'Red Cross Blood Bank'
-          },
-          {
-            id: 4,
-            type: 'system_alert',
-            title: 'Low Inventory Alert',
-            description: 'B- blood stock below threshold',
-            timestamp: '2024-01-20T10:15:00Z',
-            priority: 'high',
-            location: 'Central Blood Bank'
-          }
-        ],
-        activeRequests: [
-          {
-            id: 'BR001',
-            bloodType: 'AB-',
-            urgency: 'critical',
-            hospital: 'AIIMS Hospital',
-            location: [28.5672, 77.2100],
-            timeRemaining: '2h 15m',
-            donorsNotified: 45,
-            responses: 8,
-            status: 'active'
-          },
-          {
-            id: 'BR002',
-            bloodType: 'O+',
-            urgency: 'urgent',
-            hospital: 'Safdarjung Hospital',
-            location: [28.5706, 77.2081],
-            timeRemaining: '6h 30m',
-            donorsNotified: 32,
-            responses: 12,
-            status: 'matched'
-          },
-          {
-            id: 'BR003',
-            bloodType: 'B+',
-            urgency: 'scheduled',
-            hospital: 'Apollo Hospital',
-            location: [28.5355, 77.2803],
-            timeRemaining: '1d 4h',
-            donorsNotified: 18,
-            responses: 6,
-            status: 'active'
-          }
-        ],
-        systemMetrics: {
-          serverHealth: 98,
-          databaseHealth: 99,
-          whatsappService: 95,
-          smsService: 97,
-          emailService: 100,
-          averageResponseTime: 180,
-          errorRate: 0.2,
-          throughput: 1250 // requests per hour
-        },
-        geographicData: [
-          {
-            region: 'Central Delhi',
-            coordinates: [28.6139, 77.2090],
-            activeDonors: 234,
-            activeRequests: 4,
-            responseRate: 89
-          },
-          {
-            region: 'South Delhi',
-            coordinates: [28.5355, 77.2803],
-            activeDonors: 189,
-            activeRequests: 3,
-            responseRate: 94
-          },
-          {
-            region: 'North Delhi',
-            coordinates: [28.7041, 77.1025],
-            activeDonors: 156,
-            activeRequests: 2,
-            responseRate: 82
-          }
-        ]
+      const [donorStatsRes, pendingRes, activityRes, requestsRes] = await Promise.all([
+        adminApi.getDonorStats(),
+        adminApi.getPendingDonors(),
+        adminApi.getRecentActivity(),
+        adminApi.getRequestsSummary()
+      ]);
+
+      const overview = {
+        totalDonors: donorStatsRes?.data?.stats?.total || 0,
+        activeDonors: donorStatsRes?.data?.stats?.active || 0,
+        pendingVerifications: pendingRes?.data?.count || 0,
+        totalRequests: requestsRes?.data?.overview?.totalRequests || 0,
+        activeRequests: requestsRes?.data?.overview?.activeRequests || 0,
+        fulfilledRequests: requestsRes?.data?.overview?.fulfilledRequests || 0,
+        criticalRequests: requestsRes?.data?.overview?.criticalRequests || 0,
+        systemUptime: 99,
+        responseTime: 0
       };
 
-      setDashboardData(mockData);
-      logger.success('Admin dashboard data loaded', 'ADMIN_DASHBOARD');
+      const recentActivity = (activityRes?.data?.recent || []).map((e, i) => ({
+        id: e._id || i,
+        type: e.event || 'system',
+        title: e.event || 'Event',
+        description: e.details || e.message || '',
+        timestamp: e.timestamp || e.createdAt,
+        priority: (e.success === false ? 'high' : 'normal'),
+        location: e.metadata?.location || '—'
+      }));
+
+      const activeRequests = (requestsRes?.data?.activeRequests || []).map((r) => ({
+        id: r.requestId,
+        bloodType: r.patient?.bloodType,
+        urgency: r.request?.urgency,
+        hospital: r.location?.hospital?.name,
+        location: [
+          r.location?.hospital?.coordinates?.coordinates?.[1] ?? 0,
+          r.location?.hospital?.coordinates?.coordinates?.[0] ?? 0
+        ],
+        timeRemaining: '—',
+        donorsNotified: r.matching?.totalNotified || 0,
+        responses: r.matching?.totalResponded || 0,
+        status: r.status
+      }));
+
+      const systemMetrics = {
+        serverHealth: 99.8,
+        databaseHealth: 99,
+        whatsappService: 95,
+        smsService: 97,
+        emailService: 100,
+        averageResponseTime: 0,
+        errorRate: 0,
+        throughput: 0
+      };
+
+      const geographicData = [];
+
+      setDashboardData({ overview, recentActivity, activeRequests, systemMetrics, geographicData });
+      logger.success('Admin dashboard data loaded (API)', 'ADMIN_DASHBOARD');
     } catch (error) {
       logger.error('Error fetching dashboard data', 'ADMIN_DASHBOARD', error);
     } finally {
@@ -422,7 +440,7 @@ const AdminDashboard = () => {
                 </h2>
                 <div className="flex items-center space-x-4">
                   <Badge variant="red">
-                    {dashboardData?.activeRequests.length} Active Requests
+                  {dashboardData?.activeRequests.length} Active Requests
                   </Badge>
                   <Badge variant="green">
                     {dashboardData?.geographicData.length} Regions
@@ -510,7 +528,7 @@ const AdminDashboard = () => {
                       </p>
                     </div>
                   </div>
-                  <Button size="sm" onClick={() => window.location.href = '/admin/donors/verification'}>
+                  <Button size="sm" onClick={() => (window.location.href = '/admin/verification')}>
                     Review
                   </Button>
                 </div>
@@ -547,6 +565,110 @@ const AdminDashboard = () => {
                   <Button size="sm" variant="outline">
                     Manage
                   </Button>
+                </div>
+                {/* Email Diagnostics */}
+                <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-3">
+                      <Shield className="h-5 w-5 text-purple-600" />
+                      <div>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">
+                          Email Diagnostics
+                        </p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400">
+                          {emailStatus?.ready ? 'Configured' : 'Not configured'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      value={testEmail}
+                      onChange={(e) => setTestEmail(e.target.value)}
+                      placeholder="test@example.com"
+                      className="flex-1 px-3 py-2 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm"
+                    />
+                    <Button size="sm" onClick={handleSendTestEmail}>Send Test</Button>
+                  </div>
+                </div>
+                {/* Notification Settings (Admin) */}
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-sm font-medium text-slate-900 dark:text-white">Notification Channels</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">Default: Push → Email. Escalate via WhatsApp/SMS if enabled.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mb-3">
+                    <Button size="sm" variant={notifSettings?.enableWhatsApp ? 'default' : 'outline'} onClick={handleToggleWhatsApp}>
+                      {notifSettings?.enableWhatsApp ? 'Disable WhatsApp' : 'Enable WhatsApp'}
+                    </Button>
+                    <Button size="sm" variant={notifSettings?.enableSMS ? 'default' : 'outline'} onClick={handleToggleSMS}>
+                      {notifSettings?.enableSMS ? 'Disable SMS' : 'Enable SMS'}
+                    </Button>
+                  </div>
+                  {/* Channel order and escalation */}
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Channel order</p>
+                      <div className="flex flex-wrap gap-2">
+                        {['push','email','whatsapp','sms'].map((ch) => (
+                          <span key={ch}
+                            className={`px-2 py-1 rounded border text-xs cursor-pointer ${channelOrder.includes(ch) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'}`}
+                            onClick={() => {
+                              setChannelOrder((prev) => {
+                                const exists = prev.includes(ch);
+                                if (!exists) return [...prev, ch];
+                                return [ch, ...prev.filter((p) => p !== ch)];
+                              });
+                            }}
+                          >
+                            {ch.toUpperCase()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Escalate WhatsApp on</p>
+                        <div className="flex gap-2 text-xs">
+                          {['critical','urgent','normal'].map((u) => (
+                            <span key={u}
+                              className={`px-2 py-1 rounded border cursor-pointer ${escalateWhatsApp.includes(u) ? 'bg-green-600 text-white border-green-600' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'}`}
+                              onClick={() => setEscalateWhatsApp((prev) => prev.includes(u) ? prev.filter(x=>x!==u) : [...prev, u])}
+                            >
+                              {u}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Escalate SMS on</p>
+                        <div className="flex gap-2 text-xs">
+                          {['critical','urgent','normal'].map((u) => (
+                            <span key={u}
+                              className={`px-2 py-1 rounded border cursor-pointer ${escalateSMS.includes(u) ? 'bg-yellow-600 text-white border-yellow-600' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600'}`}
+                              onClick={() => setEscalateSMS((prev) => prev.includes(u) ? prev.filter(x=>x!==u) : [...prev, u])}
+                            >
+                              {u}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 mb-1">Escalate after (ms)</p>
+                      <input type="number" className="w-full px-2 py-1 rounded border text-sm bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600"
+                        value={escalateAfterMs}
+                        onChange={(e) => setEscalateAfterMs(parseInt(e.target.value || '0', 10))}
+                        min={0}
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <Button size="sm" onClick={handleSaveNotificationSettings}>Save</Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Card>
@@ -621,7 +743,7 @@ const AdminDashboard = () => {
                 <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
                   Active Blood Requests
                 </h2>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={() => (window.location.href = '/admin/requests')}>
                   Manage All
                 </Button>
               </div>

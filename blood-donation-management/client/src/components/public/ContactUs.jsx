@@ -157,7 +157,7 @@ const ContactUs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-dark-bg">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -203,8 +203,8 @@ const ContactUs = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
-                className={`bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow ${
-                  channel.urgent ? 'ring-2 ring-red-200' : ''
+                className={`bg-white dark:bg-dark-bg-secondary rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow ${
+                  channel.urgent ? 'ring-2 ring-red-200 dark:ring-red-800' : ''
                 }`}
               >
                 <div className={`w-12 h-12 rounded-lg ${channel.bgColor} flex items-center justify-center mb-4`}>
@@ -254,7 +254,7 @@ const ContactUs = () => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="bg-white rounded-xl shadow-lg p-8"
+            className="bg-white dark:bg-dark-bg-secondary rounded-xl shadow-lg p-8"
           >
             {submitStatus === 'success' && (
               <div className="mb-6 p-4 bg-green-100 border border-green-200 rounded-lg flex items-center space-x-3">
@@ -438,7 +438,7 @@ const ContactUs = () => {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
-                className={`bg-white rounded-xl shadow-lg p-6 ${
+                className={`bg-white dark:bg-dark-bg-secondary rounded-xl shadow-lg p-6 ${
                   office.isHeadquarters ? 'ring-2 ring-red-200' : ''
                 }`}
               >
@@ -521,7 +521,7 @@ const ContactUs = () => {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-lg p-6 shadow-md"
+                className="bg-white dark:bg-dark-bg-secondary rounded-lg p-6 shadow-md"
               >
                 <div className="flex items-start space-x-4">
                   <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">

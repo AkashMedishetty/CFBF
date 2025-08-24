@@ -94,7 +94,7 @@ const AboutPage = () => {
       </section>
 
       {/* Mission & Vision Section */}
-      <section className="py-20 bg-white dark:bg-slate-900">
+      <section className="py-20 bg-white dark:bg-dark-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -141,7 +141,7 @@ const AboutPage = () => {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 bg-slate-50 dark:bg-slate-800">
+      <section className="py-20 bg-slate-50 dark:bg-dark-bg-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -196,7 +196,7 @@ const AboutPage = () => {
       </section>
 
       {/* Story Section */}
-      <section className="py-20 bg-white dark:bg-slate-900">
+      <section className="py-20 bg-white dark:bg-dark-bg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={containerVariants}
@@ -216,7 +216,7 @@ const AboutPage = () => {
               className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed space-y-6"
             >
               <p>
-                Call For Blood Foundation was born from a simple yet powerful realization: 
+                CallforBlood Foundation was born from a simple yet powerful realization: 
                 in emergency situations, every second counts, and traditional methods of 
                 finding blood donors were simply too slow and inefficient.
               </p>
@@ -275,7 +275,7 @@ const AboutPage = () => {
       </section>
 
       {/* Contact CTA Section */}
-      <section className="py-20 bg-slate-50 dark:bg-slate-800">
+      <section className="py-20 bg-slate-50 dark:bg-dark-bg-secondary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             variants={containerVariants}

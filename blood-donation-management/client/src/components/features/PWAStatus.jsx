@@ -128,7 +128,7 @@ const PWAStatus = () => {
         <motion.div
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
-            className="fixed top-4 right-4 z-50 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-4 max-w-sm"
+            className="fixed top-4 right-4 z-50 bg-white dark:bg-dark-bg-secondary rounded-lg shadow-lg border border-slate-200 dark:border-dark-border p-4 max-w-sm"
         >
             <div className="flex items-center space-x-2 mb-3">
                 <Smartphone className="w-5 h-5 text-blue-600" />
@@ -197,7 +197,7 @@ const PWAStatus = () => {
                 </div>
             </div>
 
-            <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+            <div className="mt-3 pt-3 border-t border-slate-200 dark:border-dark-border">
                 <div className="flex items-start space-x-2 mb-2">
                     <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                     <div className="text-xs text-slate-500 dark:text-slate-400">

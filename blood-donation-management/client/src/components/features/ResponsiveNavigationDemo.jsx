@@ -151,7 +151,7 @@ const ResponsiveNavigationDemo = () => {
             }}
           >
             {/* Mock Header */}
-            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 p-4">
+            <div className="bg-white dark:bg-dark-bg border-b border-slate-200 dark:border-dark-border p-4">
               <div className="flex items-center justify-between">
                 {/* Logo */}
                 <div className="flex items-center space-x-2">

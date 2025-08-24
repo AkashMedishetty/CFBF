@@ -236,7 +236,7 @@ class SMSService {
 
     const action = purposeText[purpose] || 'verify your phone number';
 
-    return `Call For Blood Foundation
+    return `CallforBlood Foundation
 
 Your verification code is: ${otp}
 

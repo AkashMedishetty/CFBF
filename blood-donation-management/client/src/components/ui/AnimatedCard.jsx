@@ -24,7 +24,7 @@ const AnimatedCard = ({
   };
 
   // Base styles
-  const baseStyles = 'bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 transition-all duration-200';
+  const baseStyles = 'bg-white dark:bg-dark-bg-secondary rounded-xl border border-slate-200 dark:border-dark-border transition-all duration-200';
   
   // Variant styles
   const variants = {
@@ -107,7 +107,7 @@ AnimatedCard.Footer = ({ children, className = '', animationType = 'slideUp' }) 
 
   return (
     <motion.div 
-      className={`mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 ${className}`}
+      className={`mt-4 pt-4 border-t border-slate-200 dark:border-dark-border ${className}`}
       {...reducedMotionAnimation}
     >
       {children}

@@ -87,7 +87,7 @@ const GuestEmergencyRequest = ({ onSubmit, onTrackingGenerated }) => {
     }
   ];
 
-  // Get user's current location
+  // Get user's current location with high accuracy and fallback
   const getCurrentLocation = async () => {
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by this browser.');
@@ -97,27 +97,46 @@ const GuestEmergencyRequest = ({ onSubmit, onTrackingGenerated }) => {
     setIsGettingLocation(true);
     
     try {
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000
+      let position;
+      
+      try {
+        // First attempt with high accuracy
+        position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000 // 5 minutes
+          });
         });
-      });
+      } catch (highAccuracyError) {
+        console.warn('High accuracy location failed, trying fallback:', highAccuracyError);
+        
+        // Fallback with lower accuracy
+        position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: false,
+            timeout: 15000,
+            maximumAge: 600000 // 10 minutes
+          });
+        });
+      }
 
-      const { latitude, longitude } = position.coords;
-      setLocation({ lat: latitude, lng: longitude });
+      const { latitude, longitude, accuracy } = position.coords;
+      setLocation({ lat: latitude, lng: longitude, accuracy });
+      
+      console.log(`Location obtained with accuracy: ${accuracy}m`);
       
       // Try to get address from coordinates (reverse geocoding)
+      // Note: Using free Nominatim API instead of OpenCage which requires API key
       try {
         const response = await fetch(
-          `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=YOUR_API_KEY`
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&countrycodes=in`
         );
         const data = await response.json();
         
-        if (data.results && data.results[0]) {
-          const address = data.results[0].formatted;
-          const city = data.results[0].components.city || data.results[0].components.town;
+        if (data && data.display_name) {
+          const address = data.display_name;
+          const city = data.address?.city || data.address?.town || data.address?.village;
           
           setFormData(prev => ({
             ...prev,
@@ -131,7 +150,7 @@ const GuestEmergencyRequest = ({ onSubmit, onTrackingGenerated }) => {
       
     } catch (error) {
       console.error('Error getting location:', error);
-      alert('Unable to get your location. Please enter the hospital address manually.');
+      alert('Unable to get your location. Please check your location settings and enter the hospital address manually.');
     } finally {
       setIsGettingLocation(false);
     }
@@ -244,7 +263,7 @@ const GuestEmergencyRequest = ({ onSubmit, onTrackingGenerated }) => {
                     className={`p-3 rounded-lg border-2 font-medium transition-colors touch-manipulation ${
                       formData.bloodType === type
                         ? 'border-red-500 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
-                        : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500'
+                        : 'border-slate-300 dark:border-dark-border hover:border-slate-400 dark:hover:border-dark-border-light'
                     }`}
                   >
                     {type}
@@ -276,7 +295,7 @@ const GuestEmergencyRequest = ({ onSubmit, onTrackingGenerated }) => {
                     className={`w-full p-4 rounded-lg border-2 text-left transition-colors touch-manipulation ${
                       formData.urgencyLevel === level.value
                         ? `border-red-500 ${level.bgColor} ${level.color}`
-                        : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500'
+                        : 'border-slate-300 dark:border-dark-border hover:border-slate-400 dark:hover:border-dark-border-light'
                     }`}
                   >
                     <div className="flex items-center space-x-3">
@@ -395,7 +414,7 @@ const GuestEmergencyRequest = ({ onSubmit, onTrackingGenerated }) => {
                 onChange={(e) => handleInputChange('additionalNotes', e.target.value)}
                 placeholder="Any additional information that might help donors..."
                 rows={4}
-                className="w-full px-4 py-3 border-2 border-slate-300 dark:border-slate-600 rounded-xl focus:border-red-500 dark:focus:border-red-400 focus:outline-none transition-colors bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                className="w-full px-4 py-3 border-2 border-slate-300 dark:border-dark-border rounded-xl focus:border-red-500 dark:focus:border-red-400 focus:outline-none transition-colors bg-white dark:bg-dark-bg-secondary text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
               />
             </div>
           </div>
@@ -432,7 +451,7 @@ const GuestEmergencyRequest = ({ onSubmit, onTrackingGenerated }) => {
             <h3 className="font-semibold text-slate-900 dark:text-white mb-2">
               Tracking ID
             </h3>
-            <div className="flex items-center justify-center space-x-2 p-3 bg-white dark:bg-slate-700 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600">
+            <div className="flex items-center justify-center space-x-2 p-3 bg-white dark:bg-dark-bg-tertiary rounded-lg border-2 border-dashed border-slate-300 dark:border-dark-border">
               <span className="text-2xl font-mono font-bold text-red-600 dark:text-red-400">
                 {trackingId}
               </span>

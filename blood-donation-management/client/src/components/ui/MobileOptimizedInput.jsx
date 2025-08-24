@@ -48,7 +48,7 @@ const MobileOptimizedInput = ({
           ? 'border-red-300 dark:border-red-600 focus:border-red-500 dark:focus:border-red-400' 
           : success
           ? 'border-green-300 dark:border-green-600 focus:border-green-500 dark:focus:border-green-400'
-          : 'border-slate-300 dark:border-slate-600 focus:border-primary-500 dark:focus:border-primary-400'
+          : 'border-slate-300 dark:border-dark-border focus:border-primary-500 dark:focus:border-primary-400'
         }
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         text-slate-900 dark:text-white

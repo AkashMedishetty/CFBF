@@ -12,9 +12,9 @@ const Badge = ({
   const baseClasses = 'inline-flex items-center font-medium rounded-full transition-all duration-200';
   
   const variants = {
-    default: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200',
+    default: 'bg-slate-100 text-slate-800 dark:bg-dark-bg-secondary dark:text-slate-200',
     primary: 'bg-primary-100 text-primary-800 dark:bg-primary-900/20 dark:text-primary-300',
-    secondary: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+    secondary: 'bg-slate-100 text-slate-600 dark:bg-dark-bg-secondary dark:text-slate-400',
     success: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
     green: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
     warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300',

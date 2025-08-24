@@ -43,151 +43,34 @@ const AchievementSystem = ({ donorId, className = '' }) => {
 
   const fetchAchievements = async () => {
     try {
-      // Mock data - in real app, this would be an API call
-      const mockAchievements = [
-        {
-          id: 'ACH001',
-          title: 'First Drop',
-          description: 'Completed your first blood donation',
-          icon: '🩸',
-          category: 'milestone',
-          rarity: 'common',
-          points: 100,
-          earnedDate: '2023-06-20T10:30:00Z',
-          isUnlocked: true,
-          requirements: {
-            donations: 1
-          },
-          shareText: 'I just completed my first blood donation! 🩸 #BloodDonation #LifeSaver'
-        },
-        {
-          id: 'ACH002',
-          title: 'Quick Responder',
-          description: 'Responded to an emergency request within 10 minutes',
-          icon: '⚡',
-          category: 'speed',
-          rarity: 'rare',
-          points: 150,
-          earnedDate: '2023-08-15T14:20:00Z',
-          isUnlocked: true,
-          requirements: {
-            responseTime: 10 // minutes
-          },
-          shareText: 'I responded to an emergency blood request in under 10 minutes! ⚡ #QuickResponse #EmergencyHero'
-        },
-        {
-          id: 'ACH003',
-          title: 'Dedicated Donor',
-          description: 'Completed 5 blood donations',
-          icon: '🏅',
-          category: 'milestone',
-          rarity: 'uncommon',
-          points: 250,
-          earnedDate: '2023-10-10T09:15:00Z',
-          isUnlocked: true,
-          requirements: {
-            donations: 5
-          },
-          shareText: 'I\'ve completed 5 blood donations! 🏅 Proud to be a dedicated donor #BloodDonation #LifeSaver'
-        },
-        {
-          id: 'ACH004',
-          title: 'Gold Donor',
-          description: 'Completed 10+ blood donations',
-          icon: '🏆',
-          category: 'milestone',
-          rarity: 'epic',
-          points: 500,
-          earnedDate: '2024-01-10T11:45:00Z',
-          isUnlocked: true,
-          requirements: {
-            donations: 10
-          },
-          shareText: 'I\'ve achieved Gold Donor status with 10+ blood donations! 🏆 #GoldDonor #LifeSaver'
-        },
-        {
-          id: 'ACH005',
-          title: 'Community Hero',
-          description: 'Helped save 30+ lives through donations',
-          icon: '🦸',
-          category: 'impact',
-          rarity: 'epic',
-          points: 300,
-          earnedDate: '2024-01-15T16:30:00Z',
-          isUnlocked: true,
-          requirements: {
-            livesImpacted: 30
-          },
-          shareText: 'I\'ve helped save 30+ lives through blood donation! 🦸 #CommunityHero #LifeSaver'
-        },
-        {
-          id: 'ACH006',
-          title: 'Streak Master',
-          description: 'Maintained a 6-month donation streak',
-          icon: '🔥',
-          category: 'consistency',
-          rarity: 'rare',
-          points: 200,
-          earnedDate: null,
-          isUnlocked: false,
-          requirements: {
-            streakMonths: 6
-          },
-          progress: {
-            current: 3,
-            target: 6
-          },
-          shareText: 'I\'ve maintained a 6-month blood donation streak! 🔥 #StreakMaster #Consistency'
-        },
-        {
-          id: 'ACH007',
-          title: 'Platinum Donor',
-          description: 'Completed 25+ blood donations',
-          icon: '💎',
-          category: 'milestone',
-          rarity: 'legendary',
-          points: 1000,
-          earnedDate: null,
-          isUnlocked: false,
-          requirements: {
-            donations: 25
-          },
-          progress: {
-            current: 12,
-            target: 25
-          },
-          shareText: 'I\'ve achieved Platinum Donor status with 25+ blood donations! 💎 #PlatinumDonor #Legend'
-        },
-        {
-          id: 'ACH008',
-          title: 'Night Owl',
-          description: 'Responded to 5 emergency requests after 10 PM',
-          icon: '🦉',
-          category: 'special',
-          rarity: 'uncommon',
-          points: 175,
-          earnedDate: null,
-          isUnlocked: false,
-          requirements: {
-            nightResponses: 5
-          },
-          progress: {
-            current: 2,
-            target: 5
-          },
-          shareText: 'I\'m a Night Owl donor - responding to emergencies even after 10 PM! 🦉 #NightOwl #AlwaysReady'
-        }
-      ];
-
-      setAchievements(mockAchievements);
-      logger.success(`Loaded ${mockAchievements.length} achievements`, 'ACHIEVEMENT_SYSTEM');
+      // Compute basic achievements from real donations
+      const { authApi, userApi } = await import('../../utils/api');
+      const me = await authApi.getCurrentUser();
+      const user = me?.data?.user || me?.data;
+      const uid = user?._id || user?.id;
+      if (!uid) {
+        setAchievements([]);
+        return;
+      }
+      const donationsRes = await userApi.getDonations(uid);
+      const donations = donationsRes?.data?.donations || [];
+      const total = donations.filter(d => d.status === 'completed').length;
+      const units = donations.reduce((s, d) => s + (d.unitsDonated || 0), 0);
+      const computed = [];
+      if (total >= 1) computed.push({ id: 'ACH001', title: 'First Drop', description: 'Completed your first donation', icon: '🩸', isUnlocked: true });
+      if (total >= 5) computed.push({ id: 'ACH003', title: 'Dedicated Donor', description: 'Completed 5 donations', icon: '🏅', isUnlocked: true });
+      if (units >= 10) computed.push({ id: 'ACH005', title: 'Community Hero', description: 'Donated 10+ units', icon: '🦸', isUnlocked: true });
+      setAchievements(computed);
+      logger.success('Achievements computed', 'ACHIEVEMENT_SYSTEM');
     } catch (error) {
-      logger.error('Error fetching achievements', 'ACHIEVEMENT_SYSTEM', error);
+      logger.error('Error computing achievements', 'ACHIEVEMENT_SYSTEM', error);
+      setAchievements([]);
     }
   };
 
   const fetchMilestones = async () => {
     try {
+      // TODO: Replace with real milestones API when available
       const mockMilestones = [
         {
           id: 'MIL001',
@@ -270,8 +153,8 @@ const AchievementSystem = ({ donorId, className = '' }) => {
         }
       ];
 
-      setMilestones(mockMilestones);
-      logger.success(`Loaded ${mockMilestones.length} milestones`, 'ACHIEVEMENT_SYSTEM');
+      setMilestones([]);
+      logger.success('Loaded milestones (API placeholder)', 'ACHIEVEMENT_SYSTEM');
     } catch (error) {
       logger.error('Error fetching milestones', 'ACHIEVEMENT_SYSTEM', error);
     }

@@ -397,6 +397,13 @@ router.post('/login', userRateLimit(5, 15 * 60 * 1000), async (req, res) => {
     logger.success(`User logged in successfully: ${phone}`, 'AUTH_ROUTES');
     logger.auth('USER_LOGIN', user._id, 'AUTH_ROUTES');
 
+    // Compute onboarding status - documents are now optional
+    // const Document = require('../models/Document');
+    // const docs = await Document.find({ userId: user._id }).select('type').lean();
+    // const hasIdProof = docs.some(d => d.type === 'id_proof');
+    // const hasAddressProof = docs.some(d => d.type === 'address_proof');
+    const questionnaireDone = !!user.questionnaire?.completedAt;
+
     // Return user data without sensitive information
     const userResponse = {
       id: user._id,
@@ -406,7 +413,8 @@ router.post('/login', userRateLimit(5, 15 * 60 * 1000), async (req, res) => {
       role: user.role,
       status: user.status,
       whatsappVerified: user.whatsappVerified,
-      lastLogin: user.lastLogin
+      lastLogin: user.lastLogin,
+      hasCompletedOnboarding: questionnaireDone // Only questionnaire required now
     };
 
     res.json({
@@ -524,6 +532,13 @@ router.post('/login-otp', userRateLimit(5, 15 * 60 * 1000), async (req, res) => 
     logger.success(`User logged in successfully via OTP: ${phone}`, 'AUTH_ROUTES');
     logger.auth('USER_OTP_LOGIN', user._id, 'AUTH_ROUTES');
 
+    // Compute onboarding status - documents are now optional
+    // const Document = require('../models/Document');
+    // const docs = await Document.find({ userId: user._id }).select('type').lean();
+    // const hasIdProof = docs.some(d => d.type === 'id_proof');
+    // const hasAddressProof = docs.some(d => d.type === 'address_proof');
+    const questionnaireDone = !!user.questionnaire?.completedAt;
+
     // Return user data without sensitive information
     const userResponse = {
       id: user._id,
@@ -534,7 +549,7 @@ router.post('/login-otp', userRateLimit(5, 15 * 60 * 1000), async (req, res) => 
       status: user.status,
       whatsappVerified: user.whatsappVerified,
       lastLogin: user.lastLogin,
-      hasCompletedOnboarding: user.hasCompletedOnboarding
+      hasCompletedOnboarding: questionnaireDone // Only questionnaire required now
     };
 
     res.json({
@@ -685,10 +700,20 @@ router.get('/me', auth, async (req, res) => {
       phone: user.phoneNumber
     });
 
+    // Attach onboarding completion flag for convenience
+    const Document = require('../models/Document');
+    const docs = await Document.find({ userId: user._id }).select('type').lean();
+    const hasIdProof = docs.some(d => d.type === 'id_proof');
+    const hasAddressProof = docs.some(d => d.type === 'address_proof');
+    const questionnaireDone = !!user.questionnaire?.completedAt;
+
+    const responseUser = user.toObject();
+    responseUser.hasCompletedOnboarding = hasIdProof && hasAddressProof && questionnaireDone;
+
     res.json({
       success: true,
       data: {
-        user
+        user: responseUser
       }
     });
 

@@ -26,7 +26,7 @@ import Alert from './components/ui/Alert';
 import InstallPrompt from './components/pwa/InstallPrompt';
 import UpdateNotification from './components/pwa/UpdateNotification';
 import PWAInstallPrompt from './components/features/PWAInstallPrompt';
-// import PWAStatus from './components/features/PWAStatus';
+
 
 // Hooks
 import { useAuth } from './contexts/AuthContext';
@@ -47,6 +47,7 @@ const SignInPage = lazy(() => import('./pages/auth/SignInPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('./pages/auth/ResetPasswordPage'));
 const AdminLoginPage = lazy(() => import('./pages/auth/AdminLoginPage'));
+const HospitalLoginPage = lazy(() => import('./pages/auth/HospitalLoginPage'));
 
 // Donor Pages
 const DonorDashboardPage = lazy(() => import('./pages/donor/DashboardPage'));
@@ -56,6 +57,9 @@ const DonorProfilePage = lazy(() => import('./pages/donor/ProfilePage'));
 // Admin Pages
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
 const DonorVerificationPage = lazy(() => import('./pages/admin/DonorVerificationPage'));
+const AdminRequestsPage = lazy(() => import('./pages/admin/RequestsPage'));
+// Hospital Pages
+const HospitalDashboardPage = lazy(() => import('./pages/hospital/DashboardPage'));
 
 
 // Component to track route changes
@@ -88,14 +92,14 @@ const RouteTracker = () => {
 
 // Loading component for Suspense fallback
 const LoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
+  <div className="min-h-screen flex items-center justify-center">
     <LoadingSpinner size="lg" />
   </div>
 );
 
 // Auth loading component
 const AuthLoadingScreen = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
+  <div className="min-h-screen flex items-center justify-center">
     <LoadingSpinner size="lg" text="Loading..." />
   </div>
 );
@@ -112,7 +116,7 @@ const AppContent = () => {
     <Router>
       <ErrorBoundary>
         <RouteTracker />
-        <div className="min-h-screen bg-background text-foreground flex flex-col">
+        <div className="min-h-screen text-foreground flex flex-col">
           <Header />
           
           <main className="flex-1">
@@ -130,10 +134,12 @@ const AppContent = () => {
                 
                 {/* Authentication Routes */}
                 <Route path="/login" element={<SignInPage />} />
+                <Route path="/signin" element={<SignInPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/admin/login" element={<AdminLoginPage />} />
+                <Route path="/hospital/login" element={<HospitalLoginPage />} />
                 
                 {/* Donor Routes - Protected */}
                 <Route path="/donor">
@@ -164,6 +170,20 @@ const AppContent = () => {
                   <Route path="verification" element={
                     <ProtectedRoute requiredRole="admin">
                       <DonorVerificationPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="requests" element={
+                    <ProtectedRoute requiredRole="admin">
+                      <AdminRequestsPage />
+                    </ProtectedRoute>
+                  } />
+                </Route>
+
+                {/* Hospital Routes - Protected */}
+                <Route path="/hospital">
+                  <Route path="dashboard" element={
+                    <ProtectedRoute requiredRole="hospital">
+                      <HospitalDashboardPage />
                     </ProtectedRoute>
                   } />
                 </Route>
@@ -197,7 +217,7 @@ const AppContent = () => {
 function App() {
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
   useEffect(() => {
-    logger.info(' Call For Blood Foundation client starting...', 'APP');
+    logger.info(' CallforBlood Foundation client starting...', 'APP');
     logger.debug(`Environment: ${process.env.NODE_ENV}`, 'APP');
     logger.debug(`React version: ${React.version}`, 'APP');
     
@@ -326,7 +346,7 @@ function App() {
         <InstallPrompt />
         <UpdateNotification />
         <PWAInstallPrompt />
-        {/* <PWAStatus /> */}
+
       </AuthProvider>
     </ThemeProvider>
   );

@@ -105,17 +105,17 @@ Failed Tests:
 ${processedResults.failureAnalysis.map(suite => 
   `${suite.suite}:\n${suite.failures.map(f => `  - ${f.name}`).join('\n')}`
 ).join('\n\n')}
-` : 'All tests passed! 🎉'}
+` : 'All tests passed!'}
 `;
   
   fs.writeFileSync(summaryFile, summaryText);
   
   // Console output
   console.log('\n📊 Test Results Summary:');
-  console.log(`✅ Passed: ${processedResults.summary.passedTests}`);
-  console.log(`❌ Failed: ${processedResults.summary.failedTests}`);
-  console.log(`⏸️  Pending: ${processedResults.summary.pendingTests}`);
-  console.log(`⏱️  Runtime: ${Math.round(processedResults.summary.testRunTime)}ms`);
+  console.log(`Passed: ${processedResults.summary.passedTests}`);
+  console.log(`Failed: ${processedResults.summary.failedTests}`);
+  console.log(`Pending: ${processedResults.summary.pendingTests}`);
+  console.log(`Runtime: ${Math.round(processedResults.summary.testRunTime)}ms`);
   
   if (processedResults.coverage) {
     console.log('\n📈 Coverage Summary:');
@@ -133,7 +133,7 @@ ${processedResults.failureAnalysis.map(suite =>
   }
   
   if (processedResults.failureAnalysis.length > 0) {
-    console.log('\n❌ Failed Test Suites:');
+    console.log('\nFailed Test Suites:');
     processedResults.failureAnalysis.forEach(suite => {
       console.log(`- ${suite.suite} (${suite.failures.length} failures)`);
     });

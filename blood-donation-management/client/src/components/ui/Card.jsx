@@ -1,61 +1,64 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import logger from '../../utils/logger';
+import { clsx } from 'clsx';
 
-const Card = ({ 
-  children, 
+const Card = ({
+  children,
+  className,
   variant = 'default',
   padding = 'md',
+  shadow = 'sm',
   hover = false,
-  className = '',
   onClick,
-  ...props 
+  ...props
 }) => {
+  const baseClasses = 'bg-white dark:bg-dark-bg-secondary rounded-lg border border-gray-200 dark:border-dark-border transition-all duration-200';
   
-  const handleClick = (e) => {
-    if (onClick) {
-      logger.ui('CLICK', 'Card', { variant, padding, hover }, 'UI_CARD');
-      onClick(e);
-    }
+  const variantClasses = {
+    default: 'bg-white dark:bg-dark-bg-secondary border-gray-200 dark:border-dark-border',
+    elevated: 'bg-white dark:bg-dark-bg-secondary border-gray-100 dark:border-dark-border',
+    outlined: 'bg-transparent border-gray-300 dark:border-dark-border',
+    filled: 'bg-gray-50 dark:bg-dark-bg-tertiary border-gray-200 dark:border-dark-border'
   };
-
-  // Base styles
-  const baseStyles = 'bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 transition-all duration-200';
   
-  // Variant styles
-  const variants = {
-    default: 'shadow-soft',
-    elevated: 'shadow-medium',
-    outlined: 'border-2 shadow-none',
-    flat: 'shadow-none border-0 bg-slate-50 dark:bg-slate-900'
-  };
-
-  // Padding styles
-  const paddings = {
+  const paddingClasses = {
     none: '',
-    sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8',
-    xl: 'p-10'
+    sm: 'p-3',
+    md: 'p-4',
+    lg: 'p-6',
+    xl: 'p-8'
+  };
+  
+  const shadowClasses = {
+    none: '',
+    sm: 'shadow-sm',
+    md: 'shadow-md',
+    lg: 'shadow-lg',
+    xl: 'shadow-xl'
   };
 
-  // Hover styles
-  const hoverStyles = hover ? 'hover:shadow-strong hover:-translate-y-1 cursor-pointer' : '';
+  const hoverClasses = hover ? 'hover:shadow-md hover:-translate-y-1 cursor-pointer' : '';
 
-  const cardClasses = `${baseStyles} ${variants[variant]} ${paddings[padding]} ${hoverStyles} ${className}`;
-
-  logger.debug(`Card rendered with variant: ${variant}, padding: ${padding}, hover: ${hover}`, 'UI_CARD');
+  const combinedClasses = clsx(
+    baseClasses,
+    variantClasses[variant],
+    paddingClasses[padding],
+    shadowClasses[shadow],
+    hoverClasses,
+    className
+  );
 
   const CardComponent = onClick ? motion.div : 'div';
   const motionProps = onClick ? {
-    whileHover: { y: -2 },
-    whileTap: { scale: 0.98 }
+    whileHover: { scale: 1.02 },
+    whileTap: { scale: 0.98 },
+    transition: { duration: 0.1 }
   } : {};
 
   return (
     <CardComponent
-      className={cardClasses}
-      onClick={handleClick}
+      className={combinedClasses}
+      onClick={onClick}
       {...motionProps}
       {...props}
     >
@@ -64,32 +67,40 @@ const Card = ({
   );
 };
 
-// Card sub-components
-Card.Header = ({ children, className = '' }) => {
-  logger.debug('Card.Header rendered', 'UI_CARD');
-  return (
-    <div className={`mb-4 ${className}`}>
-      {children}
-    </div>
-  );
-};
+const CardHeader = ({ children, className, ...props }) => (
+  <div className={clsx('mb-4', className)} {...props}>
+    {children}
+  </div>
+);
 
-Card.Body = ({ children, className = '' }) => {
-  logger.debug('Card.Body rendered', 'UI_CARD');
-  return (
-    <div className={`${className}`}>
-      {children}
-    </div>
-  );
-};
+const CardTitle = ({ children, className, ...props }) => (
+  <h3 className={clsx('text-lg font-semibold text-gray-900', className)} {...props}>
+    {children}
+  </h3>
+);
 
-Card.Footer = ({ children, className = '' }) => {
-  logger.debug('Card.Footer rendered', 'UI_CARD');
-  return (
-    <div className={`mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 ${className}`}>
-      {children}
-    </div>
-  );
-};
+const CardDescription = ({ children, className, ...props }) => (
+  <p className={clsx('text-sm text-gray-600 mt-1', className)} {...props}>
+    {children}
+  </p>
+);
+
+const CardContent = ({ children, className, ...props }) => (
+  <div className={clsx('', className)} {...props}>
+    {children}
+  </div>
+);
+
+const CardFooter = ({ children, className, ...props }) => (
+  <div className={clsx('mt-4 pt-4 border-t border-gray-200', className)} {...props}>
+    {children}
+  </div>
+);
+
+Card.Header = CardHeader;
+Card.Title = CardTitle;
+Card.Description = CardDescription;
+Card.Content = CardContent;
+Card.Footer = CardFooter;
 
 export default Card;
