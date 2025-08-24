@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -68,13 +68,13 @@ const HospitalDirectory = ({ className = '' }) => {
   useEffect(() => {
     fetchHospitals();
     getUserLocation();
-  }, []);
+  }, [fetchHospitals]);
 
   useEffect(() => {
     applyFilters();
-  }, [hospitals, searchQuery, selectedType, selectedServices, minRating, selectedCity, selectedState, sortBy, userLocation]);
+  }, [hospitals, searchQuery, selectedType, selectedServices, minRating, selectedCity, selectedState, sortBy, userLocation, applyFilters]);
 
-  const fetchHospitals = async () => {
+  const fetchHospitals = useCallback(async () => {
     setIsLoading(true);
     try {
       const params = {};
@@ -106,7 +106,7 @@ const HospitalDirectory = ({ className = '' }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [searchQuery, selectedType, selectedServices, minRating, selectedCity, selectedState]);
 
   const getMockHospitals = () => [
     {
@@ -195,7 +195,7 @@ const HospitalDirectory = ({ className = '' }) => {
     }
   };
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = [...hospitals];
 
     // Apply filters
@@ -250,7 +250,7 @@ const HospitalDirectory = ({ className = '' }) => {
     });
 
     setFilteredHospitals(filtered);
-  };
+  }, [hospitals, searchQuery, selectedType, selectedServices, minRating, selectedCity, selectedState, sortBy]);
 
   const handleServiceToggle = (service) => {
     setSelectedServices(prev =>

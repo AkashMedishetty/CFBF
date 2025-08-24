@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  Heart, 
-  Phone, 
   Mail, 
   MapPin, 
   Facebook, 

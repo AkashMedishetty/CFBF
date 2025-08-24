@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -129,7 +129,7 @@ const Map = ({
     }
   }, [center, zoom]);
 
-  const createMarker = (markerData) => {
+  const createMarker = useCallback((markerData) => {
     try {
       const {
         position,
@@ -199,7 +199,7 @@ const Map = ({
       logger.error('Error creating marker', 'MAP_COMPONENT', error);
       return null;
     }
-  };
+  }, [onMarkerClick]);
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {

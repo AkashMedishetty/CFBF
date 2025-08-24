@@ -32,41 +32,6 @@ const OTPModal = ({
   // Use useRef to store the timeout ID
   const successTimeoutRef = useRef(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      logger.componentMount('OTPModal', { phoneNumber: phoneNumber?.slice(-4), purpose, autoRequest });
-
-      // Reset state when modal opens
-      setOtp('');
-      setError('');
-      setSuccess('');
-      setRemainingAttempts(3);
-      setVerificationAttempted(false);
-      setIsVerified(false);
-
-      // Auto-request OTP when modal opens if enabled and not already requested
-      if (autoRequest && !otpRequested) {
-        requestOTP();
-      }
-    } else {
-      // Reset state when modal closes
-      setOtpRequested(false);
-      setTimerKey(prev => prev + 1);
-      setIsVerified(false);
-      setVerificationAttempted(false);
-    }
-
-    return () => {
-      if (isOpen) {
-        logger.componentUnmount('OTPModal');
-      }
-      // Cleanup timeout on unmount
-      if (successTimeoutRef.current) {
-        clearTimeout(successTimeoutRef.current);
-      }
-    };
-  }, [isOpen, autoRequest, otpRequested, phoneNumber, purpose, requestOTP]);
-
   const requestOTP = useCallback(async () => {
     if (!phoneNumber) {
       logger.error('No phone number provided for OTP request', 'OTP_MODAL');
@@ -125,6 +90,41 @@ const OTPModal = ({
       setIsRequesting(false);
     }
   }, [phoneNumber, purpose, isRequesting, onVerificationError]);
+
+  useEffect(() => {
+    if (isOpen) {
+      logger.componentMount('OTPModal', { phoneNumber: phoneNumber?.slice(-4), purpose, autoRequest });
+
+      // Reset state when modal opens
+      setOtp('');
+      setError('');
+      setSuccess('');
+      setRemainingAttempts(3);
+      setVerificationAttempted(false);
+      setIsVerified(false);
+
+      // Auto-request OTP when modal opens if enabled and not already requested
+      if (autoRequest && !otpRequested) {
+        requestOTP();
+      }
+    } else {
+      // Reset state when modal closes
+      setOtpRequested(false);
+      setTimerKey(prev => prev + 1);
+      setIsVerified(false);
+      setVerificationAttempted(false);
+    }
+
+    return () => {
+      if (isOpen) {
+        logger.componentUnmount('OTPModal');
+      }
+      // Cleanup timeout on unmount
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+      }
+    };
+  }, [isOpen, autoRequest, otpRequested, phoneNumber, purpose, requestOTP]);
 
   const verifyOTP = async (otpCode) => {
     // Prevent multiple verification attempts

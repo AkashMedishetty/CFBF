@@ -18,16 +18,6 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // Check if user is authenticated on app load
-    useEffect(() => {
-        checkAuthStatus();
-        
-        // Cleanup session manager on unmount
-        return () => {
-            sessionManager.destroy();
-        };
-    }, [checkAuthStatus]);
-
     const checkAuthStatus = useCallback(async () => {
         logger.debug('🔍 Starting enhanced auth status check', 'AUTH_CONTEXT');
         
@@ -122,6 +112,16 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         }
     }, [isAuthenticated, user]);
+
+    // Check if user is authenticated on app load
+    useEffect(() => {
+        checkAuthStatus();
+        
+        // Cleanup session manager on unmount
+        return () => {
+            sessionManager.destroy();
+        };
+    }, [checkAuthStatus]);
 
     const login = async (userData, tokens) => {
         try {

@@ -1,13 +1,10 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import {
   BookOpen,
   Clock,
   User,
   Eye,
   Tag,
-  Calendar,
-  Star,
   Share2,
   Bookmark
 } from 'lucide-react';

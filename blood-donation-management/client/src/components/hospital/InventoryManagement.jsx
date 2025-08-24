@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Droplet,
@@ -68,13 +68,7 @@ const InventoryManagement = ({ hospitalId, className = '' }) => {
     { value: 'other', label: 'Other' }
   ];
 
-  useEffect(() => {
-    if (hospitalId) {
-      fetchInventory();
-    }
-  }, [hospitalId]);
-
-  const fetchInventory = async () => {
+  const fetchInventory = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/inventory/${hospitalId}`, {
@@ -142,7 +136,13 @@ const InventoryManagement = ({ hospitalId, className = '' }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [hospitalId]);
+
+  useEffect(() => {
+    if (hospitalId) {
+      fetchInventory();
+    }
+  }, [hospitalId, fetchInventory]);
 
   const handleAddInventory = async () => {
     try {

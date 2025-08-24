@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCw, X, Download, Sparkles, Zap, Shield } from 'lucide-react';
+import { RefreshCw, Download, Sparkles, Zap, Shield } from 'lucide-react';
 
 import Button from '../ui/Button';
 import Alert from '../ui/Alert';
@@ -30,6 +30,10 @@ const UpdateNotification = () => {
           setTimeout(() => {
             setShowUpdate(false);
           }, 2000);
+          break;
+          
+        default:
+          logger.warn('Unknown update event', 'UPDATE_NOTIFICATION', { event, data });
           break;
       }
     };

@@ -28,7 +28,7 @@ const Modal = ({
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, title]);
+  }, [isOpen, title, size]);
 
   useEffect(() => {
     const handleEscape = (e) => {
