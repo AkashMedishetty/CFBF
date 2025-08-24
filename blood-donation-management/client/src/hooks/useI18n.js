@@ -22,7 +22,7 @@ export const useI18n = () => {
   // Translation function
   const t = useCallback((key, params) => {
     return i18n.t(key, params);
-  }, [currentLanguage]);
+  }, []);
 
   // Change language function
   const changeLanguage = useCallback(async (languageCode) => {
@@ -39,24 +39,24 @@ export const useI18n = () => {
   // Format functions
   const formatNumber = useCallback((number, options) => {
     return i18n.formatNumber(number, options);
-  }, [currentLanguage]);
+  }, []);
 
   const formatCurrency = useCallback((amount, currency) => {
     return i18n.formatCurrency(amount, currency);
-  }, [currentLanguage]);
+  }, []);
 
   const formatDate = useCallback((date, options) => {
     return i18n.formatDate(date, options);
-  }, [currentLanguage]);
+  }, []);
 
   const formatRelativeTime = useCallback((date) => {
     return i18n.formatRelativeTime(date);
-  }, [currentLanguage]);
+  }, []);
 
   // Pluralization function
   const plural = useCallback((key, count, params) => {
     return i18n.plural(key, count, params);
-  }, [currentLanguage]);
+  }, []);
 
   // Language info
   const languageInfo = useMemo(() => ({
@@ -65,7 +65,7 @@ export const useI18n = () => {
     isRTL: i18n.isRTL(),
     directionClass: i18n.getDirectionClass(),
     languageClasses: i18n.getLanguageClasses()
-  }), [currentLanguage]);
+  }), []);
 
   return {
     // Translation
@@ -107,7 +107,7 @@ export const useTranslation = (namespace = '') => {
   const t = useCallback((key, params) => {
     const fullKey = namespace ? `${namespace}.${key}` : key;
     return i18n.t(fullKey, params);
-  }, [namespace, currentLanguage]);
+  }, [namespace]);
 
   return { t, currentLanguage };
 };

@@ -126,9 +126,12 @@ class BrowserCompatibilityManager {
       // ES6 Features
       es6: (() => {
         try {
-          // Test for arrow functions and other ES6 features
-          new Function('() => {}');
-          return true;
+          // Test for ES6 features by checking for arrow function support
+          // Use eval-free method to test ES6 compatibility
+          return typeof Symbol !== 'undefined' && 
+                 typeof Promise !== 'undefined' && 
+                 typeof Map !== 'undefined' && 
+                 typeof Set !== 'undefined';
         } catch (e) {
           return false;
         }

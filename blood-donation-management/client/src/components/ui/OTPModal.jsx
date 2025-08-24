@@ -65,7 +65,7 @@ const OTPModal = ({
         clearTimeout(successTimeoutRef.current);
       }
     };
-  }, [isOpen, autoRequest]);
+  }, [isOpen, autoRequest, otpRequested, phoneNumber, purpose, requestOTP]);
 
   const requestOTP = async () => {
     if (!phoneNumber) {

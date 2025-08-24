@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         return () => {
             sessionManager.destroy();
         };
-    }, []);
+    }, [checkAuthStatus]);
 
     const checkAuthStatus = async () => {
         logger.debug('🔍 Starting enhanced auth status check', 'AUTH_CONTEXT');

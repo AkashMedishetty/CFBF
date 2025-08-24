@@ -59,38 +59,6 @@ export const useKeyboardNavigation = (options = {}) => {
     }
   }, [enableTabTrapping]);
 
-  // Handle keyboard events
-  const handleKeyDown = useCallback((event) => {
-    const { key, shiftKey, ctrlKey, altKey, metaKey } = event;
-    
-    // Handle custom key handlers first
-    if (customKeyHandlers[key]) {
-      const handled = customKeyHandlers[key](event);
-      if (handled) return;
-    }
-    
-    // Handle escape key
-    if (enableEscapeHandling && key === 'Escape') {
-      event.preventDefault();
-      if (restoreFocus && previousFocusRef.current) {
-        previousFocusRef.current.focus();
-      }
-      return;
-    }
-    
-    // Handle arrow key navigation
-    if (enableArrowKeys && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
-      handleArrowKeyNavigation(event);
-    }
-    
-    // Handle Enter and Space for custom interactive elements
-    if ((key === 'Enter' || key === ' ') && event.target.getAttribute('role') === 'button') {
-      event.preventDefault();
-      event.target.click();
-    }
-    
-  }, [customKeyHandlers, enableEscapeHandling, enableArrowKeys, restoreFocus, handleArrowKeyNavigation]);
-
   // Handle arrow key navigation
   const handleArrowKeyNavigation = useCallback((event) => {
     if (!containerRef.current) return;
@@ -125,6 +93,38 @@ export const useKeyboardNavigation = (options = {}) => {
       focusableElements[nextIndex].focus();
     }
   }, []);
+
+  // Handle keyboard events
+  const handleKeyDown = useCallback((event) => {
+    const { key } = event;
+    
+    // Handle custom key handlers first
+    if (customKeyHandlers[key]) {
+      const handled = customKeyHandlers[key](event);
+      if (handled) return;
+    }
+    
+    // Handle escape key
+    if (enableEscapeHandling && key === 'Escape') {
+      event.preventDefault();
+      if (restoreFocus && previousFocusRef.current) {
+        previousFocusRef.current.focus();
+      }
+      return;
+    }
+    
+    // Handle arrow key navigation
+    if (enableArrowKeys && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+      handleArrowKeyNavigation(event);
+    }
+    
+    // Handle Enter and Space for custom interactive elements
+    if ((key === 'Enter' || key === ' ') && event.target.getAttribute('role') === 'button') {
+      event.preventDefault();
+      event.target.click();
+    }
+    
+  }, [customKeyHandlers, enableEscapeHandling, enableArrowKeys, restoreFocus, handleArrowKeyNavigation]);
 
   // Setup keyboard event listeners
   useEffect(() => {

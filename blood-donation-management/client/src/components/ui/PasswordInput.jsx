@@ -52,7 +52,7 @@ const PasswordInput = ({
       hasLowercase: /[a-z]/.test(value),
       hasUppercase: /[A-Z]/.test(value),
       hasNumbers: /\d/.test(value),
-      hasSymbols: /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(value),
+      hasSymbols: /[!@#$%^&*()_+\-=[\]{}|;:,.<>?]/.test(value),
       noCommonPatterns: !hasCommonPatterns(value)
     };
 

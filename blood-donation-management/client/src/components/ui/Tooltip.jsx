@@ -29,7 +29,7 @@ const Tooltip = ({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, []);
+  }, [delay, position, trigger]);
 
   const showTooltip = () => {
     if (disabled || !content) return;
@@ -87,6 +87,9 @@ const Tooltip = ({
         if (triggerRect.right + tooltipRect.width > viewport.width - 10) {
           newPosition = 'left';
         }
+        break;
+      default:
+        // Keep the original position if it's not one of the standard positions
         break;
     }
 
