@@ -337,7 +337,7 @@ class SecurityManager {
 
   // Phone validation
   validatePhone(phone) {
-    const phonePattern = /^\+?[\d\s\-\(\)]{10,}$/;
+    const phonePattern = /^\+?[\ds\-()]{10,}$/;
     const isValid = phonePattern.test(phone);
     
     return {

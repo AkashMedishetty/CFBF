@@ -126,7 +126,8 @@ class BrowserCompatibilityManager {
       // ES6 Features
       es6: (() => {
         try {
-          return eval('(function*(){})().constructor === (function*(){}).constructor');
+          // Test for generator functions without eval
+          return typeof function*(){} === 'function';
         } catch (e) {
           return false;
         }
@@ -509,8 +510,6 @@ class BrowserCompatibilityManager {
           const duration = typeof options === 'number' ? options : (options?.duration || 1000);
           
           // Simple CSS transition fallback
-          const startTime = Date.now();
-          const startStyles = getComputedStyle(element);
           
           const animation = {
             finished: new Promise(resolve => {

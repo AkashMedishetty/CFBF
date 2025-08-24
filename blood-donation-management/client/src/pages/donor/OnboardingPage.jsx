@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
-  FileText, 
   Upload, 
   Heart, 
   Clock,
@@ -15,7 +14,6 @@ import {
 
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
-import Badge from '../../components/ui/Badge';
 import DocumentUpload from '../../components/donor/DocumentUpload';
 import DonorQuestionnaire from '../../components/donor/DonorQuestionnaire';
 import logger from '../../utils/logger';
@@ -84,9 +82,9 @@ const OnboardingPage = () => {
     return () => {
       logger.componentUnmount('OnboardingPage');
     };
-  }, [user, navigate, location.state]);
+  }, [user, navigate, location.state, checkCompletionStatus]);
 
-  const checkCompletionStatus = async () => {
+  const checkCompletionStatus = useCallback(async () => {
     const uid = user?._id || user?.id;
     if (!uid) return;
 
@@ -110,7 +108,7 @@ const OnboardingPage = () => {
     } catch (error) {
       logger.error('Failed to check onboarding status', 'ONBOARDING_PAGE', error);
     }
-  };
+  }, [user]);
 
   const steps = [
     {

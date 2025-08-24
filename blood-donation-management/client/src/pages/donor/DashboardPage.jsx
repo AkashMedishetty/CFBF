@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Heart, 
   Droplet, 
   Calendar, 
   Award, 
   TrendingUp,
-  Users,
   MapPin,
   Clock,
   Star,
   Share2,
-  Download,
   Bell,
   Activity,
   Target,
@@ -22,14 +20,12 @@ import {
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
-import Avatar from '../../components/ui/Avatar';
 import logger from '../../utils/logger';
 import { authApi, userApi } from '../../utils/api';
 
 const DashboardPage = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedTimeRange, setSelectedTimeRange] = useState('all');
 
   useEffect(() => {
     logger.componentMount('DonorDashboard');
@@ -38,7 +34,7 @@ const DashboardPage = () => {
     return () => {
       logger.componentUnmount('DonorDashboard');
     };
-  }, [selectedTimeRange]);
+  }, []);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);

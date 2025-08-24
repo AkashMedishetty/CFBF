@@ -433,6 +433,9 @@ class AccessibilityManager {
           event.preventDefault();
           nextIndex = items.length - 1;
           break;
+        default:
+          // No action needed for other keys
+          break;
       }
       
       if (nextIndex !== currentIndex && items[nextIndex]) {

@@ -480,6 +480,9 @@ class AnalyticsManager {
       case 'feature_usage':
         this.userEngagement.features.add(event.properties.feature);
         break;
+      default:
+        // No specific metrics update needed for other event types
+        break;
     }
   }
 
