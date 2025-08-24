@@ -3,7 +3,7 @@
  * Provides performance optimization utilities for React components
  */
 
-import { useEffect, useCallback, useRef, useMemo } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import performanceMonitor from '../utils/performanceMonitor';
 import animationOptimizer from '../utils/animationOptimizer';
 import imageOptimizer from '../utils/imageOptimizer';

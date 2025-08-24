@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, Droplet, Clock, MapPin, CheckCircle, XCircle, RefreshCw, Users } from 'lucide-react';
+import { Droplet, Clock, MapPin, CheckCircle, XCircle, RefreshCw, Users } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
@@ -18,7 +18,7 @@ const RequestsPage = () => {
   const [selected, setSelected] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
 
-  const loadRequests = async () => {
+  const loadRequests = useCallback(async () => {
     setIsLoading(true);
     try {
       const res = await adminApi.getBloodRequests({ status, urgency, bloodType, limit: 50 });
@@ -29,11 +29,11 @@ const RequestsPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [status, urgency, bloodType]);
 
   useEffect(() => {
     loadRequests();
-  }, [status, urgency, bloodType]);
+  }, [loadRequests]);
 
   const handleStatusUpdate = async (requestId, newStatus) => {
     try {

@@ -126,8 +126,9 @@ class BrowserCompatibilityManager {
       // ES6 Features
       es6: (() => {
         try {
-          // Test for generator functions without eval
-          return typeof function*(){} === 'function';
+          // Test for arrow functions and other ES6 features
+          new Function('() => {}');
+          return true;
         } catch (e) {
           return false;
         }

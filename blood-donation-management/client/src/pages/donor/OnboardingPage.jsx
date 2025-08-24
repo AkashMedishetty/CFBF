@@ -34,7 +34,31 @@ const OnboardingPage = () => {
     documents: false,
     questionnaire: false
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const checkCompletionStatus = useCallback(async () => {
+    const uid = user?._id || user?.id;
+    if (!uid) return;
+
+    try {
+      const response = await fetch(`/api/v1/users/${uid}/onboarding-status`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setCompletedSteps(data.data.completedSteps);
+        
+        // If both steps are complete, show completion screen
+        if (data.data.completedSteps.documents && data.data.completedSteps.questionnaire) {
+          setCurrentStep(3);
+        }
+      }
+    } catch (error) {
+      logger.error('Failed to check onboarding status', 'ONBOARDING_PAGE', error);
+    }
+  }, [user]);
 
   useEffect(() => {
     logger.componentMount('OnboardingPage');
@@ -84,32 +108,6 @@ const OnboardingPage = () => {
     };
   }, [user, navigate, location.state, checkCompletionStatus]);
 
-  const checkCompletionStatus = useCallback(async () => {
-    const uid = user?._id || user?.id;
-    if (!uid) return;
-
-    try {
-      const response = await fetch(`/api/v1/users/${uid}/onboarding-status`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        setCompletedSteps(data.data.completedSteps);
-        
-        // If both steps are complete, show completion screen
-        if (data.data.completedSteps.documents && data.data.completedSteps.questionnaire) {
-          setCurrentStep(3);
-        }
-      }
-    } catch (error) {
-      logger.error('Failed to check onboarding status', 'ONBOARDING_PAGE', error);
-    }
-  }, [user]);
-
   const steps = [
     {
       id: 1,
@@ -158,8 +156,6 @@ const OnboardingPage = () => {
   const handleQuestionnaireComplete = async (questionnaireData) => {
     logger.ui('COMPLETE', 'DonorQuestionnaire', null, 'ONBOARDING_PAGE');
     
-    setIsLoading(true);
-    
     try {
       const uid = user?._id || user?.id;
       if (!uid) throw new Error('Missing user ID');
@@ -184,8 +180,6 @@ const OnboardingPage = () => {
     } catch (error) {
       logger.error('Failed to complete questionnaire', 'ONBOARDING_PAGE', error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { Phone, ArrowRight, AlertCircle, Lock, MessageSquare, Key, CheckCircle } from 'lucide-react';
+import { Phone, ArrowRight, AlertCircle, Lock, MessageSquare, CheckCircle } from 'lucide-react';
 
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -16,7 +16,7 @@ const SignInPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
-  const [loginMethod, setLoginMethod] = useState('password'); // 'otp' or 'password' - defaulting to password
+  const [loginMethod] = useState('password'); // 'otp' or 'password' - defaulting to password
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [showOTPModal, setShowOTPModal] = useState(false);

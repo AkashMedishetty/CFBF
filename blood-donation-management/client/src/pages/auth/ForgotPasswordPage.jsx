@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { Phone, ArrowRight, AlertCircle, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Phone, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
 
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -16,7 +16,7 @@ const ForgotPasswordPage = () => {
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [step, setStep] = useState('phone'); // 'phone', 'otp', 'success'
+
 
   useEffect(() => {
     logger.componentMount('ForgotPasswordPage');
@@ -63,7 +63,6 @@ const ForgotPasswordPage = () => {
       
       // Phone number exists, proceed with OTP
       setShowOTPModal(true);
-      setStep('otp');
     } catch (error) {
       logger.error('Error requesting password reset', 'FORGOT_PASSWORD', error);
       setErrors({ 

@@ -89,7 +89,7 @@ export const useKeyboardNavigation = (options = {}) => {
       event.target.click();
     }
     
-  }, [customKeyHandlers, enableEscapeHandling, enableArrowKeys, restoreFocus]);
+  }, [customKeyHandlers, enableEscapeHandling, enableArrowKeys, restoreFocus, handleArrowKeyNavigation]);
 
   // Handle arrow key navigation
   const handleArrowKeyNavigation = useCallback((event) => {
@@ -117,6 +117,8 @@ export const useKeyboardNavigation = (options = {}) => {
         event.preventDefault();
         nextIndex = currentIndex === 0 ? focusableElements.length - 1 : currentIndex - 1;
         break;
+      default:
+        return;
     }
     
     if (focusableElements[nextIndex]) {
@@ -299,7 +301,7 @@ export const useModalFocus = (isOpen = false) => {
     modalRef,
     setCloseModal: useCallback((closeFn) => {
       closeModal.current = closeFn;
-    }, [])
+    }, [closeModal])
   };
 };
 

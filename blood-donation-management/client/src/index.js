@@ -14,7 +14,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register(swUrl)
        .then((registration) => {
          console.log('SW registered: ', registration);
-         swRegistration = registration;
          
          // Check for updates
          registration.addEventListener('updatefound', () => {
@@ -39,7 +38,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register(swUrl)
        .then((registration) => {
          console.log('Development SW registered: ', registration);
-         swRegistration = registration;
          
          // Check for updates
          registration.addEventListener('updatefound', () => {
@@ -60,7 +58,6 @@ if ('serviceWorker' in navigator) {
 
   // Enhanced PWA install prompt handling
   let deferredPrompt;
-  let swRegistration;
   let installPromptState = {
     available: false,
     dismissed: false,
