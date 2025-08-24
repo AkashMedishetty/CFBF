@@ -13,17 +13,12 @@ import {
   CheckCircle, 
   TrendingUp,
   Monitor,
-  Smartphone,
-  Wifi,
   HardDrive,
-  Clock,
-  Eye,
-  Settings
+  Clock
 } from 'lucide-react';
 
 import usePerformanceOptimization from '../../hooks/usePerformanceOptimization';
 import performanceMonitor from '../../utils/performanceMonitor';
-import imageOptimizer from '../../utils/imageOptimizer';
 import preloadManager from '../../utils/preloadManager';
 import animationOptimizer from '../../utils/animationOptimizer';
 import codeSplittingManager from '../../utils/codeSplitting';

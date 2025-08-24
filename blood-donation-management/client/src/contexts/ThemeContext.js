@@ -14,52 +14,39 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('light');
+  const [theme] = useState('light'); // Always light mode
 
-  // Initialize theme from localStorage or system preference
+  // Initialize theme - always light mode
   useEffect(() => {
-    logger.info('Initializing theme provider...', 'THEME_PROVIDER');
+    logger.info('Initializing theme provider (light mode only)...', 'THEME_PROVIDER');
     
-    const savedTheme = localStorage.getItem('call-for-blood-theme');
-    if (savedTheme) {
-      logger.info(`Found saved theme: ${savedTheme}`, 'THEME_PROVIDER');
-      setTheme(savedTheme);
-    } else {
-      // Check system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const systemTheme = prefersDark ? 'dark' : 'light';
-      logger.info(`No saved theme found, using system preference: ${systemTheme}`, 'THEME_PROVIDER');
-      setTheme(systemTheme);
-    }
+    // Remove any saved dark theme preference
+    localStorage.removeItem('call-for-blood-theme');
+    localStorage.setItem('call-for-blood-theme', 'light');
   }, []);
 
-  // Apply theme to document
+  // Apply theme to document - always light
   useEffect(() => {
-    logger.theme('APPLY', theme, 'THEME_PROVIDER');
+    logger.theme('APPLY', 'light', 'THEME_PROVIDER');
     
     const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      logger.debug('Added dark class to document root', 'THEME_PROVIDER');
-    } else {
-      root.classList.remove('dark');
-      logger.debug('Removed dark class from document root', 'THEME_PROVIDER');
-    }
+    root.classList.remove('dark'); // Always remove dark class
+    logger.debug('Ensured light mode - removed dark class from document root', 'THEME_PROVIDER');
     
-    localStorage.setItem('call-for-blood-theme', theme);
-    logger.debug(`Theme saved to localStorage: ${theme}`, 'THEME_PROVIDER');
-  }, [theme]);
+    localStorage.setItem('call-for-blood-theme', 'light');
+    logger.debug('Theme saved to localStorage: light', 'THEME_PROVIDER');
+  }, []);
 
+  // Disabled toggle function - no-op
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    logger.theme('TOGGLE', `${theme} → ${newTheme}`, 'THEME_PROVIDER');
-    setTheme(newTheme);
+    logger.debug('Theme toggle disabled - app is light mode only', 'THEME_PROVIDER');
+    // No-op: theme switching is disabled
   };
 
   const value = {
-    theme,
+    theme: 'light',
     toggleTheme,
-    isDark: theme === 'dark'
+    isDark: false // Always false
   };
 
   logger.debug(`Theme provider value: ${JSON.stringify(value)}`, 'THEME_PROVIDER');

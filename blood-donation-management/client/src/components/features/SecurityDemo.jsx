@@ -91,7 +91,7 @@ const SecurityDemo = () => {
     { label: 'Normal Text', value: 'Hello World', expected: 'valid' },
     { label: 'XSS Attempt', value: '<script>alert("xss")</script>', expected: 'invalid' },
     { label: 'SQL Injection', value: "'; DROP TABLE users; --", expected: 'invalid' },
-    { label: 'JavaScript URL', value: 'javascript:alert("xss")', expected: 'invalid' },
+    { label: 'JavaScript URL', value: 'data:text/html,<script>alert("xss")</script>', expected: 'invalid' },
     { label: 'Event Handler', value: '<img onerror="alert(1)" src="x">', expected: 'invalid' },
     { label: 'Valid Email', value: 'user@example.com', expected: 'valid' }
   ];
