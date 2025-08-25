@@ -1,19 +1,51 @@
-const sgMail = require('@sendgrid/mail');
+const nodemailer = require('nodemailer');
 const logger = require('../utils/logger');
 
 class EmailService {
     constructor() {
-        this.apiKey = process.env.SENDGRID_API_KEY;
-        this.fromEmail = process.env.SENDGRID_FROM_EMAIL || 'noreply@callforblood.org';
-        this.fromName = process.env.SENDGRID_FROM_NAME || 'CallforBlood Foundation';
-        this.isConfigured = !!(this.apiKey && this.fromEmail);
+        this.smtpHost = process.env.SMTP_HOST;
+        this.smtpPort = process.env.SMTP_PORT || 587;
+        this.smtpSecure = process.env.SMTP_SECURE === 'true';
+        this.smtpUser = process.env.SMTP_USER;
+        this.smtpPass = process.env.SMTP_PASS;
+        this.fromEmail = process.env.EMAIL_FROM || 'info@callforbloodfoundation.com';
+        this.fromName = process.env.EMAIL_FROM_NAME || 'CallforBlood Foundation';
+
+        this.isConfigured = !!(this.smtpHost && this.smtpUser && this.smtpPass && this.fromEmail);
 
         if (this.isConfigured) {
-            sgMail.setApiKey(this.apiKey);
-            logger.success('Email Service initialized with SendGrid credentials', 'EMAIL_SERVICE');
+            this.transporter = nodemailer.createTransport({
+                host: this.smtpHost,
+                port: parseInt(this.smtpPort),
+                secure: this.smtpSecure,
+                auth: {
+                    user: this.smtpUser,
+                    pass: this.smtpPass
+                },
+                tls: {
+                    rejectUnauthorized: false
+                }
+            });
+
+            logger.success('Email Service initialized with SMTP credentials', 'EMAIL_SERVICE');
+
+            // Verify SMTP connection
+            this.verifyConnection();
         } else {
             logger.warn('Email Service initialized without credentials (development mode)', 'EMAIL_SERVICE');
-            logger.debug('Missing: SENDGRID_API_KEY or SENDGRID_FROM_EMAIL', 'EMAIL_SERVICE');
+            logger.debug('Missing: SMTP_HOST, SMTP_USER, SMTP_PASS, or EMAIL_FROM', 'EMAIL_SERVICE');
+        }
+    }
+
+    /**
+     * Verify SMTP connection
+     */
+    async verifyConnection() {
+        try {
+            await this.transporter.verify();
+            logger.success('SMTP connection verified successfully', 'EMAIL_SERVICE');
+        } catch (error) {
+            logger.error('SMTP connection verification failed', 'EMAIL_SERVICE', error);
         }
     }
 
@@ -52,69 +84,60 @@ class EmailService {
                 };
             }
 
-            // Prepare email message
-            const msg = {
+            // Prepare email content
+            const contentData = this.prepareContent(content, options);
+
+            // Prepare email message for nodemailer
+            const mailOptions = {
+                from: `"${this.fromName}" <${this.fromEmail}>`,
                 to: to.toLowerCase().trim(),
-                from: {
-                    email: this.fromEmail,
-                    name: this.fromName
-                },
                 subject: subject,
-                ...this.prepareContent(content, options),
-                ...options.sendGridOptions
+                text: contentData.text,
+                html: contentData.html
             };
 
-            // Add template ID if provided
-            if (options.templateId) {
-                msg.templateId = options.templateId;
-                if (options.dynamicTemplateData) {
-                    msg.dynamicTemplateData = options.dynamicTemplateData;
-                }
+            // Add attachments if provided
+            if (options.attachments) {
+                mailOptions.attachments = options.attachments;
             }
 
-            // Add categories for tracking
-            if (options.categories) {
-                msg.categories = Array.isArray(options.categories) ? options.categories : [options.categories];
+            // Add reply-to if provided
+            if (options.replyTo) {
+                mailOptions.replyTo = options.replyTo;
             }
 
-            // Add custom args for tracking
-            if (options.customArgs) {
-                msg.customArgs = options.customArgs;
+            // Add CC and BCC if provided
+            if (options.cc) {
+                mailOptions.cc = options.cc;
+            }
+            if (options.bcc) {
+                mailOptions.bcc = options.bcc;
             }
 
-            const response = await sgMail.send(msg);
+            // Send email using nodemailer
+            const info = await this.transporter.sendMail(mailOptions);
 
             logger.success(`Email sent successfully to: ${this.maskEmail(to)}`, 'EMAIL_SERVICE');
-            logger.debug(`SendGrid Message ID: ${response[0].headers['x-message-id']}`, 'EMAIL_SERVICE');
+            logger.debug(`Message ID: ${info.messageId}`, 'EMAIL_SERVICE');
 
             return {
                 success: true,
-                messageId: response[0].headers['x-message-id'],
+                messageId: info.messageId,
                 message: 'Email sent successfully',
-                statusCode: response[0].statusCode
+                response: info.response
             };
 
         } catch (error) {
             logger.error(`Failed to send email to: ${this.maskEmail(to)}`, 'EMAIL_SERVICE', error);
 
-            // Handle SendGrid specific errors
-            if (error.response && error.response.body) {
-                const sendGridError = error.response.body.errors?.[0];
-                return {
-                    success: false,
-                    error: 'SENDGRID_ERROR',
-                    message: sendGridError?.message || 'SendGrid API error',
-                    statusCode: error.code,
-                    details: sendGridError
-                };
-            } else {
-                return {
-                    success: false,
-                    error: 'EMAIL_SEND_ERROR',
-                    message: 'Failed to send email',
-                    details: error.message
-                };
-            }
+            // Handle SMTP specific errors
+            return {
+                success: false,
+                error: 'SMTP_ERROR',
+                message: error.message || 'SMTP server error',
+                code: error.code,
+                details: error
+            };
         }
     }
 
@@ -126,7 +149,7 @@ class EmailService {
      * @returns {Promise<Object>} Send result
      */
     async sendOTP(email, otp, purpose = 'verification') {
-        const subject = '🔐 Verification Code - Call For Blood Foundation';
+        const subject = '🔐 Verification Code - CallforBlood Foundation';
         const content = this.formatOTPEmail(otp, purpose);
 
         return this.sendEmail(email, subject, content, {
@@ -165,7 +188,7 @@ class EmailService {
      * @returns {Promise<Object>} Send result
      */
     async sendWelcomeEmail(email, donorData) {
-        const subject = '🎉 Welcome to Call For Blood Foundation!';
+        const subject = '🎉 Welcome to CallforBlood Foundation!';
         const content = this.formatWelcomeEmail(donorData);
 
         return this.sendEmail(email, subject, content, {
@@ -314,13 +337,12 @@ class EmailService {
      * @returns {string} HTML content
      */
     textToHtml(text) {
-        return `
-<!DOCTYPE html>
+        return `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Call For Blood Foundation</title>
+    <title>CallforBlood Foundation</title>
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
         .header { background-color: #dc2626; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
@@ -338,7 +360,17 @@ class EmailService {
     </div>
     <div class="footer">
         <p>CallforBlood Foundation | Saving Lives Together</p>
-        <p>📞 +91-911-BLOOD | 📧 support@callforblood.org | 🌐 www.callforblood.org</p>
+        <p>
+            <a href="https://wa.me/919491254120" style="color: #25D366; text-decoration: none;">
+                📱 WhatsApp
+            </a> | 
+            <a href="mailto:info@callforbloodfoundation.com" style="color: #0066cc; text-decoration: none;">
+                📧 Email
+            </a> | 
+            <a href="https://callforbloodfoundation.com" style="color: #0066cc; text-decoration: none;">
+                🌐 Website
+            </a>
+        </p>
     </div>
 </body>
 </html>`;
@@ -362,7 +394,7 @@ class EmailService {
 
         return `Dear User,
 
-Your Call For Blood Foundation verification code is:
+Your CallforBlood Foundation verification code is:
 
 ${otp}
 
@@ -373,10 +405,10 @@ Use this code to ${action}.
 
 If you didn't request this code, please ignore this email.
 
-Need help? Contact our support team at support@callforblood.org
+Need help? Contact our support team at info@callforbloodfoundation.com
 
 Best regards,
-Call For Blood Foundation Team`;
+CallforBlood Foundation Team`;
     }
 
     /**
@@ -425,7 +457,7 @@ Your generosity can make the difference between life and death.
 Thank you for being a life saver!
 
 Best regards,
-Call For Blood Foundation Team
+CallforBlood Foundation Team
 
 ---
 Every drop counts. Every donor matters.`;
@@ -437,7 +469,7 @@ Every drop counts. Every donor matters.`;
      * @returns {string} Formatted email content
      */
     formatWelcomeEmail(donorData) {
-        return `Welcome to Call For Blood Foundation, ${donorData.name}!
+        return `Welcome to CallforBlood Foundation, ${donorData.name}!
 
 🎉 Congratulations on joining our life-saving community!
 
@@ -460,20 +492,20 @@ IMPORTANT INFORMATION:
 • Your privacy and safety are our top priorities
 
 GETTING STARTED:
-• Visit your dashboard: www.callforblood.org/dashboard
+• Visit your dashboard: callforbloodfoundation.com/dashboard
 • Update your availability status
 • Set your notification preferences
 • Learn about blood donation guidelines
 
 Need help? Our support team is here for you:
-📞 Phone: +91-911-BLOOD
-📧 Email: support@callforblood.org
-🌐 Website: www.callforblood.org
+�  WhatsApp: https://wa.me/919491254120
+📧 Email: info@callforbloodfoundation.com
+🌐 Website: callforbloodfoundation.com
 
 Thank you for choosing to be a hero. Together, we save lives!
 
 Best regards,
-Call For Blood Foundation Team
+CallforBlood Foundation Team
 
 ---
 "The gift of blood is the gift of life. Thank you for giving."`;
@@ -523,7 +555,7 @@ CERTIFICATE & RECOGNITION:
 Thank you for making a difference. Your generosity gives hope and saves lives.
 
 Best regards,
-Call For Blood Foundation Team
+CallforBlood Foundation Team
 
 ---
 "Heroes don't always wear capes. Sometimes they just roll up their sleeves."`;
@@ -591,8 +623,13 @@ Call For Blood Foundation Team
     getStatus() {
         return {
             configured: this.isConfigured,
-            hasApiKey: !!this.apiKey,
+            hasSmtpHost: !!this.smtpHost,
+            hasSmtpUser: !!this.smtpUser,
+            hasSmtpPass: !!this.smtpPass,
             hasFromEmail: !!this.fromEmail,
+            smtpHost: this.smtpHost,
+            smtpPort: this.smtpPort,
+            smtpSecure: this.smtpSecure,
             fromEmail: this.fromEmail,
             fromName: this.fromName,
             ready: this.isConfigured
@@ -615,8 +652,8 @@ Call For Blood Foundation Team
         try {
             const result = await this.sendEmail(
                 testEmail,
-                'Test Email - Call For Blood Foundation',
-                'This is a test email to verify your email configuration is working correctly.',
+                'Test Email - CallforBlood Foundation',
+                'This is a test email to verify your SMTP configuration is working correctly.',
                 {
                     categories: ['test'],
                     customArgs: {

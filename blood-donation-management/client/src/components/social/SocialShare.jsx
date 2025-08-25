@@ -92,14 +92,14 @@ const SocialShare = ({
   ];
 
   const getShareContent = () => {
-    const baseUrl = 'https://callforblood.org';
+    const baseUrl = 'https://callforbloodfoundation.com';
     
     switch (type) {
       case 'achievement':
         return {
           title: `🏆 Achievement Unlocked: ${data.title}`,
           description: data.description,
-          defaultMessage: `🏆 I just unlocked the "${data.title}" achievement on Call For Blood! ${data.description} Join me in saving lives through blood donation. #BloodDonation #LifeSaver #Achievement`,
+          defaultMessage: `🏆 I just unlocked the "${data.title}" achievement on CallforBlood Foundation! ${data.description} Join me in saving lives through blood donation. #BloodDonation #LifeSaver #Achievement`,
           url: `${baseUrl}/achievements/${data.id}`,
           hashtags: ['BloodDonation', 'LifeSaver', 'Achievement', 'CallForBlood']
         };
@@ -135,7 +135,7 @@ const SocialShare = ({
         return {
           title: 'Blood Donation Achievement',
           description: 'Proud to be a blood donor',
-          defaultMessage: 'I\'m proud to be a blood donor and help save lives! Join me at Call For Blood. #BloodDonation #LifeSaver',
+          defaultMessage: 'I\'m proud to be a blood donor and help save lives! Join me at CallforBlood Foundation. #BloodDonation #LifeSaver',
           url: baseUrl,
           hashtags: ['BloodDonation', 'LifeSaver', 'CallForBlood']
         };

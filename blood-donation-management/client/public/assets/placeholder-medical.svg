@@ -1,0 +1,26 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgMedical" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f9fafb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f3f4f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#bgMedical)"/>
+  
+  <!-- Medical cross in circle -->
+  <g transform="translate(200, 150)">
+    <circle cx="0" cy="0" r="40" fill="#e5e7eb" stroke="#d1d5db" stroke-width="2"/>
+    <rect x="-4" y="-20" width="8" height="40" fill="#6b7280"/>
+    <rect x="-20" y="-4" width="40" height="8" fill="#6b7280"/>
+  </g>
+  
+  <!-- Text */
+  <text x="200" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#4b5563">
+    Medical Image
+  </text>
+  <text x="200" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#9ca3af">
+    Generic Placeholder
+  </text>
+</svg>

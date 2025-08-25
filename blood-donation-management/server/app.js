@@ -17,6 +17,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const bloodRequestRoutes = require('./routes/bloodRequests');
 const adminRoutes = require('./routes/admin');
+const adminDonorsRoutes = require('./routes/admin-donors');
 const whatsappRoutes = require('./routes/whatsapp');
 const otpRoutes = require('./routes/otp');
 const securityRoutes = require('./routes/security');
@@ -65,8 +66,8 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
-      'https://callforblood.org',
-      'https://www.callforblood.org'
+      'https://callforbloodfoundation.com',
+      'https://www.callforbloodfoundation.com'
     ];
     
     if (process.env.NODE_ENV === 'development') {
@@ -161,6 +162,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/blood-requests', bloodRequestRoutes);
 app.use('/api/v1/admin', auth, adminRoutes);
+app.use('/api/v1/admin/donors', adminDonorsRoutes);
 app.use('/api/v1/whatsapp', whatsappRoutes);
 app.use('/api/v1/otp', otpRoutes);
 app.use('/api/v1/push', pushRoutes);
@@ -201,7 +203,7 @@ app.get('/api/v1/docs', (req, res) => {
       public: '/api/v1/public',
       hospitals: '/api/v1/hospitals'
     },
-    documentation: 'https://docs.callforblood.org'
+    documentation: 'https://docs.callforbloodfoundation.com'
   });
 });
 

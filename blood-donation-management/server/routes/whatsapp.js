@@ -507,7 +507,7 @@ We'll continue searching for other donors.
 
 Thank you for being part of our community! 🩸
 
-*Call For Blood Foundation*`
+*CallforBlood Foundation*`
   );
 }
 
@@ -542,7 +542,7 @@ async function handleInfoRequest(phoneNumber, messageId, params = []) {
 
 Need more help? Reply with "HELP"
 
-*Call For Blood Foundation*`
+*CallforBlood Foundation*`
   );
 }
 
@@ -565,13 +565,13 @@ async function handleHelpRequest(phoneNumber, messageId) {
 • HELP - Show this help
 
 *Contact Support:*
-📞 Phone: +91-911-BLOOD
-📧 Email: support@callforblood.org
-🌐 Website: www.callforblood.org
+💬 WhatsApp: https://wa.me/919491254120
+📧 Email: info@callforbloodfoundation.com
+🌐 Website: callforbloodfoundation.com
 
 *Emergency:* For urgent help, call our 24/7 helpline.
 
-*Call For Blood Foundation*`
+*CallforBlood Foundation*`
   );
 }
 
@@ -613,7 +613,7 @@ Please reply with:
 ℹ️ *INFO* - Need more details
 🆘 *HELP* - Get help
 
-*Call For Blood Foundation*`
+*CallforBlood Foundation*`
     );
   }
 }

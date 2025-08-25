@@ -194,7 +194,7 @@ const AchievementSystem = ({ donorId, className = '' }) => {
       navigator.share({
         title: `Achievement Unlocked: ${achievement.title}`,
         text: achievement.shareText,
-        url: `https://callforblood.org/achievements/${achievement.id}`
+        url: `https://callforbloodfoundation.com/achievements/${achievement.id}`
       });
     } else {
       navigator.clipboard.writeText(achievement.shareText);

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
-import { Phone, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Mail, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
 
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -12,7 +12,7 @@ import logger from '../../utils/logger';
 
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [showOTPModal, setShowOTPModal] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,18 +25,18 @@ const ForgotPasswordPage = () => {
     };
   }, []);
 
-  const validatePhoneNumber = (number) => {
-    if (!number) return 'Phone number is required';
-    if (!/^\d{10}$/.test(number)) return 'Please enter a valid 10-digit phone number';
+  const validateEmail = (email) => {
+    if (!email) return 'Email is required';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return 'Please enter a valid email address';
     return '';
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const phoneError = validatePhoneNumber(phoneNumber);
-    if (phoneError) {
-      setErrors({ phone: phoneError });
+    const emailError = validateEmail(email);
+    if (emailError) {
+      setErrors({ email: emailError });
       return;
     }
 
@@ -47,21 +47,21 @@ const ForgotPasswordPage = () => {
     setIsSubmitting(true);
     
     try {
-      logger.info('Requesting password reset OTP', 'FORGOT_PASSWORD', { phoneNumber });
+      logger.info('Requesting password reset OTP', 'FORGOT_PASSWORD', { email });
       
-      // Check if phone number exists in the system
-      const phoneCheckResponse = await authApi.checkPhoneAvailability(phoneNumber);
+      // Check if email exists in the system
+      const emailCheckResponse = await authApi.checkEmailAvailability(email);
       
-      if (phoneCheckResponse.available) {
-        // Phone number is not registered
+      if (emailCheckResponse.available) {
+        // Email is not registered
         setErrors({ 
-          phone: 'This phone number is not registered. Please check your number or register for a new account.' 
+          email: 'This email is not registered. Please check your email or register for a new account.' 
         });
         setIsSubmitting(false);
         return;
       }
       
-      // Phone number exists, proceed with OTP
+      // Email exists, proceed with OTP
       setShowOTPModal(true);
     } catch (error) {
       logger.error('Error requesting password reset', 'FORGOT_PASSWORD', error);
@@ -76,20 +76,31 @@ const ForgotPasswordPage = () => {
   const handleOTPSuccess = async (data) => {
     try {
       logger.success('OTP verification successful for password reset', 'FORGOT_PASSWORD', { 
-        phoneNumber,
+        email,
         hasData: !!data,
-        hasOtp: !!data.otp
+        hasOtp: !!data?.otp,
+        dataKeys: data ? Object.keys(data) : 'null'
       });
       
-      // Navigate to reset password page with OTP data
-      navigate('/reset-password', { 
-        state: { 
-          phoneNumber,
-          otp: data.otp,
+      // Close the OTP modal first
+      setShowOTPModal(false);
+      
+      // Small delay to ensure modal closes properly
+      setTimeout(() => {
+        // Navigate to reset password page with OTP data
+        const navigationState = { 
+          email,
+          otp: data?.otp || data?.code || 'verified', // Try multiple locations for OTP
           fromForgotPassword: true
-        },
-        replace: true
-      });
+        };
+        
+        logger.debug('Navigating to reset password with state:', 'FORGOT_PASSWORD', navigationState);
+        
+        navigate('/reset-password', { 
+          state: navigationState,
+          replace: true
+        });
+      }, 100);
       
     } catch (error) {
       logger.error('Error after OTP verification', 'FORGOT_PASSWORD', error);
@@ -102,7 +113,7 @@ const ForgotPasswordPage = () => {
   const handleOTPError = (error) => {
     logger.error('OTP verification failed for password reset', 'FORGOT_PASSWORD', { 
       error: error.message,
-      phoneNumber,
+      email,
       remainingAttempts: error.remainingAttempts 
     });
     
@@ -132,24 +143,21 @@ const ForgotPasswordPage = () => {
         {/* Forgot Password Card */}
         <Card className="p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Phone Number Input */}
+            {/* Email Input */}
             <div>
               <Input
-                label="Phone Number"
-                icon={Phone}
-                type="tel"
-                placeholder="Enter your registered phone number"
-                value={phoneNumber}
+                label="Email Address"
+                icon={Mail}
+                type="email"
+                placeholder="Enter your registered email address"
+                value={email}
                 onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '').slice(0, 10);
-                  setPhoneNumber(value);
-                  if (errors.phone) setErrors({ ...errors, phone: '' });
+                  setEmail(e.target.value);
+                  if (errors.email) setErrors({ ...errors, email: '' });
                 }}
-                error={errors.phone}
+                error={errors.email}
                 required
                 autoFocus
-                inputMode="numeric"
-                pattern="[0-9]*"
               />
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 We'll send you a verification code to reset your password
@@ -212,13 +220,14 @@ const ForgotPasswordPage = () => {
       <OTPModal
         isOpen={showOTPModal}
         onClose={() => setShowOTPModal(false)}
-        phoneNumber={phoneNumber}
+        phoneNumber={email}
+        email={email}
         purpose="password-reset"
         onVerificationSuccess={handleOTPSuccess}
         onVerificationError={handleOTPError}
         autoRequest={true}
         title="Verify Your Identity"
-        description="Enter the verification code sent to your phone to proceed with password reset"
+        description="Enter the verification code sent to your email to proceed with password reset"
       />
     </div>
   );

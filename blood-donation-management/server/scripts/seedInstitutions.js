@@ -366,7 +366,7 @@ async function seedInstitutions() {
       adminUser = new User({
         name: 'System Admin',
         phoneNumber: '9988776655',
-        email: 'admin@blooddonation.com',
+        email: 'info@callforbloodfoundation.com',
         password: hashedPassword,
         dateOfBirth: new Date('1985-01-01'),
         gender: 'male',

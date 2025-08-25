@@ -421,7 +421,7 @@ async function seedHospitals() {
       adminUser = new User({
         name: 'Hospital Admin',
         phoneNumber: '9988776655',
-        email: 'hospitaladmin@blooddonation.org',
+        email: 'info@callforbloodfoundation.com',
         password: 'hashedpassword', // This would be properly hashed in real scenario
         dateOfBirth: new Date('1985-01-01'),
         gender: 'other',

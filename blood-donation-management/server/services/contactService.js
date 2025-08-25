@@ -3,8 +3,8 @@ const logger = require('../utils/logger');
 
 class ContactService {
     constructor() {
-        this.supportEmail = process.env.SUPPORT_EMAIL || 'support@callforblood.org';
-        this.partnershipEmail = process.env.PARTNERSHIP_EMAIL || 'partnerships@callforblood.org';
+        this.supportEmail = process.env.SUPPORT_EMAIL || 'info@callforbloodfoundation.com';
+        this.partnershipEmail = process.env.PARTNERSHIP_EMAIL || 'info@callforbloodfoundation.com';
     }
 
     /**
@@ -211,9 +211,8 @@ WHAT HAPPENS NEXT:
 
 NEED IMMEDIATE HELP?
 If this is an emergency blood request, please:
-📞 Call our 24/7 hotline: 1800-BLOOD-1
-💬 WhatsApp us: +91 98765 43210
-🌐 Visit: www.callforblood.org/emergency
+💬 WhatsApp us: https://wa.me/919491254120
+🌐 Visit: callforbloodfoundation.com/emergency
 
 YOUR MESSAGE:
 "${contactData.message.substring(0, 200)}${contactData.message.length > 200 ? '...' : ''}"
@@ -224,7 +223,7 @@ Best regards,
 CallforBlood Foundation Support Team
 
 ---
-Need help? Visit www.callforblood.org or call 1800-BLOOD-1`;
+Need help? Visit callforbloodfoundation.com or call 1800-BLOOD-1`;
     }
 
     /**

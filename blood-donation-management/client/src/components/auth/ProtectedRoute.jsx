@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingSpinner from '../ui/LoadingSpinner';
@@ -15,6 +15,8 @@ const ProtectedRoute = ({ children, requiredRole = null, redirectTo = '/login' }
     hasUser: !!user,
     userId: user?.id,
     userRole: user?.role,
+    userStatus: user?.status,
+    isApproved: user?.isApproved,
     requiredRole,
     redirectTo
   });
@@ -63,7 +65,7 @@ const ProtectedRoute = ({ children, requiredRole = null, redirectTo = '/login' }
     // Redirect based on user role
     const roleRedirects = {
       admin: '/admin',
-      donor: '/donor/dashboard',
+      donor: '/dashboard',
       hospital: '/hospital/dashboard'
     };
     
@@ -75,6 +77,69 @@ const ProtectedRoute = ({ children, requiredRole = null, redirectTo = '/login' }
     });
     
     return <Navigate to={defaultRedirect} replace />;
+  }
+
+  // For donors, check if they need to complete onboarding or are pending approval
+  if (user?.role === 'donor' && !requiredRole) {
+    const isOnboardingPath = location.pathname === '/onboarding';
+    const isDashboardPath = location.pathname === '/dashboard';
+    const isProfilePath = location.pathname === '/profile';
+    
+    // Check if user is approved - use multiple status indicators
+    const isApproved = user?.isApproved === true || 
+                      user?.status === 'approved' || 
+                      user?.status === 'active' ||
+                      user?.verification?.isVerified === true;
+    
+    // Check if user has completed onboarding
+    const hasCompletedOnboarding = user?.onboardingCompleted || 
+      (user?.documents && user?.documents.length > 0) || 
+      user?.questionnaireCompleted || 
+      user?.status === 'pending';
+    
+    logger.debug('🔍 Donor onboarding check', 'PROTECTED_ROUTE', {
+      hasCompletedOnboarding,
+      isApproved,
+      isOnboardingPath,
+      isDashboardPath,
+      isProfilePath,
+      userStatus: user?.status,
+      userIsApproved: user?.isApproved,
+      verificationStatus: user?.verification?.isVerified,
+      documentsCount: user?.documents?.length || 0,
+      hasQuestionnaire: !!user?.questionnaire
+    });
+    
+    // If approved, allow access to dashboard and other pages
+    if (isApproved) {
+      logger.debug('✅ Approved donor accessing protected route', 'PROTECTED_ROUTE', {
+        path: location.pathname,
+        userStatus: user?.status,
+        isApproved: user?.isApproved
+      });
+      // Allow access - don't redirect approved users to onboarding
+      return children;
+    }
+    
+    // If not approved and trying to access dashboard/other pages, redirect to onboarding
+    if (!isApproved && !isOnboardingPath && !isProfilePath) {
+      logger.debug('🔄 Redirecting unapproved donor to onboarding', 'PROTECTED_ROUTE', {
+        from: location.pathname,
+        to: '/onboarding',
+        reason: 'pending_approval'
+      });
+      return <Navigate to="/onboarding" replace />;
+    }
+    
+    // If not completed onboarding and trying to access other pages, redirect to onboarding
+    if (!hasCompletedOnboarding && !isOnboardingPath) {
+      logger.debug('🔄 Redirecting incomplete donor to onboarding', 'PROTECTED_ROUTE', {
+        from: location.pathname,
+        to: '/onboarding',
+        reason: 'incomplete_onboarding'
+      });
+      return <Navigate to="/onboarding" replace />;
+    }
   }
 
   logger.debug('✅ Access granted to protected route', 'PROTECTED_ROUTE', {

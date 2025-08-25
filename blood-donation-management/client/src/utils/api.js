@@ -272,7 +272,53 @@ export const adminApi = {
   ,
   // Notification settings
   getNotificationSettings: () => apiClient.get('api/v1/admin/notifications/settings'),
-  updateNotificationSettings: (payload) => apiClient.put('api/v1/admin/notifications/settings', payload)
+  updateNotificationSettings: (payload) => apiClient.put('api/v1/admin/notifications/settings', payload),
+  
+  // Donor management
+  approveDonor: (donorId) => apiClient.post(`api/v1/admin/donors/${donorId}/approve`),
+  rejectDonor: (donorId, reason) => apiClient.post(`api/v1/admin/donors/${donorId}/reject`, { reason }),
+  suspendDonor: (donorId, reason) => apiClient.post(`api/v1/admin/donors/${donorId}/suspend`, { reason }),
+  reactivateDonor: (donorId) => apiClient.post(`api/v1/admin/donors/${donorId}/reactivate`),
+  
+  // Data export
+  exportDonors: async (filters = {}) => {
+    try {
+      const response = await fetch('/api/v1/admin/export/donors', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(filters)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      // Get the CSV content as text
+      const csvContent = await response.text();
+      
+      // Create a blob and download link
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `donors-export-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      return { success: true, message: 'Export completed successfully' };
+    } catch (error) {
+      logger.error('Export failed', 'API_CLIENT', error);
+      throw error;
+    }
+  },
+  
+  // Questionnaire review
+  reviewQuestionnaire: (donorId, reviewData) => apiClient.put(`api/v1/admin/donors/${donorId}/questionnaire/review`, reviewData)
 };
 
 // Blood Request API endpoints
@@ -310,18 +356,40 @@ export const facilityApi = {
 
 // OTP API endpoints
 export const otpApi = {
-  // Request OTP
-  sendOTP: (phoneNumber, purpose = 'verification') => apiClient.post('api/v1/otp/request', { phoneNumber, purpose }),
+  // Request OTP (supports both phone and email)
+  sendOTP: (target, purpose = 'verification', method = 'email') => {
+    const isEmail = target.includes('@');
+    return apiClient.post('api/v1/otp/request', { 
+      [isEmail ? 'email' : 'phoneNumber']: target, 
+      purpose,
+      method: isEmail ? 'email' : method
+    });
+  },
   
-  // Verify OTP
-  verifyOTP: (phoneNumber, otp, purpose = 'verification') => apiClient.post('api/v1/otp/verify', { phoneNumber, otp, purpose }),
+  // Verify OTP (supports both phone and email)
+  verifyOTP: (target, otp, purpose = 'verification') => {
+    const isEmail = target.includes('@');
+    return apiClient.post('api/v1/otp/verify', { 
+      [isEmail ? 'email' : 'phoneNumber']: target, 
+      otp, 
+      purpose 
+    });
+  },
   
-  // Resend OTP (alias for sendOTP with the same endpoint but different purpose)
-  resendOTP: (phoneNumber, purpose = 'verification') => apiClient.post('api/v1/otp/request', { 
-    phoneNumber, 
-    purpose,
-    isResend: true 
-  }),
+  // Resend OTP
+  resendOTP: (target, purpose = 'verification', method = 'email') => {
+    const isEmail = target.includes('@');
+    return apiClient.post('api/v1/otp/request', { 
+      [isEmail ? 'email' : 'phoneNumber']: target, 
+      purpose,
+      method: isEmail ? 'email' : method,
+      isResend: true 
+    });
+  },
+
+  // Email-specific OTP methods
+  sendEmailOTP: (email, purpose = 'verification') => apiClient.post('api/v1/otp/email/request', { email, purpose }),
+  verifyEmailOTP: (email, otp, purpose = 'verification') => apiClient.post('api/v1/otp/email/verify', { email, otp, purpose }),
 };
 
 // Export the main API client and specific APIs

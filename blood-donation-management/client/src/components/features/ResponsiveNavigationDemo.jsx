@@ -160,7 +160,7 @@ const ResponsiveNavigationDemo = () => {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold text-slate-900 dark:text-white">
-                      Call For Blood
+                      CallforBlood Foundation
                     </span>
                     {selectedDevice !== 'mobile' && (
                       <span className="text-xs text-slate-500 dark:text-slate-400">

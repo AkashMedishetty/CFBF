@@ -6,7 +6,7 @@ import {
   Facebook, 
   Twitter, 
   Instagram, 
-  Linkedin 
+  MessageSquare 
 } from 'lucide-react';
 
 const Footer = () => {
@@ -34,10 +34,10 @@ const Footer = () => {
   };
 
   const socialLinks = [
-    { name: 'Facebook', icon: Facebook, href: '#' },
-    { name: 'Twitter', icon: Twitter, href: '#' },
-    { name: 'Instagram', icon: Instagram, href: '#' },
-    { name: 'LinkedIn', icon: Linkedin, href: '#' },
+    { name: 'Facebook', icon: Facebook, href: 'https://www.facebook.com/callforblood.cs' },
+    { name: 'Twitter', icon: Twitter, href: 'https://www.twitter.com/callforblood_cs' },
+    { name: 'Instagram', icon: Instagram, href: 'https://instagram.com/callforbloodfoundation' },
+    { name: 'WhatsApp', icon: MessageSquare, href: 'https://wa.me/919491254120' },
   ];
 
   return (
@@ -52,8 +52,8 @@ const Footer = () => {
                 <img src="/Logo/android-chrome-192x192.png" alt="CallforBlood Logo" className="h-6 w-6" />
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-bold">Call For Blood</span>
-                <span className="text-sm text-slate-400 -mt-1">Foundation</span>
+                <span className="text-xl font-bold">CallforBlood Foundation</span>
+                
               </div>
             </div>
             <p className="text-slate-400 mb-6 text-sm leading-relaxed">
@@ -65,7 +65,7 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm">
                 <Mail className="h-4 w-4 text-primary-400" />
-                <span className="text-slate-300">help@callforblood.org</span>
+                <span className="text-slate-300">info@callforbloodfoundation.com</span>
               </div>
               <div className="flex items-center space-x-3 text-sm">
                 <MapPin className="h-4 w-4 text-primary-400" />

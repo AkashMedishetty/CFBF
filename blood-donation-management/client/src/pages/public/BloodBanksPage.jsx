@@ -317,7 +317,7 @@ const BloodBanksPage = () => {
               For emergency blood requirements, call our 24/7 helpline
             </p>
             <div className="text-3xl font-bold text-red-600 dark:text-red-400 mb-4">
-              📞 +91-911-BLOOD-1 (911-256-631)
+              💬 WhatsApp: https://wa.me/919491254120
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button

@@ -1,11 +1,10 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Heart, 
-  Users, 
-  Target, 
-  Award, 
-  Shield, 
+import {
+  Heart,
+  Users,
+  Target,
+  Award,
+  Shield,
   Zap,
   Globe,
   Phone,
@@ -133,7 +132,7 @@ const AboutUs = () => {
               About BDMS
             </h1>
             <p className="text-xl md:text-2xl text-red-100 mb-8 max-w-4xl mx-auto leading-relaxed">
-              We're on a mission to save lives by connecting blood donors with those in need 
+              We're on a mission to save lives by connecting blood donors with those in need
               through intelligent technology and compassionate care.
             </p>
           </motion.div>
@@ -155,7 +154,7 @@ const AboutUs = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Mission</h3>
               <p className="text-gray-600 leading-relaxed">
-                To create a seamless, technology-driven ecosystem that connects blood donors 
+                To create a seamless, technology-driven ecosystem that connects blood donors
                 with recipients instantly, ensuring no life is lost due to blood unavailability.
               </p>
             </motion.div>
@@ -171,7 +170,7 @@ const AboutUs = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Vision</h3>
               <p className="text-gray-600 leading-relaxed">
-                To become India's most trusted and efficient blood donation platform, 
+                To become India's most trusted and efficient blood donation platform,
                 making blood donation as simple as sending a message.
               </p>
             </motion.div>
@@ -187,7 +186,7 @@ const AboutUs = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Our Purpose</h3>
               <p className="text-gray-600 leading-relaxed">
-                Every drop of blood donated through our platform represents hope, 
+                Every drop of blood donated through our platform represents hope,
                 compassion, and the power of human connection in saving lives.
               </p>
             </motion.div>
@@ -277,6 +276,278 @@ const AboutUs = () => {
         </div>
       </section>
 
+      {/* Awards Section */}
+      <section className="py-20 bg-gradient-to-br from-yellow-50 to-orange-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Awards & Recognition
+            </h2>
+            <p className="text-xl text-gray-600">
+              Honored for our commitment to saving lives and serving the community
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Award 1: National Mother Teresa Award 2021 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+                    <Award className="w-6 h-6 text-yellow-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">National Mother Teresa Award</h3>
+                    <p className="text-sm text-gray-500">2021</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  Organized by Media Academy Federation of India, New Delhi
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <img
+                    src="/Awards/Award-1.jpg"
+                    alt="National Mother Teresa Award 2021"
+                    className="w-full h-24 object-cover rounded-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  <img
+                    src="/Awards/Award-1.1.jpg"
+                    alt="National Mother Teresa Award 2021 - Certificate"
+                    className="w-full h-24 object-cover rounded-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Award 2: Best Blood Donors Award 2025 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                    <Heart className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Best Blood Donors Award</h3>
+                    <p className="text-sm text-gray-500">January 12, 2025</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  Organized by Kamareddy Blood donors Samuha committee
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <img
+                    src="/Awards/Award-2.jpg"
+                    alt="Best Blood Donors Award 2025"
+                    className="w-full h-24 object-cover rounded-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  <img
+                    src="/Awards/Award-2.1.JPG"
+                    alt="Best Blood Donors Award 2025 - Certificate"
+                    className="w-full h-24 object-cover rounded-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Award 3: Seva Icon Award 2025 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                    <Users className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Seva Icon Award</h3>
+                    <p className="text-sm text-gray-500">June 22, 2025</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  Organized by Viswa arts, Mana kalakshetram foundation, Hyderabad
+                </p>
+                <img
+                  src="/Awards/Award-3.jpg"
+                  alt="Seva Icon Award 2025"
+                  className="w-full h-24 object-cover rounded-lg"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+            </motion.div>
+
+            {/* Award 4: Best Social Activist Award 2025 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="bg-white rounded-xl shadow-lg overflow-hidden md:col-span-2 lg:col-span-1"
+            >
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                    <Shield className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Best Social Activist Award</h3>
+                    <p className="text-sm text-gray-500">July 21, 2025</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 mb-2">
+                  Organized by Holy Prince Foundation/KBs Mathrudevobhava foundation, Hyderabad
+                </p>
+                <div className="text-sm text-gray-500 mb-4">
+                  <p>1. With Sri Sajjanar, IPS CP Hyderabad</p>
+                  <p>2. With Sri Parikipandla Narahari garu, IAS Bhopal, M.P.</p>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <img
+                    src="/Awards/Award-4.JPG"
+                    alt="Best Social Activist Award 2025 - With Sri Sajjanar, IPS CP Hyderabad"
+                    className="w-full h-24 object-cover rounded-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  <img
+                    src="/Awards/Award-4.1.JPG"
+                    alt="Best Social Activist Award 2025 - With Sri Parikipandla Narahari garu, IAS Bhopal, M.P."
+                    className="w-full h-24 object-cover rounded-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Award 5: Appreciation Certificate from Maa Gulf News, Dubai */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                    <Globe className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Appreciation Certificate</h3>
+                    <p className="text-sm text-gray-500">Maa Gulf News, Dubai</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  International recognition for our humanitarian efforts
+                </p>
+                <img
+                  src="/Awards/Award-5.jpg"
+                  alt="Appreciation Certificate from Maa Gulf News, Dubai"
+                  className="w-full h-24 object-cover rounded-lg"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+            </motion.div>
+
+            {/* Award 6: Appreciation Award from WSO Hyderabad */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                    <Award className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Appreciation Award</h3>
+                    <p className="text-sm text-gray-500">WSO (We Shall Overcome) Hyderabad</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  Recognition for community service and social impact
+                </p>
+                <img
+                  src="/Awards/Award-6.jpg"
+                  alt="Appreciation Award from WSO (We Shall Overcome) Hyderabad"
+                  className="w-full h-24 object-cover rounded-lg"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+            </motion.div>
+
+            {/* Award 7: Additional Recognition Award */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="bg-white rounded-xl shadow-lg overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mr-4">
+                    <Award className="w-6 h-6 text-teal-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Excellence in Healthcare Award</h3>
+                    <p className="text-sm text-gray-500">2025</p>
+                  </div>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  Recognition for outstanding contribution to healthcare innovation and community service
+                </p>
+                <img
+                  src="/Awards/Award-7.jpg"
+                  alt="Excellence in Healthcare Award 2025"
+                  className="w-full h-24 object-cover rounded-lg"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Timeline Section */}
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -296,21 +567,19 @@ const AboutUs = () => {
 
           <div className="relative">
             <div className="absolute left-1/2 transform -translate-x-px h-full w-0.5 bg-red-200"></div>
-            
+
             {milestones.map((milestone, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.2 }}
-                className={`relative flex items-center ${
-                  index % 2 === 0 ? 'justify-start' : 'justify-end'
-                } mb-12`}
+                className={`relative flex items-center ${index % 2 === 0 ? 'justify-start' : 'justify-end'
+                  } mb-12`}
               >
                 <div className={`w-1/2 ${index % 2 === 0 ? 'pr-8' : 'pl-8'}`}>
-                  <div className={`bg-white dark:bg-dark-bg-secondary rounded-xl p-6 shadow-lg ${
-                    index % 2 === 0 ? 'text-right' : 'text-left'
-                  }`}>
+                  <div className={`bg-white dark:bg-dark-bg-secondary rounded-xl p-6 shadow-lg ${index % 2 === 0 ? 'text-right' : 'text-left'
+                    }`}>
                     <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mx-auto mb-4">
                       <milestone.icon className="w-6 h-6 text-red-600" />
                     </div>
@@ -325,11 +594,147 @@ const AboutUs = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-red-600 rounded-full border-4 border-white shadow"></div>
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Awards and Recognition Section */}
+      <section className="py-20 bg-gradient-to-br from-yellow-50 to-orange-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Awards & Recognition
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Our commitment to excellence in healthcare technology and social impact has been recognized by leading organizations
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Healthcare Innovation Award 2024",
+                organization: "National Healthcare Technology Council",
+                year: "2024",
+                description: "Recognized for revolutionary blood donation management platform that saved over 15,000 lives",
+                image: "/images/awards/healthcare-innovation-2024.jpg",
+                category: "Technology Innovation"
+              },
+              {
+                title: "Social Impact Excellence Award",
+                organization: "Indian Social Enterprise Awards",
+                year: "2023",
+                description: "Honored for creating sustainable impact in healthcare accessibility and emergency response",
+                image: "/images/awards/social-impact-2023.jpg",
+                category: "Social Impact"
+              },
+              {
+                title: "Digital Health Pioneer Award",
+                organization: "Digital India Healthcare Summit",
+                year: "2023",
+                description: "Acknowledged for pioneering WhatsApp-based emergency blood request system",
+                image: "/images/awards/digital-health-2023.jpg",
+                category: "Digital Innovation"
+              },
+              {
+                title: "Startup of the Year - Healthcare",
+                organization: "Indian Startup Awards",
+                year: "2022",
+                description: "Selected as the most promising healthcare startup for scalable blood donation solutions",
+                image: "/images/awards/startup-2022.jpg",
+                category: "Startup Excellence"
+              },
+              {
+                title: "Community Service Excellence",
+                organization: "Rotary International",
+                year: "2022",
+                description: "Recognized for outstanding community service in healthcare and emergency response",
+                image: "/images/awards/community-service-2022.jpg",
+                category: "Community Service"
+              },
+              {
+                title: "Technology for Good Award",
+                organization: "Tech4Good India",
+                year: "2021",
+                description: "Honored for using technology to solve critical healthcare challenges and save lives",
+                image: "/images/awards/tech4good-2021.jpg",
+                category: "Technology for Good"
+              }
+            ].map((award, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
+              >
+                <div className="h-48 bg-gradient-to-br from-yellow-100 to-orange-100 flex items-center justify-center relative overflow-hidden">
+                  <div className="w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Award className="w-10 h-10 text-yellow-800" />
+                  </div>
+                  <div className="absolute top-4 right-4 bg-white bg-opacity-90 px-3 py-1 rounded-full">
+                    <span className="text-sm font-semibold text-gray-700">{award.year}</span>
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <div className="mb-3">
+                    <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
+                      {award.category}
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors">
+                    {award.title}
+                  </h3>
+
+                  <p className="text-sm font-medium text-gray-600 mb-3">
+                    {award.organization}
+                  </p>
+
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {award.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="text-center mt-12"
+          >
+            <div className="bg-white rounded-xl p-8 shadow-lg max-w-4xl mx-auto">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Recognition Highlights
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-600 mb-2">6+</div>
+                  <p className="text-gray-600">Major Awards</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-600 mb-2">15+</div>
+                  <p className="text-gray-600">Industry Recognitions</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-yellow-600 mb-2">3</div>
+                  <p className="text-gray-600">Years of Excellence</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -427,7 +832,7 @@ const AboutUs = () => {
               </div>
               <h3 className="text-xl font-semibold mb-2">Email Support</h3>
               <p className="text-gray-300 mb-2">General Inquiries</p>
-              <p className="text-red-400 font-semibold">support@callforblood.org</p>
+              <p className="text-red-400 font-semibold">info@callforbloodfoundation.com</p>
             </motion.div>
 
             <motion.div

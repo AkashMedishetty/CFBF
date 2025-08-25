@@ -4,9 +4,6 @@ import {
   Heart, 
   AlertTriangle, 
   CheckCircle, 
-  X, 
-  Plus,
-  Trash2,
   Info
 } from 'lucide-react';
 
@@ -126,24 +123,7 @@ const DonorQuestionnaire = ({ onComplete, initialData = {} }) => {
     }));
   };
 
-  const addMedication = () => {
-    const newMedication = {
-      name: '',
-      dosage: '',
-      frequency: '',
-      reason: ''
-    };
-    addArrayItem('medications', newMedication);
-  };
 
-  const updateMedication = (index, field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      medications: prev.medications.map((med, i) => 
-        i === index ? { ...med, [field]: value } : med
-      )
-    }));
-  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -159,15 +139,7 @@ const DonorQuestionnaire = ({ onComplete, initialData = {} }) => {
       newErrors['lifestyle.exercise'] = 'Please select exercise level';
     }
 
-    // Validate medications have required fields
-    formData.medications.forEach((med, index) => {
-      if (med.name && !med.dosage) {
-        newErrors[`medication_${index}_dosage`] = 'Dosage is required';
-      }
-      if (med.name && !med.frequency) {
-        newErrors[`medication_${index}_frequency`] = 'Frequency is required';
-      }
-    });
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -291,9 +263,12 @@ const DonorQuestionnaire = ({ onComplete, initialData = {} }) => {
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Do you have any of the following medical conditions?
             </label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {medicalConditionOptions.map(condition => (
-                <label key={condition.value} className="flex items-center space-x-2">
+                <label 
+                  key={condition.value} 
+                  className="flex items-start space-x-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors"
+                >
                   <input
                     type="checkbox"
                     checked={formData.medicalConditions.includes(condition.value)}
@@ -305,9 +280,12 @@ const DonorQuestionnaire = ({ onComplete, initialData = {} }) => {
                         removeArrayItem('medicalConditions', index);
                       }
                     }}
-                    className="rounded border-slate-300 text-red-600 focus:ring-red-500"
+                    className="mt-0.5 w-5 h-5 rounded border-2 border-slate-400 dark:border-slate-500 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200 cursor-pointer"
+                    style={{
+                      accentColor: '#dc2626' // Modern way to style checkboxes
+                    }}
                   />
-                  <span className="text-sm text-slate-700 dark:text-slate-300">
+                  <span className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed select-none">
                     {condition.label}
                   </span>
                 </label>
@@ -317,91 +295,7 @@ const DonorQuestionnaire = ({ onComplete, initialData = {} }) => {
         </div>
       </Card>
 
-      {/* Current Medications */}
-      <Card className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-            Current Medications
-          </h3>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={addMedication}
-            className="flex items-center space-x-2"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Add Medication</span>
-          </Button>
-        </div>
 
-        <AnimatePresence>
-          {formData.medications.map((medication, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 mb-4"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium text-slate-900 dark:text-white">
-                  Medication {index + 1}
-                </h4>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeArrayItem('medications', index)}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  label="Medication Name"
-                  value={medication.name}
-                  onChange={(e) => updateMedication(index, 'name', e.target.value)}
-                  placeholder="e.g., Aspirin"
-                  required
-                />
-                
-                <Input
-                  label="Dosage"
-                  value={medication.dosage}
-                  onChange={(e) => updateMedication(index, 'dosage', e.target.value)}
-                  error={errors[`medication_${index}_dosage`]}
-                  placeholder="e.g., 100mg"
-                  required
-                />
-                
-                <Input
-                  label="Frequency"
-                  value={medication.frequency}
-                  onChange={(e) => updateMedication(index, 'frequency', e.target.value)}
-                  error={errors[`medication_${index}_frequency`]}
-                  placeholder="e.g., Once daily"
-                  required
-                />
-                
-                <Input
-                  label="Reason for Taking"
-                  value={medication.reason}
-                  onChange={(e) => updateMedication(index, 'reason', e.target.value)}
-                  placeholder="e.g., Pain relief"
-                />
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-
-        {formData.medications.length === 0 && (
-          <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-            <Info className="h-8 w-8 mx-auto mb-2" />
-            <p>No medications added. Click "Add Medication" if you take any.</p>
-          </div>
-        )}
-      </Card>
 
       {/* Lifestyle Questions */}
       <Card className="p-6">
@@ -457,14 +351,17 @@ const DonorQuestionnaire = ({ onComplete, initialData = {} }) => {
         </h3>
         
         <div className="space-y-4">
-          <label className="flex items-center space-x-3">
+          <label className="flex items-start space-x-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
             <input
               type="checkbox"
               checked={formData.previousDonations.hasDonateBefore}
               onChange={(e) => handleInputChange('previousDonations.hasDonateBefore', e.target.checked)}
-              className="rounded border-slate-300 text-red-600 focus:ring-red-500"
+              className="mt-0.5 w-5 h-5 rounded border-2 border-slate-400 dark:border-slate-500 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200 cursor-pointer"
+              style={{
+                accentColor: '#dc2626'
+              }}
             />
-            <span className="text-sm text-slate-700 dark:text-slate-300">
+            <span className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed select-none">
               I have donated blood before
             </span>
           </label>
@@ -502,14 +399,17 @@ const DonorQuestionnaire = ({ onComplete, initialData = {} }) => {
         </h3>
         
         <div className="space-y-4">
-          <label className="flex items-center space-x-3">
+          <label className="flex items-start space-x-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
             <input
               type="checkbox"
               checked={formData.currentHealth.feelingWell}
               onChange={(e) => handleInputChange('currentHealth.feelingWell', e.target.checked)}
-              className="rounded border-slate-300 text-red-600 focus:ring-red-500"
+              className="mt-0.5 w-5 h-5 rounded border-2 border-slate-400 dark:border-slate-500 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-all duration-200 cursor-pointer"
+              style={{
+                accentColor: '#dc2626'
+              }}
             />
-            <span className="text-sm text-slate-700 dark:text-slate-300">
+            <span className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed select-none">
               I am feeling well today and have no symptoms of illness
             </span>
           </label>

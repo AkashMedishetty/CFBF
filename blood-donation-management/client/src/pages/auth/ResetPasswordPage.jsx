@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Lock, ArrowRight, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
@@ -20,26 +20,46 @@ const ResetPasswordPage = () => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   // Get data from navigation state
-  const { phoneNumber, otp, fromForgotPassword } = location.state || {};
+  const { email, phoneNumber, otp, fromForgotPassword } = location.state || {};
+  const userIdentifier = email || phoneNumber;
 
   useEffect(() => {
     logger.componentMount('ResetPasswordPage');
     
+    // Debug log all received data
+    logger.debug('ResetPasswordPage received state:', 'RESET_PASSWORD', {
+      locationState: location.state,
+      email,
+      phoneNumber,
+      otp,
+      fromForgotPassword,
+      userIdentifier,
+      hasLocationState: !!location.state
+    });
+    
     // Redirect if required data is missing
-    if (!phoneNumber || !otp || !fromForgotPassword) {
-      logger.warn('Missing required data for password reset', 'RESET_PASSWORD', {
+    if (!userIdentifier || !otp || !fromForgotPassword) {
+      logger.warn('Missing required data for password reset - redirecting to forgot password', 'RESET_PASSWORD', {
+        hasEmail: !!email,
         hasPhoneNumber: !!phoneNumber,
         hasOtp: !!otp,
-        fromForgotPassword
+        fromForgotPassword,
+        userIdentifier,
+        locationState: location.state
       });
       navigate('/forgot-password', { replace: true });
       return;
     }
     
+    logger.success('ResetPasswordPage validation passed - ready for password reset', 'RESET_PASSWORD', {
+      userIdentifier,
+      hasOtp: !!otp
+    });
+    
     return () => {
       logger.componentUnmount('ResetPasswordPage');
     };
-  }, [phoneNumber, otp, fromForgotPassword, navigate]);
+  }, [userIdentifier, otp, fromForgotPassword, navigate, email, phoneNumber, location.state]);
 
   const validatePasswords = () => {
     const newErrors = {};
@@ -74,11 +94,12 @@ const ResetPasswordPage = () => {
     setIsSubmitting(true);
     
     try {
-      logger.info('Attempting password reset', 'RESET_PASSWORD', { phoneNumber });
+      logger.info('Attempting password reset', 'RESET_PASSWORD', { userIdentifier });
       
-      // Call password reset API
+      // Call password reset API with email or phone
       const resetResponse = await authApi.resetPassword({
-        phoneNumber,
+        email: email,
+        phoneNumber: phoneNumber,
         otp,
         newPassword: password
       });
@@ -89,7 +110,7 @@ const ResetPasswordPage = () => {
       });
       
       if (resetResponse.success) {
-        logger.success('Password reset successful', 'RESET_PASSWORD', { phoneNumber });
+        logger.success('Password reset successful', 'RESET_PASSWORD', { userIdentifier });
         setIsSuccess(true);
         
         // Auto-redirect to login after 3 seconds
@@ -97,6 +118,7 @@ const ResetPasswordPage = () => {
           navigate('/login', { 
             state: { 
               message: 'Password reset successful! Please sign in with your new password.',
+              email: email,
               phoneNumber: phoneNumber
             },
             replace: true
@@ -142,6 +164,7 @@ const ResetPasswordPage = () => {
                 onClick={() => navigate('/login', { 
                   state: { 
                     message: 'Password reset successful! Please sign in with your new password.',
+                    email: email,
                     phoneNumber: phoneNumber
                   },
                   replace: true
@@ -176,9 +199,9 @@ const ResetPasswordPage = () => {
           <p className="text-lg text-slate-600 dark:text-slate-400">
             Create a new secure password for your account
           </p>
-          {phoneNumber && (
+          {userIdentifier && (
             <p className="text-sm text-slate-500 dark:text-slate-500 mt-2">
-              For account: {phoneNumber}
+              For account: {userIdentifier}
             </p>
           )}
         </motion.div>

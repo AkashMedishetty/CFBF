@@ -1,6 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
-import { Heart, ArrowRight, Shield, Users, Clock } from 'lucide-react';
+import { Heart, ArrowRight, Shield, Users, Clock, Droplets } from 'lucide-react';
 import Button from '../ui/Button';
 
 const CallToActionSection = ({ onRegisterClick }) => {
@@ -108,6 +107,7 @@ const CallToActionSection = ({ onRegisterClick }) => {
               size="xl"
               onClick={onRegisterClick}
               className="!bg-white !text-primary-900 hover:!bg-gray-50 hover:!text-primary-950 shadow-lg px-8 py-4 text-lg font-bold group border-2 border-white"
+              leftIcon={<Droplets className="w-6 h-6 !text-primary-900 group-hover:scale-110 transition-transform" />}
               rightIcon={<ArrowRight className="w-5 h-5 !text-primary-900 group-hover:translate-x-1 transition-transform" />}
             >
               Register as Donor - FREE Forever
@@ -130,23 +130,7 @@ const CallToActionSection = ({ onRegisterClick }) => {
             <p>Trusted by 50,000+ donors • 25,000+ lives saved • 95% success rate</p>
           </motion.div>
 
-          {/* Emergency Contact */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-12 p-6 bg-white/10 backdrop-blur-sm rounded-2xl max-w-2xl mx-auto"
-          >
-            <h3 className="text-lg font-semibold mb-2">Need Blood Urgently?</h3>
-            <p className="text-red-100 mb-4">
-              Don't wait for registration. Contact our emergency helpline for immediate assistance.
-            </p>
-            <Button
-              variant="outline"
-              className="border-2 border-white bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-primary-800 font-medium"
-              leftIcon={<Heart className="w-4 h-4 fill-current" />}
-            >
-              Emergency Blood Request
-            </Button>
-          </motion.div>
+
         </motion.div>
       </div>
 

@@ -225,9 +225,9 @@ Tests encryption/decryption functionality for system validation.
 5. **Documentation**: Record incident details
 
 ### Contact Information
-- **Security Team**: security@callforblood.org
-- **Emergency**: +1-XXX-XXX-XXXX
-- **Incident Reporting**: incidents@callforblood.org
+- **Security Team**: info@callforbloodfoundation.com
+- **Emergency**: http://wa.me/919491254120
+- **Incident Reporting**: info@callforbloodfoundation.com
 
 ## Security Testing
 

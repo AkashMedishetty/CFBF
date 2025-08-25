@@ -122,7 +122,7 @@ const InstallPrompt = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-sm font-semibold text-gray-900 mb-1">
-                    Install Call For Blood
+                    Install CallforBlood Foundation
                   </h3>
                   <p className="text-xs text-gray-600 mb-3">
                     Get instant access to emergency blood requests and save lives faster with our app.

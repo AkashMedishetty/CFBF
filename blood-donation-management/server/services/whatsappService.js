@@ -198,7 +198,7 @@ Use this code to ${action}.
 ⏰ This code expires in 5 minutes.
 🔒 For security, don't share this code with anyone.
 
-Need help? Contact us at +91-911-BLOOD`;
+Need help? Contact us at http://wa.me/919491254120`;
   }
 
   /**
@@ -235,7 +235,7 @@ Reply with:
 ❌ NO - Cannot donate now
 ℹ️ INFO - Need more details
 
-*Call For Blood Foundation*
+*CallforBlood Foundation*
 Every drop counts. Every donor matters.`;
   }
 
@@ -354,7 +354,7 @@ Your blood donor registration has been *APPROVED* by our admin team!
 
 Thank you for joining our life-saving mission! 🩸❤️
 
-*Call For Blood Foundation*`;
+*CallforBlood Foundation*`;
 
       const payload = {
         messaging_product: 'whatsapp',
@@ -426,8 +426,8 @@ Unfortunately, your blood donor registration could not be approved at this time.
 
 You can reapply after addressing the mentioned concerns. Please contact our support team if you have any questions.
 
-*Call For Blood Foundation*
-Support: +91-911-BLOOD`;
+*CallforBlood Foundation*
+Support: http://wa.me/919491254120`;
 
       const payload = {
         messaging_product: 'whatsapp',

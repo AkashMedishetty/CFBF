@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Shield, AlertCircle, CheckCircle } from 'lucide-react';
 
@@ -12,6 +12,7 @@ const OTPModal = ({
   isOpen,
   onClose,
   phoneNumber,
+  email,
   purpose = 'verification',
   onVerificationSuccess,
   onVerificationError,
@@ -33,9 +34,12 @@ const OTPModal = ({
   const successTimeoutRef = useRef(null);
 
   const requestOTP = useCallback(async () => {
-    if (!phoneNumber) {
-      logger.error('No phone number provided for OTP request', 'OTP_MODAL');
-      setError('Phone number is required');
+    const identifier = email || phoneNumber;
+    const isEmail = email && email.includes('@');
+    
+    if (!identifier) {
+      logger.error('No phone number or email provided for OTP request', 'OTP_MODAL');
+      setError(isEmail ? 'Email is required' : 'Phone number is required');
       return;
     }
 
@@ -45,20 +49,28 @@ const OTPModal = ({
       return;
     }
 
-    logger.ui('REQUEST', 'OTP', { phoneNumber: phoneNumber.slice(-4), purpose }, 'OTP_MODAL');
+    logger.ui('REQUEST', 'OTP', { 
+      identifier: isEmail ? identifier : identifier.slice(-4), 
+      purpose, 
+      type: isEmail ? 'email' : 'phone' 
+    }, 'OTP_MODAL');
+    
     setIsRequesting(true);
     setError('');
 
     try {
-      const response = await fetch('/api/v1/otp/request', {
+      // Use different endpoints for email vs phone
+      const endpoint = isEmail ? '/api/v1/otp/email/request' : '/api/v1/otp/request';
+      const requestBody = isEmail 
+        ? { email: identifier, purpose }
+        : { phoneNumber: identifier, purpose };
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          phoneNumber,
-          purpose
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -67,7 +79,7 @@ const OTPModal = ({
         logger.success('OTP requested successfully', 'OTP_MODAL');
         setOtpRequested(true);
         setTimerKey(prev => prev + 1); // Reset timer
-        setSuccess('OTP sent successfully to your phone');
+        setSuccess(`OTP sent successfully to your ${isEmail ? 'email' : 'phone'}`);
 
         // Clear success message after 3 seconds
         setTimeout(() => setSuccess(''), 3000);
@@ -76,7 +88,11 @@ const OTPModal = ({
         setError(data.message || 'Failed to send OTP');
 
         if (onVerificationError) {
-          onVerificationError(data);
+          try {
+            onVerificationError(data);
+          } catch (callbackError) {
+            logger.error('Error in onVerificationError callback', 'OTP_MODAL', callbackError);
+          }
         }
       }
     } catch (error) {
@@ -89,11 +105,16 @@ const OTPModal = ({
     } finally {
       setIsRequesting(false);
     }
-  }, [phoneNumber, purpose, isRequesting, onVerificationError]);
+  }, [phoneNumber, email, purpose]); // Removed isRequesting and onVerificationError to prevent re-renders
 
   useEffect(() => {
     if (isOpen) {
-      logger.componentMount('OTPModal', { phoneNumber: phoneNumber?.slice(-4), purpose, autoRequest });
+      logger.componentMount('OTPModal', { 
+        identifier: email ? email : phoneNumber?.slice(-4), 
+        purpose, 
+        autoRequest,
+        type: email ? 'email' : 'phone'
+      });
 
       // Reset state when modal opens
       setOtp('');
@@ -105,7 +126,44 @@ const OTPModal = ({
 
       // Auto-request OTP when modal opens if enabled and not already requested
       if (autoRequest && !otpRequested) {
-        requestOTP();
+        // Call requestOTP directly to avoid dependency issues
+        const identifier = email || phoneNumber;
+        const isEmailType = email && email.includes('@');
+        
+        if (identifier && !isRequesting) {
+          setIsRequesting(true);
+          setError('');
+
+          const endpoint = isEmailType ? '/api/v1/otp/email/request' : '/api/v1/otp/request';
+          const requestBody = isEmailType 
+            ? { email: identifier, purpose }
+            : { phoneNumber: identifier, purpose };
+
+          fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              setOtpRequested(true);
+              setTimerKey(prev => prev + 1);
+              setSuccess(`OTP sent successfully to your ${isEmailType ? 'email' : 'phone'}`);
+              setTimeout(() => setSuccess(''), 3000);
+            } else {
+              setError(data.message || 'Failed to send OTP');
+            }
+          })
+          .catch(error => {
+            setError('Network error. Please check your connection and try again.');
+          })
+          .finally(() => {
+            setIsRequesting(false);
+          });
+        }
       }
     } else {
       // Reset state when modal closes
@@ -124,9 +182,12 @@ const OTPModal = ({
         clearTimeout(successTimeoutRef.current);
       }
     };
-  }, [isOpen, autoRequest, otpRequested, phoneNumber, purpose, requestOTP]);
+  }, [isOpen, autoRequest, otpRequested, phoneNumber, email, purpose]); // Removed requestOTP from deps
 
   const verifyOTP = async (otpCode) => {
+    const identifier = email || phoneNumber;
+    const isEmail = email && email.includes('@');
+    
     // Prevent multiple verification attempts
     if (isVerified) {
       logger.warn('OTP already verified', 'OTP_MODAL');
@@ -148,8 +209,9 @@ const OTPModal = ({
     }
 
     logger.ui('VERIFY', 'OTP', {
-      phoneNumber: phoneNumber?.slice(-4),
-      otpLength: otpCode.length
+      identifier: isEmail ? identifier : identifier?.slice(-4),
+      otpLength: otpCode.length,
+      type: isEmail ? 'email' : 'phone'
     }, 'OTP_MODAL');
 
     setIsLoading(true);
@@ -157,17 +219,19 @@ const OTPModal = ({
     setVerificationAttempted(true);
 
     try {
-      const response = await fetch('/api/v1/otp/verify', {
+      // Use different endpoints for email vs phone
+      const endpoint = isEmail ? '/api/v1/otp/email/verify' : '/api/v1/otp/verify';
+      const requestBody = isEmail 
+        ? { email: identifier, otp: otpCode, purpose }
+        : { phoneNumber: identifier, otp: otpCode, purpose };
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
         },
-        body: JSON.stringify({
-          phoneNumber,
-          otp: otpCode,
-          purpose: purpose // Use the actual purpose passed to the modal
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -175,7 +239,7 @@ const OTPModal = ({
 
       if (data.success) {
         logger.success('OTP verified successfully', 'OTP_MODAL');
-        setSuccess('Phone number verified successfully!');
+        setSuccess(`${isEmail ? 'Email' : 'Phone number'} verified successfully!`);
         setIsVerified(true);
 
         // Store token if provided in response
@@ -210,9 +274,9 @@ const OTPModal = ({
       } else {
         throw new Error(data.error?.message || data.message || 'OTP verification failed');
       }
-    } catch (error) {
-      logger.error('OTP verification error', 'OTP_MODAL', error);
-      const errorMessage = error.response?.data?.error?.message || error.message || 'Failed to verify OTP. Please try again.';
+    } catch (err) {
+      logger.error('OTP verification error', 'OTP_MODAL', err);
+      const errorMessage = err.response?.data?.error?.message || err.message || 'Failed to verify OTP. Please try again.';
       setError(errorMessage);
       setRemainingAttempts(prev => Math.max(0, prev - 1));
 
@@ -260,7 +324,10 @@ const OTPModal = ({
       return;
     }
 
-    logger.ui('RESEND', 'OTP', { phoneNumber: phoneNumber?.slice(-4) }, 'OTP_MODAL');
+    logger.ui('RESEND', 'OTP', { 
+      identifier: email ? email : phoneNumber?.slice(-4),
+      type: email ? 'email' : 'phone'
+    }, 'OTP_MODAL');
 
     try {
       // Reset OTP state before requesting new one
@@ -278,30 +345,45 @@ const OTPModal = ({
   };
 
   const handleOTPExpire = () => {
-    logger.ui('EXPIRE', 'OTP', { phoneNumber: phoneNumber?.slice(-4) }, 'OTP_MODAL');
+    logger.ui('EXPIRE', 'OTP', { 
+      identifier: email ? email : phoneNumber?.slice(-4),
+      type: email ? 'email' : 'phone'
+    }, 'OTP_MODAL');
     setError('OTP has expired. Please request a new one.');
   };
 
-  const maskPhoneNumber = (phone) => {
-    if (!phone || phone.length < 4) return '****';
-    return phone.slice(0, 2) + '*'.repeat(phone.length - 4) + phone.slice(-2);
+  const maskIdentifier = (identifier) => {
+    if (!identifier) return '****';
+    
+    // Check if it's an email
+    if (identifier.includes('@')) {
+      const [username, domain] = identifier.split('@');
+      if (username.length <= 2) return `${username}***@${domain}`;
+      return `${username.slice(0, 2)}***@${domain}`;
+    }
+    
+    // Phone number masking
+    if (identifier.length < 4) return '****';
+    return identifier.slice(0, 2) + '*'.repeat(identifier.length - 4) + identifier.slice(-2);
   };
 
   const getPurposeText = () => {
+    const isEmail = email && email.includes('@');
     const purposeTexts = {
       'registration': 'complete your registration',
       'login': 'log into your account',
-      'verification': 'verify your phone number',
-      'password_reset': 'reset your password'
+      'verification': `verify your ${isEmail ? 'email address' : 'phone number'}`,
+      'password_reset': 'reset your password',
+      'password-reset': 'reset your password'
     };
-    return purposeTexts[purpose] || 'verify your phone number';
+    return purposeTexts[purpose] || `verify your ${isEmail ? 'email address' : 'phone number'}`;
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Phone Verification"
+      title={email && email.includes('@') ? "Email Verification" : "Phone Verification"}
       size="md"
       className={className}
     >
@@ -312,18 +394,24 @@ const OTPModal = ({
             <Shield className="h-8 w-8 text-primary-600 dark:text-primary-400" />
           </div>
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-            Verify Your Phone Number
+            {email && email.includes('@') ? 'Verify Your Email' : 'Verify Your Phone Number'}
           </h3>
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            We've sent a verification code to {maskPhoneNumber(phoneNumber)} to {getPurposeText()}.
+            We've sent a verification code to {maskIdentifier(email || phoneNumber)} to {getPurposeText()}.
           </p>
         </div>
 
-        {/* Phone Number Display */}
+        {/* Identifier Display */}
         <div className="flex items-center justify-center space-x-2 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-          <Phone className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+          {email && email.includes('@') ? (
+            <svg className="h-4 w-4 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          ) : (
+            <Phone className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+          )}
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-            {maskPhoneNumber(phoneNumber)}
+            {maskIdentifier(email || phoneNumber)}
           </span>
         </div>
 
@@ -419,7 +507,7 @@ const OTPModal = ({
         {/* Help Text */}
         <div className="text-center text-xs text-slate-500 dark:text-slate-400">
           <p>Didn't receive the code? Check your messages or try resending after the timer expires.</p>
-          <p className="mt-1">For help, contact us at +91-911-BLOOD</p>
+          <p className="mt-1">For help, contact us at http://wa.me/919491254120</p>
         </div>
       </div>
     </Modal>

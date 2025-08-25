@@ -28,9 +28,9 @@ class SecurityMiddleware {
   getAllowedOrigins() {
     if (process.env.NODE_ENV === 'production') {
       return [
-        'https://callforblood.org',
-        'https://www.callforblood.org',
-        'https://admin.callforblood.org'
+        'https://callforbloodfoundation.com',
+        'https://www.callforbloodfoundation.com',
+        'https://admin.callforbloodfoundation.com'
       ];
     }
     

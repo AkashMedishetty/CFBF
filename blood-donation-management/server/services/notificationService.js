@@ -134,7 +134,7 @@ class NotificationService {
     try {
       const webpush = require('web-push');
       const PushSubscription = require('../models/PushSubscription');
-      const { userId, title = 'Call For Blood', message, metadata } = notification;
+      const { userId, title = 'CallforBlood Foundation', message, metadata } = notification;
       const subs = await PushSubscription.find({ userId });
       if (!subs.length) return { success: false, message: 'NO_SUBSCRIPTIONS' };
       const payload = JSON.stringify({ title, body: message, data: { metadata } });
@@ -433,7 +433,7 @@ class NotificationService {
       'registration_approved': '🎉 Blood Donor Registration Approved',
       'registration_rejected': '❌ Blood Donor Registration Update',
       'otp_verification': '🔐 Verification Code - CallforBlood Foundation',
-      'general': '📢 Call For Blood Foundation Notification'
+      'general': '📢 CallforBlood Foundation Notification'
     };
 
     return subjects[type] || subjects['general'];

@@ -261,7 +261,7 @@ class ConversationService {
           return {
             success: true,
             action: 'start_registration',
-            message: 'Great! To register as a blood donor, please visit our website: www.callforblood.org/register\n\nOr reply with your full name to start here.'
+            message: 'Great! To register as a blood donor, please visit our website: callforbloodfoundation.com/register\n\nOr reply with your full name to start here.'
           };
         }
         break;
@@ -289,7 +289,7 @@ class ConversationService {
           return {
             success: true,
             action: 'complete_registration',
-            message: `Perfect! Your blood type is ${response.toUpperCase()}.\n\nTo complete your registration, please visit: www.callforblood.org/register\n\nUse this phone number to continue your registration.`
+            message: `Perfect! Your blood type is ${response.toUpperCase()}.\n\nTo complete your registration, please visit: callforbloodfoundation.com/register\n\nUse this phone number to continue your registration.`
           };
         }
         break;

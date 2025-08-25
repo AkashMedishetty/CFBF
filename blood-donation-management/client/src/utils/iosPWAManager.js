@@ -103,7 +103,7 @@ class IOSPWAManager {
       // Apple-specific meta tags
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
       { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
-      { name: 'apple-mobile-web-app-title', content: 'Call For Blood' },
+      { name: 'apple-mobile-web-app-title', content: 'CallforBlood Foundation' },
       
       // Touch icons
       { rel: 'apple-touch-icon', href: '/icons/apple-touch-icon-57x57.png', sizes: '57x57' },
@@ -285,7 +285,7 @@ class IOSPWAManager {
     const structuredData = {
       '@context': 'https://schema.org',
       '@type': 'MobileApplication',
-      name: 'Call For Blood',
+      name: 'CallforBlood Foundation',
       description: 'Emergency blood donation management system',
       applicationCategory: 'HealthApplication',
       operatingSystem: 'iOS',
@@ -360,7 +360,7 @@ class IOSPWAManager {
       installPrompt.innerHTML = `
         <div class="ios-install-content">
           <div class="ios-install-icon" style="color: #007AFF;">●</div>
-          <h3>Install Call For Blood</h3>
+          <h3>Install CallforBlood Foundation</h3>
           <p>Add this app to your home screen for quick access to emergency blood requests.</p>
           <div class="ios-install-steps">
             <p>1. Tap the share button</p>

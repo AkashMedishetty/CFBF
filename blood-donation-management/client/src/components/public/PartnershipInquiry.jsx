@@ -255,7 +255,7 @@ const PartnershipInquiry = () => {
                 <AlertCircle className="w-6 h-6 text-red-600" />
                 <div>
                   <p className="text-red-800 font-medium">Failed to submit inquiry</p>
-                  <p className="text-red-700 text-sm">Please try again or contact us directly at partnerships@callforblood.org</p>
+                  <p className="text-red-700 text-sm">Please try again or contact us directly at info@callforbloodfoundation.com</p>
                 </div>
               </div>
             )}

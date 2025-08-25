@@ -102,7 +102,7 @@ const PWAInstallPrompt = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">
-                                    Install Call For Blood
+                                    Install CallforBlood Foundation
                                 </h3>
                                 <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
                                     Add to your home screen for quick access to emergency blood requests.
@@ -143,7 +143,7 @@ const PWAInstallPrompt = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-1">
-                                    Install Call For Blood
+                                    Install CallforBlood Foundation
                                 </h3>
                                 <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
                                     Get instant notifications for emergency blood requests and work offline.

@@ -190,7 +190,7 @@ class SecurityManager {
       const urlObj = new URL(url, window.location.origin);
       const allowedOrigins = [
         window.location.origin,
-        'https://api.callforblood.org'
+        'https://api.callforbloodfoundation.com'
       ];
       
       return allowedOrigins.includes(urlObj.origin);

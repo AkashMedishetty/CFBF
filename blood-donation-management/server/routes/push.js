@@ -7,7 +7,7 @@ const router = express.Router();
 // Configure VAPID keys (set via env)
 const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY;
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY;
-const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:support@callforblood.org';
+const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:info@callforbloodfoundation.com';
 
 if (VAPID_PUBLIC && VAPID_PRIVATE) {
   webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC, VAPID_PRIVATE);
@@ -47,7 +47,7 @@ router.post('/test', async (req, res) => {
     if (!VAPID_PUBLIC || !VAPID_PRIVATE) {
       return res.status(400).json({ success: false, message: 'VAPID not configured' });
     }
-    const { userId, title = 'Call For Blood', body = 'Notifications enabled', data = {} } = req.body || {};
+    const { userId, title = 'CallforBlood Foundation', body = 'Notifications enabled', data = {} } = req.body || {};
     let subs = [];
     if (userId) {
       subs = await PushSubscription.find({ userId });

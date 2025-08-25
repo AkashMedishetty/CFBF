@@ -1,6 +1,6 @@
 import React, { useState, forwardRef } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 
 const Input = forwardRef(({ 
   label,
@@ -17,6 +17,7 @@ const Input = forwardRef(({
   className = '',
   multiline = false,
   rows = 3,
+  loading = false,
   ...props
 }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -60,8 +61,18 @@ const Input = forwardRef(({
       )}
       
       <div className="relative">
-        {Icon && (
+        {Icon && !loading && (
           <Icon className={`absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors duration-200 ${
+            error 
+              ? 'text-red-400' 
+              : isFocused 
+                ? 'text-primary-500' 
+                : 'text-slate-400'
+          }`} />
+        )}
+        
+        {loading && (
+          <Loader2 className={`absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 animate-spin transition-colors duration-200 ${
             error 
               ? 'text-red-400' 
               : isFocused 
@@ -107,7 +118,7 @@ const Input = forwardRef(({
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={placeholder}
-            disabled={disabled}
+            disabled={disabled || loading}
             className={`
               w-full px-4 py-3 bg-white dark:bg-slate-800 border rounded-lg
               transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
@@ -117,11 +128,11 @@ const Input = forwardRef(({
                 ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
                 : 'border-slate-300 dark:border-slate-600 focus:ring-primary-500 focus:border-primary-500'
               }
-              ${disabled 
+              ${disabled || loading
                 ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-700' 
                 : 'hover:border-slate-400 dark:hover:border-slate-500'
               }
-              ${Icon ? 'pl-12' : ''}
+              ${Icon || loading ? 'pl-12' : ''}
               ${isPassword ? 'pr-12' : ''}
             `}
             whileFocus={{ scale: 1.01 }}

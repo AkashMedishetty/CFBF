@@ -1,34 +1,13 @@
 {
-  "short_name": "Call For Blood",
-  "name": "Call For Blood Foundation - India's First Privacy-Focused Blood Donation Platform",
+  "short_name": "CallforBlood Foundation",
+  "name": "CallforBlood Foundation - India's First Privacy-Focused Blood Donation Platform",
   "description": "India's first unique donor privacy concept - connecting blood donors and recipients with complete privacy protection and intelligent automation.",
   "icons": [
     {
-      "src": "Logo/favicon-16x16.png",
-      "type": "image/png",
-      "sizes": "16x16"
-    },
-    {
-      "src": "Logo/favicon-32x32.png",
-      "type": "image/png",
-      "sizes": "32x32"
-    },
-    {
-      "src": "Logo/android-chrome-192x192.png",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAAAwCAYAAABtG3WwAAAACXBIWXMAAAsSAAALEgHS3X78AAAAGXRFWHRTb2Z0d2FyZQBQbGFjZWhvbGRlciBQTkcgdjEAAABYSURBVHicY2AYBaOBlYGBgYGJgQGJmYGBgQGxgZGBwT8GJgZGBkYmBgYGBkYGBgYGJ4Z8DAwMDw9E0EwMDQ0NDg8MDAwMDw8DAwMDw4GBAUKYwQw0AAACUdQ8/65o5gAAAAASUVORK5CYII=",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "Logo/android-chrome-512x512.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "Logo/apple-touch-icon.png",
-      "type": "image/png",
-      "sizes": "180x180"
+      "purpose": "any"
     }
   ],
   "start_url": "/?source=pwa&dev=true",

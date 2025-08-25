@@ -67,7 +67,7 @@ class MessageTemplateService {
           },
           {
             type: 'FOOTER',
-            text: 'Call For Blood Foundation - Emergency Response'
+            text: 'CallforBlood Foundation - Emergency Response'
           },
           {
             type: 'BUTTONS',
@@ -101,7 +101,7 @@ class MessageTemplateService {
           },
           {
             type: 'FOOTER',
-            text: 'Call For Blood Foundation'
+            text: 'CallforBlood Foundation'
           }
         ]
       },
@@ -122,7 +122,7 @@ class MessageTemplateService {
           },
           {
             type: 'FOOTER',
-            text: 'Call For Blood Foundation'
+            text: 'CallforBlood Foundation'
           }
         ]
       },
@@ -143,7 +143,7 @@ class MessageTemplateService {
           },
           {
             type: 'FOOTER',
-            text: 'Call For Blood Foundation\nSupport: +91-911-BLOOD'
+            text: 'CallforBlood Foundation\nSupport: http://wa.me/919491254120'
           }
         ]
       },
@@ -160,11 +160,11 @@ class MessageTemplateService {
           },
           {
             type: 'BODY',
-            text: 'Your Call For Blood Foundation verification code is: *{{1}}*\n\nUse this code to {{2}}.\n\n⏰ This code expires in 5 minutes.\n🔒 For security, don\'t share this code with anyone.'
+            text: 'Your CallforBlood Foundation verification code is: *{{1}}*\n\nUse this code to {{2}}.\n\n⏰ This code expires in 5 minutes.\n🔒 For security, don\'t share this code with anyone.'
           },
           {
             type: 'FOOTER',
-            text: 'Call For Blood Foundation'
+            text: 'CallforBlood Foundation'
           }
         ]
       },
@@ -185,7 +185,7 @@ class MessageTemplateService {
           },
           {
             type: 'FOOTER',
-            text: 'Call For Blood Foundation'
+            text: 'CallforBlood Foundation'
           },
           {
             type: 'BUTTONS',
@@ -223,7 +223,7 @@ class MessageTemplateService {
           },
           {
             type: 'FOOTER',
-            text: 'Call For Blood Foundation'
+            text: 'CallforBlood Foundation'
           }
         ]
       }

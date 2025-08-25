@@ -379,12 +379,12 @@ const SignInPage = () => {
                   required
                 />
                 <div className="mt-2 text-right">
-                  <Link
-                    to="/forgot-password"
-                    className="text-sm text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
+                  <span
+                    className="text-sm text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                    title="Forgot password temporarily disabled"
                   >
                     Forgot your password?
-                  </Link>
+                  </span>
                 </div>
               </motion.div>
             )}

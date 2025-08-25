@@ -71,7 +71,7 @@ class IOSNotificationManager {
     const metaTags = [
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
       { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
-      { name: 'apple-mobile-web-app-title', content: 'Call For Blood' },
+      { name: 'apple-mobile-web-app-title', content: 'CallforBlood Foundation' },
       { name: 'apple-touch-icon', content: '/apple-touch-icon.png' },
       { name: 'apple-touch-startup-image', content: '/apple-splash-screen.png' }
     ];
@@ -423,7 +423,7 @@ class IOSNotificationManager {
 
       // Fallback: Update document title for iOS
       if (this.isIOS) {
-        const originalTitle = 'Call For Blood';
+        const originalTitle = 'CallforBlood Foundation';
         document.title = count > 0 ? `(${count}) ${originalTitle}` : originalTitle;
       }
 

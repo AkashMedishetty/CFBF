@@ -409,7 +409,7 @@ class InstitutionService {
   async notifyAdminsNewRegistration(institution) {
     try {
       // This would typically fetch admin emails from database
-      const adminEmails = ['admin@callforblood.org'];
+      const adminEmails = ['info@callforbloodfoundation.com'];
       
       for (const email of adminEmails) {
         await emailService.sendEmail({

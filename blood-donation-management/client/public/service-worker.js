@@ -403,7 +403,7 @@ async function handleNavigationRequest(request) {
       <!DOCTYPE html>
       <html>
         <head>
-          <title>Offline - Call For Blood</title>
+          <title>Offline - CallforBlood Foundation</title>
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <style>
             body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
@@ -590,7 +590,7 @@ self.addEventListener('push', (event) => {
 
         // Determine notification priority and type
         const isEmergency = data.priority === 'emergency' || data.type === 'blood_request_urgent';
-        const title = data.title || 'Call For Blood';
+        const title = data.title || 'CallforBlood Foundation';
 
         // Enhanced notification options based on priority
         const options = {
@@ -648,7 +648,7 @@ self.addEventListener('push', (event) => {
         console.error('[SW] Push event handling failed:', error);
 
         // Fallback notification
-        await self.registration.showNotification('Call For Blood', {
+        await self.registration.showNotification('CallforBlood Foundation', {
           body: 'You have a new notification',
           icon: '/logo192.png',
           badge: '/logo192.png'
@@ -1034,7 +1034,7 @@ async function processBackgroundNotification(data) {
 
     // Show notification
     await self.registration.showNotification(
-      notification.title || 'Call For Blood',
+      notification.title || 'CallforBlood Foundation',
       options
     );
 

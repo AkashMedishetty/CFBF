@@ -201,7 +201,7 @@ const DashboardPage = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <Button variant="outline" className="flex items-center space-x-2">
+            <Button variant="outline" className="flex items-center space-x-2" onClick={() => window.location.href = '/notifications'}>
               <Bell className="h-4 w-4" />
               <span>Notifications</span>
             </Button>

@@ -6,6 +6,7 @@ const passwordManager = require('../utils/password');
 const logger = require('../utils/logger');
 const { userRateLimit, auth } = require('../middleware/auth');
 const { rateLimit } = require('express-rate-limit');
+const emailService = require('../services/emailService');
 
 const router = express.Router();
 
@@ -271,6 +272,24 @@ router.post('/register', userRateLimit(3, 15 * 60 * 1000), async (req, res) => {
 
     logger.success(`User registered successfully: ${phone}`, 'AUTH_ROUTES');
     logger.auth('USER_REGISTERED', user._id, 'AUTH_ROUTES');
+
+    // Send welcome email if email is provided
+    if (email) {
+      try {
+        const donorData = {
+          id: user._id,
+          name: user.name,
+          bloodType: user.bloodType,
+          phoneNumber: user.phoneNumber
+        };
+        
+        await emailService.sendWelcomeEmail(email, donorData);
+        logger.success(`Welcome email sent to: ${emailService.maskEmail(email)}`, 'AUTH_ROUTES');
+      } catch (emailError) {
+        // Don't fail registration if email fails, just log the error
+        logger.error(`Failed to send welcome email to: ${emailService.maskEmail(email)}`, 'AUTH_ROUTES', emailError);
+      }
+    }
 
     // Return user data without sensitive information
     const userResponse = {
@@ -829,6 +848,130 @@ router.post('/check-phone', validationLimiter, async (req, res) => {
   }
 });
 
+// @route   POST /api/v1/auth/forgot-password
+// @desc    Send password reset OTP via email or phone
+// @access  Public
+router.post('/forgot-password', userRateLimit(3, 15 * 60 * 1000), async (req, res) => {
+  try {
+    logger.api('POST', '/api/v1/auth/forgot-password', null, null, 'AUTH_ROUTES');
+    logger.debug('Forgot password request', 'AUTH_ROUTES');
+
+    const { phoneNumber, email } = req.body;
+
+    // Validate input - either phone or email required
+    if (!phoneNumber && !email) {
+      logger.warn('Forgot password validation failed: Missing phone or email', 'AUTH_ROUTES');
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Either phone number or email is required',
+          code: 'VALIDATION_ERROR'
+        }
+      });
+    }
+
+    // Find user by phone or email
+    let user;
+    let searchCriteria = {};
+    let targetIdentifier = '';
+
+    if (phoneNumber) {
+      // Validate phone number format
+      if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
+        logger.warn(`Forgot password failed: Invalid phone format ${phoneNumber}`, 'AUTH_ROUTES');
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: 'Invalid phone number format',
+            code: 'INVALID_PHONE'
+          }
+        });
+      }
+      searchCriteria.phoneNumber = phoneNumber;
+      targetIdentifier = phoneNumber;
+    } else {
+      // Validate email format
+      const emailValidation = emailService.validateEmail(email);
+      if (!emailValidation.valid) {
+        logger.warn(`Forgot password failed: Invalid email format ${email}`, 'AUTH_ROUTES');
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: emailValidation.message,
+            code: 'INVALID_EMAIL'
+          }
+        });
+      }
+      searchCriteria.email = email.toLowerCase().trim();
+      targetIdentifier = email;
+    }
+
+    user = await User.findOne(searchCriteria);
+    if (!user) {
+      logger.warn(`Forgot password failed: User not found for ${phoneNumber ? 'phone' : 'email'} ${targetIdentifier}`, 'AUTH_ROUTES');
+      return res.status(404).json({
+        success: false,
+        error: {
+          message: 'User not found with provided credentials',
+          code: 'USER_NOT_FOUND'
+        }
+      });
+    }
+
+    // Generate and send OTP
+    const otpService = require('../services/otpService');
+    const otp = otpService.generateOTP();
+    otpService.storeOTP(targetIdentifier, otp, 'password_reset');
+
+    let sendResult;
+    if (email) {
+      // Send OTP via email
+      sendResult = await emailService.sendOTP(email, otp, 'password_reset');
+    } else {
+      // Send OTP via WhatsApp
+      const whatsappService = require('../services/whatsappService');
+      sendResult = await whatsappService.sendOTP(phoneNumber, otp, 'password_reset');
+    }
+
+    if (sendResult.success) {
+      logger.success(`Password reset OTP sent to: ${phoneNumber ? otpService.maskPhoneNumber(phoneNumber) : emailService.maskEmail(email)}`, 'AUTH_ROUTES');
+      
+      res.json({
+        success: true,
+        message: `Password reset OTP sent successfully via ${email ? 'email' : 'WhatsApp'}`,
+        data: {
+          target: targetIdentifier,
+          method: email ? 'email' : 'whatsapp',
+          expiresIn: 300 // 5 minutes
+        }
+      });
+    } else {
+      logger.error(`Failed to send password reset OTP to: ${phoneNumber ? otpService.maskPhoneNumber(phoneNumber) : emailService.maskEmail(email)}`, 'AUTH_ROUTES');
+      
+      // Clear stored OTP if sending failed
+      otpService.clearOTP(targetIdentifier);
+      
+      res.status(500).json({
+        success: false,
+        error: {
+          message: `Failed to send OTP via ${email ? 'email' : 'WhatsApp'}. Please try again.`,
+          code: 'OTP_SEND_FAILED'
+        }
+      });
+    }
+
+  } catch (error) {
+    logger.error('Forgot password failed', 'AUTH_ROUTES', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Forgot password request failed',
+        code: 'FORGOT_PASSWORD_ERROR'
+      }
+    });
+  }
+});
+
 // @route   POST /api/v1/auth/reset-password
 // @desc    Reset user password with OTP verification
 // @access  Public
@@ -837,22 +980,25 @@ router.post('/reset-password', userRateLimit(3, 15 * 60 * 1000), async (req, res
     logger.api('POST', '/api/v1/auth/reset-password', null, null, 'AUTH_ROUTES');
     logger.debug('Password reset attempt', 'AUTH_ROUTES');
 
-    const { phoneNumber, otp, newPassword } = req.body;
+    const { phoneNumber, email, otp, newPassword } = req.body;
 
     // Validate input
-    if (!phoneNumber || !otp || !newPassword) {
+    if ((!phoneNumber && !email) || !otp || !newPassword) {
       logger.warn('Password reset validation failed: Missing required fields', 'AUTH_ROUTES');
       return res.status(400).json({
         success: false,
         error: {
-          message: 'Phone number, OTP, and new password are required',
+          message: 'Phone number or email, OTP, and new password are required',
           code: 'VALIDATION_ERROR'
         }
       });
     }
 
-    // Validate phone number format
-    if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
+    const targetIdentifier = phoneNumber || email;
+    const isEmail = !!email && !phoneNumber;
+
+    // Validate input format
+    if (phoneNumber && !/^[6-9]\d{9}$/.test(phoneNumber)) {
       logger.warn(`Password reset failed: Invalid phone format ${phoneNumber}`, 'AUTH_ROUTES');
       return res.status(400).json({
         success: false,
@@ -863,10 +1009,24 @@ router.post('/reset-password', userRateLimit(3, 15 * 60 * 1000), async (req, res
       });
     }
 
+    if (email) {
+      const emailValidation = emailService.validateEmail(email);
+      if (!emailValidation.valid) {
+        logger.warn(`Password reset failed: Invalid email format ${email}`, 'AUTH_ROUTES');
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: emailValidation.message,
+            code: 'INVALID_EMAIL'
+          }
+        });
+      }
+    }
+
     // Validate password strength
     const passwordStrength = passwordManager.validatePasswordStrength(newPassword);
     if (passwordStrength.score < 3) {
-      logger.warn(`Password reset failed: Weak password for ${phoneNumber}`, 'AUTH_ROUTES');
+      logger.warn(`Password reset failed: Weak password for ${targetIdentifier}`, 'AUTH_ROUTES');
       return res.status(400).json({
         success: false,
         error: {
@@ -878,9 +1038,10 @@ router.post('/reset-password', userRateLimit(3, 15 * 60 * 1000), async (req, res
     }
 
     // Find user
-    const user = await User.findOne({ phoneNumber });
+    const searchCriteria = phoneNumber ? { phoneNumber } : { email: email.toLowerCase().trim() };
+    const user = await User.findOne(searchCriteria);
     if (!user) {
-      logger.warn(`Password reset failed: User not found for phone ${phoneNumber}`, 'AUTH_ROUTES');
+      logger.warn(`Password reset failed: User not found for ${isEmail ? 'email' : 'phone'} ${targetIdentifier}`, 'AUTH_ROUTES');
       return res.status(404).json({
         success: false,
         error: {
@@ -892,10 +1053,10 @@ router.post('/reset-password', userRateLimit(3, 15 * 60 * 1000), async (req, res
 
     // Verify OTP
     const otpService = require('../services/otpService');
-    const otpVerification = otpService.verifyOTP(phoneNumber, otp, 'password-reset');
+    const otpVerification = otpService.verifyOTP(targetIdentifier, otp);
     
     if (!otpVerification.success) {
-      logger.warn(`Password reset failed: Invalid OTP for phone ${phoneNumber}`, 'AUTH_ROUTES');
+      logger.warn(`Password reset failed: Invalid OTP for ${isEmail ? 'email' : 'phone'} ${targetIdentifier}`, 'AUTH_ROUTES');
       return res.status(401).json({
         success: false,
         error: {
@@ -914,8 +1075,43 @@ router.post('/reset-password', userRateLimit(3, 15 * 60 * 1000), async (req, res
     user.loginAttempts = undefined; // Reset login attempts
     await user.save();
 
-    logger.success(`Password reset successful for phone: ${phoneNumber}`, 'AUTH_ROUTES');
+    logger.success(`Password reset successful for ${isEmail ? 'email' : 'phone'}: ${targetIdentifier}`, 'AUTH_ROUTES');
     logger.auth('PASSWORD_RESET', user._id, 'AUTH_ROUTES');
+
+    // Send confirmation email if user has email
+    if (user.email) {
+      try {
+        await emailService.sendEmail(
+          user.email,
+          '🔐 Password Reset Successful - CallforBlood Foundation',
+          `Dear ${user.name},
+
+Your password has been successfully reset for your CallforBlood Foundation account.
+
+If you did not request this password reset, please contact our support team immediately at info@callforbloodfoundation.com.
+
+For your security:
+• Never share your password with anyone
+• Use a strong, unique password
+• Enable two-factor authentication if available
+
+Thank you for keeping your account secure.
+
+Best regards,
+CallforBlood Foundation Team`,
+          {
+            categories: ['security', 'password_reset'],
+            customArgs: {
+              type: 'password_reset_confirmation',
+              userId: user._id.toString()
+            }
+          }
+        );
+      } catch (emailError) {
+        logger.warn('Failed to send password reset confirmation email', 'AUTH_ROUTES', emailError);
+        // Don't fail the password reset if email fails
+      }
+    }
 
     res.json({
       success: true,
@@ -929,6 +1125,117 @@ router.post('/reset-password', userRateLimit(3, 15 * 60 * 1000), async (req, res
       error: {
         message: 'Password reset failed',
         code: 'RESET_ERROR'
+      }
+    });
+  }
+});
+
+// @route   POST /api/v1/auth/test-email
+// @desc    Test email service (development only)
+// @access  Public (should be restricted in production)
+router.post('/test-email', async (req, res) => {
+  try {
+    // Only allow in development
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(403).json({
+        success: false,
+        error: {
+          message: 'Test endpoints not available in production',
+          code: 'FORBIDDEN'
+        }
+      });
+    }
+
+    logger.api('POST', '/api/v1/auth/test-email', null, null, 'AUTH_ROUTES');
+    
+    const { email, type = 'welcome' } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Email is required',
+          code: 'EMAIL_REQUIRED'
+        }
+      });
+    }
+
+    // Validate email
+    const emailValidation = emailService.validateEmail(email);
+    if (!emailValidation.valid) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: emailValidation.message,
+          code: 'INVALID_EMAIL'
+        }
+      });
+    }
+
+    let result;
+    const testData = {
+      id: 'test-user-id',
+      name: 'Test User',
+      bloodType: 'O+',
+      phoneNumber: '9876543210'
+    };
+
+    switch (type) {
+      case 'welcome':
+        result = await emailService.sendWelcomeEmail(email, testData);
+        break;
+      case 'otp':
+        result = await emailService.sendOTP(email, '123456', 'verification');
+        break;
+      case 'test':
+        result = await emailService.sendEmail(
+          email,
+          'Test Email - CallforBlood Foundation',
+          'This is a test email to verify your SMTP configuration is working correctly.'
+        );
+        break;
+      default:
+        return res.status(400).json({
+          success: false,
+          error: {
+            message: 'Invalid email type. Use: welcome, otp, or test',
+            code: 'INVALID_TYPE'
+          }
+        });
+    }
+
+    if (result.success) {
+      logger.success(`Test email (${type}) sent successfully to: ${emailService.maskEmail(email)}`, 'AUTH_ROUTES');
+      
+      res.json({
+        success: true,
+        message: `Test email (${type}) sent successfully`,
+        data: {
+          email: emailService.maskEmail(email),
+          type,
+          messageId: result.messageId,
+          simulated: result.simulated || false
+        }
+      });
+    } else {
+      logger.error(`Test email (${type}) failed for: ${emailService.maskEmail(email)}`, 'AUTH_ROUTES');
+      
+      res.status(500).json({
+        success: false,
+        error: {
+          message: result.message || 'Failed to send test email',
+          code: result.error || 'EMAIL_SEND_FAILED'
+        }
+      });
+    }
+
+  } catch (error) {
+    logger.error('Test email endpoint failed', 'AUTH_ROUTES', error);
+    res.status(500).json({
+      success: false,
+      error: {
+        message: 'Test email failed',
+        code: 'TEST_EMAIL_ERROR'
       }
     });
   }

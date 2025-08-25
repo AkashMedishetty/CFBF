@@ -565,7 +565,7 @@ const GuestEmergencyRequest = ({ onSubmit, onTrackingGenerated }) => {
               </div>
             </div>
             <motion.a
-              href="tel:+91-911-BLOOD"
+              href="http://wa.me/919491254120"
               whileTap={{ scale: 0.95 }}
               className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors touch-manipulation"
             >

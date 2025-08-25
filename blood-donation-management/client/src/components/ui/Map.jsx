@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -34,11 +34,90 @@ const Map = ({
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
+  const onMarkerClickRef = useRef(onMarkerClick);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  // Update the ref when onMarkerClick changes
+  useEffect(() => {
+    onMarkerClickRef.current = onMarkerClick;
+  }, [onMarkerClick]);
+
+  // Define createMarker function before it's used
+  const createMarker = useCallback((markerData) => {
+    try {
+      const {
+        position,
+        title,
+        description,
+        type = 'default',
+        icon,
+        color = '#dc2626'
+      } = markerData;
+
+      if (!position || !Array.isArray(position) || position.length !== 2) {
+        logger.warn('Invalid marker position', 'MAP_COMPONENT', markerData);
+        return null;
+      }
+
+      // Create custom icon based on type
+      let markerIcon;
+      
+      if (icon) {
+        markerIcon = L.divIcon({
+          html: `<div class="custom-marker" style="background-color: ${color};">${icon}</div>`,
+          className: 'custom-div-icon',
+          iconSize: [30, 30],
+          iconAnchor: [15, 30]
+        });
+      } else {
+        // Use different colors for different types
+        const typeColors = {
+          hospital: '#dc2626',
+          donor: '#16a34a',
+          request: '#ea580c',
+          bloodbank: '#2563eb',
+          default: '#6b7280'
+        };
+
+        markerIcon = L.divIcon({
+          html: `<div class="marker-pin" style="background-color: ${typeColors[type] || color};"></div>`,
+          className: 'custom-div-icon',
+          iconSize: [25, 35],
+          iconAnchor: [12, 35]
+        });
+      }
+
+      const marker = L.marker(position, { icon: markerIcon });
+
+      // Add popup if title or description provided
+      if (title || description) {
+        const popupContent = `
+          <div class="marker-popup">
+            ${title ? `<h3 class="popup-title">${title}</h3>` : ''}
+            ${description ? `<p class="popup-description">${description}</p>` : ''}
+          </div>
+        `;
+        marker.bindPopup(popupContent);
+      }
+
+      // Add click handler
+      if (onMarkerClickRef.current) {
+        marker.on('click', () => {
+          onMarkerClickRef.current(markerData);
+          logger.ui('CLICK', 'MapMarker', { type, title }, 'MAP_COMPONENT');
+        });
+      }
+
+      return marker;
+    } catch (error) {
+      logger.error('Error creating marker', 'MAP_COMPONENT', error);
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -120,7 +199,7 @@ const Map = ({
       const group = new L.featureGroup(markersRef.current);
       mapInstanceRef.current.fitBounds(group.getBounds().pad(0.1));
     }
-  }, [markers, createMarker]);
+  }, [markers]);
 
   // Update map center when center prop changes
   useEffect(() => {
@@ -128,78 +207,6 @@ const Map = ({
       mapInstanceRef.current.setView(center, zoom);
     }
   }, [center, zoom]);
-
-  const createMarker = useCallback((markerData) => {
-    try {
-      const {
-        position,
-        title,
-        description,
-        type = 'default',
-        icon,
-        color = '#dc2626'
-      } = markerData;
-
-      if (!position || !Array.isArray(position) || position.length !== 2) {
-        logger.warn('Invalid marker position', 'MAP_COMPONENT', markerData);
-        return null;
-      }
-
-      // Create custom icon based on type
-      let markerIcon;
-      
-      if (icon) {
-        markerIcon = L.divIcon({
-          html: `<div class="custom-marker" style="background-color: ${color};">${icon}</div>`,
-          className: 'custom-div-icon',
-          iconSize: [30, 30],
-          iconAnchor: [15, 30]
-        });
-      } else {
-        // Use different colors for different types
-        const typeColors = {
-          hospital: '#dc2626',
-          donor: '#16a34a',
-          request: '#ea580c',
-          bloodbank: '#2563eb',
-          default: '#6b7280'
-        };
-
-        markerIcon = L.divIcon({
-          html: `<div class="marker-pin" style="background-color: ${typeColors[type] || color};"></div>`,
-          className: 'custom-div-icon',
-          iconSize: [25, 35],
-          iconAnchor: [12, 35]
-        });
-      }
-
-      const marker = L.marker(position, { icon: markerIcon });
-
-      // Add popup if title or description provided
-      if (title || description) {
-        const popupContent = `
-          <div class="marker-popup">
-            ${title ? `<h3 class="popup-title">${title}</h3>` : ''}
-            ${description ? `<p class="popup-description">${description}</p>` : ''}
-          </div>
-        `;
-        marker.bindPopup(popupContent);
-      }
-
-      // Add click handler
-      if (onMarkerClick) {
-        marker.on('click', () => {
-          onMarkerClick(markerData);
-          logger.ui('CLICK', 'MapMarker', { type, title }, 'MAP_COMPONENT');
-        });
-      }
-
-      return marker;
-    } catch (error) {
-      logger.error('Error creating marker', 'MAP_COMPONENT', error);
-      return null;
-    }
-  }, [onMarkerClick]);
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {

@@ -58,7 +58,7 @@ const FloatingEmergencyButton = ({
 
   // Handle emergency hotline
   const handleEmergencyHotline = () => {
-    window.open('tel:+91-911-BLOOD', '_self');
+    window.open('http://wa.me/919491254120', '_self');
   };
 
   // Toggle expanded state

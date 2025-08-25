@@ -580,7 +580,7 @@ const EmergencyRequestPage = () => {
                   For critical emergencies requiring immediate assistance, call our 24/7 hotline:
                 </p>
                 <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                  📞 +91-911-BLOOD-1 (911-256-631)
+                  💬 WhatsApp: https://wa.me/919491254120
                 </p>
               </div>
             </div>

@@ -69,17 +69,56 @@ const OnboardingPage = () => {
       userIdUnderscore: user?._id,
       userKeys: user ? Object.keys(user) : 'null',
       locationState: location.state,
-      hasLocationUser: !!location.state?.user
+      hasLocationUser: !!location.state?.user,
+      userStatus: user?.status,
+      isApproved: user?.isApproved,
+      verificationStatus: user?.verification?.isVerified
     });
     
     // Ensure we have a user with an ID; if not, fetch current user
     const ensureUser = async () => {
-      if (user && (user._id || user.id)) return true;
+      if (user && (user._id || user.id)) {
+        // Check if user is already approved - redirect to dashboard
+        const isApproved = user?.status === 'active' || 
+                          user?.verification?.medicallyCleared === true ||
+                          (user?.verification?.verifiedAt && user?.verification?.verifiedBy);
+        
+        if (isApproved) {
+          logger.info('✅ User is already approved, redirecting to dashboard', 'ONBOARDING_PAGE', {
+            userStatus: user?.status,
+            medicallyCleared: user?.verification?.medicallyCleared,
+            verifiedAt: user?.verification?.verifiedAt,
+            verifiedBy: user?.verification?.verifiedBy
+          });
+          navigate('/dashboard');
+          return false;
+        }
+        return true;
+      }
+      
       try {
         const resp = await authApi.getCurrentUser();
         if (resp.success && resp.data?.user) {
           const u = resp.data.user;
-          setUser(u._id ? u : { ...u, _id: u.id });
+          const userData = u._id ? u : { ...u, _id: u.id };
+          setUser(userData);
+          
+          // Check if newly fetched user is approved
+          const isApproved = userData?.status === 'active' || 
+                            userData?.verification?.medicallyCleared === true ||
+                            (userData?.verification?.verifiedAt && userData?.verification?.verifiedBy);
+          
+          if (isApproved) {
+            logger.info('✅ Fetched user is approved, redirecting to dashboard', 'ONBOARDING_PAGE', {
+              userStatus: userData?.status,
+              medicallyCleared: userData?.verification?.medicallyCleared,
+              verifiedAt: userData?.verification?.verifiedAt,
+              verifiedBy: userData?.verification?.verifiedBy
+            });
+            navigate('/dashboard');
+            return false;
+          }
+          
           return true;
         }
       } catch (e) {
@@ -184,21 +223,23 @@ const OnboardingPage = () => {
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+    if ((currentStep || 1) > 1) {
+      setCurrentStep(prev => (prev || 1) - 1);
     }
   };
 
   const handleNext = () => {
-    if (currentStep === 1 && completedSteps.documents) {
+    const step = currentStep || 1;
+    if (step === 1 && completedSteps.documents) {
       setCurrentStep(2);
-    } else if (currentStep === 2 && completedSteps.questionnaire) {
+    } else if (step === 2 && completedSteps.questionnaire) {
       setCurrentStep(3);
     }
   };
 
   const renderStepContent = () => {
-    switch (currentStep) {
+    const step = currentStep || 1;
+    switch (step) {
       case 1:
         return (
           <DocumentUpload
@@ -359,8 +400,8 @@ const OnboardingPage = () => {
           <div className="flex items-center justify-between max-w-2xl mx-auto">
             {steps.map((step, index) => {
               const Icon = step.icon;
-              const isActive = currentStep === step.id;
-              const isCompleted = currentStep > step.id || 
+              const isActive = (currentStep || 1) === step.id;
+              const isCompleted = (currentStep || 1) > step.id || 
                 (step.id === 1 && completedSteps.documents) ||
                 (step.id === 2 && completedSteps.questionnaire);
               
@@ -398,7 +439,7 @@ const OnboardingPage = () => {
                   
                   {index < steps.length - 1 && (
                     <div className={`flex-1 h-0.5 mx-4 transition-all duration-300 ${
-                      currentStep > step.id ? 'bg-green-500' : 'bg-slate-300 dark:bg-slate-600'
+                      (currentStep || 1) > step.id ? 'bg-green-500' : 'bg-slate-300 dark:bg-slate-600'
                     }`} />
                   )}
                 </div>
@@ -410,7 +451,7 @@ const OnboardingPage = () => {
         {/* Step Content */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentStep}
+            key={currentStep || 1}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -421,7 +462,7 @@ const OnboardingPage = () => {
         </AnimatePresence>
 
         {/* Navigation (only show for steps 1 and 2) */}
-        {currentStep < 3 && (
+        {(currentStep || 1) < 3 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -430,7 +471,7 @@ const OnboardingPage = () => {
             <Button
               variant="outline"
               onClick={handlePrevious}
-              disabled={currentStep === 1}
+              disabled={(currentStep || 1) === 1}
               className="flex items-center space-x-2"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -440,8 +481,8 @@ const OnboardingPage = () => {
             <Button
               onClick={handleNext}
               disabled={
-                (currentStep === 1 && !completedSteps.documents) ||
-                (currentStep === 2 && !completedSteps.questionnaire)
+                ((currentStep || 1) === 1 && !completedSteps.documents) ||
+                ((currentStep || 1) === 2 && !completedSteps.questionnaire)
               }
               className="flex items-center space-x-2"
             >

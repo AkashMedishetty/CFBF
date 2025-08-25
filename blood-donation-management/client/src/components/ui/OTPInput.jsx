@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import logger from '../../utils/logger';
 
@@ -58,37 +58,46 @@ const OTPInput = ({
     }
   }, [otp, onChange, onComplete, length]);
 
-  const handleChange = (index, value) => {
+  const handleChange = useCallback((index, value) => {
     // Only allow numeric input
     if (!/^\d*$/.test(value)) {
       logger.debug(`Non-numeric input rejected: ${value}`, 'OTP_INPUT');
       return;
     }
 
-    const newOtp = [...otp];
-    newOtp[index] = value.slice(-1); // Take only the last character
-    setOtp(newOtp);
+    setOtp(prevOtp => {
+      const newOtp = [...prevOtp];
+      newOtp[index] = value.slice(-1); // Take only the last character
+      
+      logger.ui('CHANGE', 'OTPInput', { index, value: value.slice(-1) }, 'OTP_INPUT');
 
-    logger.ui('CHANGE', 'OTPInput', { index, value: value.slice(-1) }, 'OTP_INPUT');
+      // Auto-focus next input
+      if (value && index < length - 1) {
+        setTimeout(() => {
+          inputRefs.current[index + 1]?.focus();
+        }, 0);
+      }
+      
+      return newOtp;
+    });
+  }, [length]);
 
-    // Auto-focus next input
-    if (value && index < length - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (index, e) => {
+  const handleKeyDown = useCallback((index, e) => {
     logger.ui('KEYDOWN', 'OTPInput', { index, key: e.key }, 'OTP_INPUT');
 
     if (e.key === 'Backspace') {
       if (!otp[index] && index > 0) {
         // If current input is empty, move to previous input
-        inputRefs.current[index - 1]?.focus();
+        setTimeout(() => {
+          inputRefs.current[index - 1]?.focus();
+        }, 0);
       } else {
         // Clear current input
-        const newOtp = [...otp];
-        newOtp[index] = '';
-        setOtp(newOtp);
+        setOtp(prevOtp => {
+          const newOtp = [...prevOtp];
+          newOtp[index] = '';
+          return newOtp;
+        });
       }
     } else if (e.key === 'ArrowLeft' && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -101,9 +110,9 @@ const OTPInput = ({
         onComplete(otpString);
       }
     }
-  };
+  }, [otp, length, onComplete]);
 
-  const handlePaste = (e) => {
+  const handlePaste = useCallback((e) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text/plain');
     const pastedOtp = pastedData.replace(/\D/g, '').slice(0, length);
@@ -120,15 +129,17 @@ const OTPInput = ({
       // Focus the next empty input or the last input
       const nextEmptyIndex = newOtp.findIndex(digit => !digit);
       const focusIndex = nextEmptyIndex !== -1 ? nextEmptyIndex : length - 1;
-      inputRefs.current[focusIndex]?.focus();
+      setTimeout(() => {
+        inputRefs.current[focusIndex]?.focus();
+      }, 0);
     }
-  };
+  }, [length]);
 
-  const handleFocus = (index) => {
+  const handleFocus = useCallback((index) => {
     logger.ui('FOCUS', 'OTPInput', { index }, 'OTP_INPUT');
     // Select all text when focusing
     inputRefs.current[index]?.select();
-  };
+  }, []);
 
   // Animation variants
   const containerVariants = {

@@ -1,0 +1,40 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fef3c7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fde68a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#bg2)"/>
+  
+  <!-- Community/people icons -->
+  <g transform="translate(150, 120)">
+    <!-- Person 1 -->
+    <circle cx="0" cy="0" r="15" fill="#dc2626" opacity="0.7"/>
+    <rect x="-10" y="15" width="20" height="30" rx="10" fill="#dc2626" opacity="0.7"/>
+    
+    <!-- Person 2 -->
+    <circle cx="40" cy="0" r="15" fill="#b91c1c" opacity="0.7"/>
+    <rect x="30" y="15" width="20" height="30" rx="10" fill="#b91c1c" opacity="0.7"/>
+    
+    <!-- Person 3 -->
+    <circle cx="80" cy="0" r="15" fill="#991b1b" opacity="0.7"/>
+    <rect x="70" y="15" width="20" height="30" rx="10" fill="#991b1b" opacity="0.7"/>
+  </g>
+  
+  <!-- Connecting heart -->
+  <g transform="translate(200, 180)">
+    <path d="M0,10 C-10,0 -25,0 -25,15 C-25,30 0,45 0,45 C0,45 25,30 25,15 C25,0 10,0 0,10 Z" 
+          fill="#dc2626" opacity="0.8"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#92400e">
+    Community Blood Donation
+  </text>
+  <text x="200" y="260" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#a16207">
+    Fallback Image
+  </text>
+</svg>

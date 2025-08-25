@@ -93,6 +93,7 @@ router.post('/donors/:donorId/approve', adminLimiter, async (req, res) => {
       donorId,
       {
         status: 'active',
+        isApproved: true,
         'verification.medicallyCleared': true,
         'verification.verifiedBy': req.user?.id,
         'verification.verifiedAt': new Date(),
@@ -189,7 +190,8 @@ router.post('/donors/:donorId/reject', adminLimiter, async (req, res) => {
     const donor = await User.findByIdAndUpdate(
       donorId,
       {
-        status: 'rejected',
+        status: 'inactive',
+        isApproved: false,
         'verification.medicallyCleared': false,
         'verification.verifiedBy': req.user?.id,
         'verification.verifiedAt': new Date(),
@@ -571,6 +573,109 @@ router.get('/requests/summary', adminLimiter, async (req, res) => {
   } catch (error) {
     logger.error('Error fetching requests summary', 'ADMIN_ROUTES', error);
     res.status(500).json({ success: false, error: 'INTERNAL_SERVER_ERROR' });
+  }
+});
+
+/**
+ * @route   POST /api/v1/admin/export/donors
+ * @desc    Export donors data to CSV
+ * @access  Private (Admin only)
+ */
+router.post('/export/donors', adminLimiter, async (req, res) => {
+  try {
+    const { filters = {} } = req.body;
+    
+    logger.info('Admin requested donor export', 'ADMIN_ROUTES', { filters });
+
+    // Build query based on filters
+    const query = { role: 'donor' };
+    
+    if (filters.status) {
+      query.status = filters.status;
+    }
+    
+    if (filters.bloodType) {
+      query['medicalInfo.bloodType'] = filters.bloodType;
+    }
+    
+    if (filters.dateRange) {
+      const { startDate, endDate } = filters.dateRange;
+      if (startDate || endDate) {
+        query.createdAt = {};
+        if (startDate) query.createdAt.$gte = new Date(startDate);
+        if (endDate) query.createdAt.$lte = new Date(endDate);
+      }
+    }
+
+    // Get donors data
+    const donors = await User.find(query)
+      .select('name email phoneNumber bloodType status createdAt address.city address.state verification.verifiedAt')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Convert to CSV format
+    const csvHeaders = [
+      'Name',
+      'Email', 
+      'Phone',
+      'Blood Type',
+      'Status',
+      'Registration Date',
+      'City',
+      'State',
+      'Verified Date'
+    ];
+
+    const csvRows = donors.map(donor => [
+      donor.name || '',
+      donor.email || '',
+      donor.phoneNumber || '',
+      donor.bloodType || '',
+      donor.status || '',
+      donor.createdAt ? new Date(donor.createdAt).toLocaleDateString() : '',
+      donor.address?.city || '',
+      donor.address?.state || '',
+      donor.verification?.verifiedAt ? new Date(donor.verification.verifiedAt).toLocaleDateString() : ''
+    ]);
+
+    // Create CSV content
+    const csvContent = [
+      csvHeaders.join(','),
+      ...csvRows.map(row => row.map(field => `"${field}"`).join(','))
+    ].join('\n');
+
+    // Log admin action
+    auditLogger.logUserAction({
+      userId: req.user?.id || 'admin',
+      userRole: 'admin',
+      action: 'export_donors',
+      resource: 'donor_data',
+      details: `Exported ${donors.length} donor records`,
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      success: true,
+      metadata: {
+        donorCount: donors.length,
+        filters,
+        requestId: req.requestId
+      }
+    });
+
+    // Set response headers for file download
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="donors-export-${new Date().toISOString().split('T')[0]}.csv"`);
+    
+    logger.success(`Donor export completed: ${donors.length} records`, 'ADMIN_ROUTES');
+
+    res.status(200).send(csvContent);
+
+  } catch (error) {
+    logger.error('Error exporting donors', 'ADMIN_ROUTES', error);
+    res.status(500).json({
+      success: false,
+      error: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to export donors'
+    });
   }
 });
 

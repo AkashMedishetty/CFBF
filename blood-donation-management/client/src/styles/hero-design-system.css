@@ -1,0 +1,386 @@
+/**
+ * Hero Section Design System
+ * Modern typography, gradients, and design tokens for the hero section
+ */
+
+/* Custom CSS Properties for Hero Section */
+:root {
+  /* Hero-specific color palette */
+  --hero-primary-gradient: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+  --hero-secondary-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+  --hero-accent-gradient: linear-gradient(135deg, #fecaca 0%, #f87171 50%, #ef4444 100%);
+  
+  /* Indian flag gradient for privacy badge */
+  --indian-flag-gradient: linear-gradient(135deg, 
+    #FF9933 0%,     /* Saffron */
+    #FF9933 25%,    /* Saffron */
+    #FFFFFF 25%,    /* White */
+    #FFFFFF 50%,    /* White */
+    #FFFFFF 50%,    /* White */
+    #FFFFFF 75%,    /* White */
+    #138808 75%,    /* Green */
+    #138808 100%    /* Green */
+  );
+  
+  /* Glass morphism effects */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-backdrop: blur(20px) saturate(180%);
+  
+  /* Modern shadows */
+  --hero-shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.1);
+  --hero-shadow-md: 0 8px 25px -5px rgba(0, 0, 0, 0.15);
+  --hero-shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+  --hero-shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* Typography scale */
+  --hero-text-xs: clamp(0.75rem, 2vw, 0.875rem);
+  --hero-text-sm: clamp(0.875rem, 2.5vw, 1rem);
+  --hero-text-base: clamp(1rem, 3vw, 1.125rem);
+  --hero-text-lg: clamp(1.125rem, 3.5vw, 1.25rem);
+  --hero-text-xl: clamp(1.25rem, 4vw, 1.5rem);
+  --hero-text-2xl: clamp(1.5rem, 5vw, 2rem);
+  --hero-text-3xl: clamp(2rem, 6vw, 2.5rem);
+  --hero-text-4xl: clamp(2.5rem, 7vw, 3rem);
+  --hero-text-5xl: clamp(3rem, 8vw, 4rem);
+  --hero-text-6xl: clamp(4rem, 10vw, 5rem);
+  --hero-text-7xl: clamp(5rem, 12vw, 6rem);
+  
+  /* Spacing scale */
+  --hero-space-xs: clamp(0.25rem, 1vw, 0.5rem);
+  --hero-space-sm: clamp(0.5rem, 2vw, 1rem);
+  --hero-space-md: clamp(1rem, 3vw, 1.5rem);
+  --hero-space-lg: clamp(1.5rem, 4vw, 2rem);
+  --hero-space-xl: clamp(2rem, 5vw, 3rem);
+  --hero-space-2xl: clamp(3rem, 6vw, 4rem);
+  --hero-space-3xl: clamp(4rem, 8vw, 6rem);
+}
+
+/* Modern Typography Classes */
+.hero-headline {
+  font-size: var(--hero-text-6xl);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.hero-tagline {
+  font-size: var(--hero-text-2xl);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-family: 'Inter', system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+.hero-badge-text {
+  font-size: var(--hero-text-base);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-feature-settings: 'cv11';
+}
+
+.hero-body-text {
+  font-size: var(--hero-text-lg);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.hero-button-text {
+  font-size: var(--hero-text-lg);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-feature-settings: 'cv11';
+}
+
+/* Modern Gradient Backgrounds */
+.hero-gradient-primary {
+  background: var(--hero-primary-gradient);
+}
+
+.hero-gradient-secondary {
+  background: var(--hero-secondary-gradient);
+}
+
+.hero-gradient-accent {
+  background: var(--hero-accent-gradient);
+}
+
+.hero-gradient-indian-flag {
+  background: var(--indian-flag-gradient);
+}
+
+/* Glass Morphism Effects */
+.hero-glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+}
+
+.hero-glass-strong {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+}
+
+/* Modern Shadow System */
+.hero-shadow-soft {
+  box-shadow: var(--hero-shadow-sm);
+}
+
+.hero-shadow-medium {
+  box-shadow: var(--hero-shadow-md);
+}
+
+.hero-shadow-strong {
+  box-shadow: var(--hero-shadow-lg);
+}
+
+.hero-shadow-dramatic {
+  box-shadow: var(--hero-shadow-xl);
+}
+
+/* Hover shadow transitions */
+.hero-shadow-hover {
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-shadow-hover:hover {
+  box-shadow: var(--hero-shadow-lg);
+}
+
+/* Modern Border Radius */
+.hero-rounded-sm { border-radius: 0.5rem; }
+.hero-rounded-md { border-radius: 0.75rem; }
+.hero-rounded-lg { border-radius: 1rem; }
+.hero-rounded-xl { border-radius: 1.25rem; }
+.hero-rounded-2xl { border-radius: 1.5rem; }
+.hero-rounded-3xl { border-radius: 2rem; }
+
+/* Text Gradients */
+.hero-text-gradient-primary {
+  background: linear-gradient(135deg, #fecaca 0%, #f87171 50%, #ef4444 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease-in-out infinite;
+}
+
+.hero-text-gradient-accent {
+  background: linear-gradient(135deg, #ffffff 0%, #fecaca 50%, #ffffff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Gradient Animation */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Modern Button Styles */
+.hero-button-primary {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  color: #1e40af;
+  border: 2px solid #ffffff;
+  border-radius: 1.5rem;
+  padding: 1rem 2rem;
+  font-weight: 700;
+  font-size: var(--hero-text-lg);
+  box-shadow: var(--hero-shadow-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-button-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--hero-shadow-lg);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.hero-button-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: var(--hero-shadow-md);
+}
+
+.hero-button-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 1.5rem;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  font-size: var(--hero-text-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1e40af;
+  border-color: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: var(--hero-shadow-md);
+}
+
+/* Privacy Badge Styles */
+.hero-privacy-badge {
+  background: var(--indian-flag-gradient);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  padding: 1rem 2rem;
+  box-shadow: var(--hero-shadow-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-privacy-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.2) 0%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  border-radius: inherit;
+}
+
+.hero-privacy-badge-text {
+  position: relative;
+  z-index: 10;
+  color: #1a365d;
+  font-weight: 700;
+  font-size: var(--hero-text-base);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+/* Image Styles */
+.hero-image {
+  border-radius: 1.5rem;
+  box-shadow: var(--hero-shadow-lg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0) 0%, 
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.hero-image:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--hero-shadow-xl);
+}
+
+/* Responsive Design Adjustments */
+@media (max-width: 768px) {
+  :root {
+    --hero-text-6xl: clamp(2.5rem, 8vw, 3.5rem);
+    --hero-text-2xl: clamp(1.25rem, 4vw, 1.75rem);
+    --hero-space-xl: clamp(1.5rem, 4vw, 2rem);
+  }
+  
+  .hero-button-primary,
+  .hero-button-secondary {
+    padding: 0.875rem 1.5rem;
+    font-size: var(--hero-text-base);
+  }
+  
+  .hero-privacy-badge {
+    padding: 0.75rem 1.5rem;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .hero-text-gradient-primary,
+  .hero-text-gradient-accent {
+    -webkit-text-fill-color: unset;
+    background: none;
+    color: #ffffff;
+  }
+  
+  .hero-glass,
+  .hero-glass-strong {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #000000;
+  }
+  
+  .hero-privacy-badge {
+    border-color: #000000;
+    border-width: 3px;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .hero-shadow-hover {
+    transition: none;
+  }
+  
+  .hero-button-primary,
+  .hero-button-secondary,
+  .hero-image {
+    transition: none;
+  }
+  
+  .hero-text-gradient-primary {
+    animation: none;
+  }
+}
+
+/* Dark Mode Adjustments */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glass-bg: rgba(0, 0, 0, 0.2);
+    --glass-border: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .hero-gradient-primary,
+  .hero-gradient-secondary,
+  .hero-gradient-accent {
+    background: #dc2626 !important;
+    color: #ffffff !important;
+  }
+  
+  .hero-shadow-soft,
+  .hero-shadow-medium,
+  .hero-shadow-strong,
+  .hero-shadow-dramatic {
+    box-shadow: none !important;
+  }
+}

@@ -461,7 +461,7 @@ async function seedEducationalContent() {
       adminUser = new User({
         name: 'System Admin',
         phoneNumber: '9999999999',
-        email: 'admin@blooddonation.org',
+        email: 'info@callforbloodfoundation.com',
         password: 'hashedpassword', // This would be properly hashed in real scenario
         dateOfBirth: new Date('1990-01-01'),
         gender: 'other',

@@ -245,7 +245,7 @@ Use this code to ${action}.
 This code expires in 5 minutes.
 For security, don't share this code.
 
-Need help? Call +91-911-BLOOD`;
+Need help? Contact http://wa.me/919491254120`;
   }
 
   /**
@@ -262,7 +262,7 @@ Need help? Call +91-911-BLOOD`;
 
     const urgency = urgencyText[requestData.urgency] || 'BLOOD REQUEST';
 
-    return `${urgency} - Call For Blood Foundation
+    return `${urgency} - CallforBlood Foundation
 
 Blood Type: ${requestData.bloodType}
 Patient: ${requestData.patientName || 'Not specified'}

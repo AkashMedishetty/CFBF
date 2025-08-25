@@ -25,7 +25,7 @@ export const mockData = {
     admin: {
       id: 'admin_123',
       name: 'Admin User',
-      email: 'admin@callforblood.org',
+      email: 'info@callforbloodfoundation.com',
       role: 'admin',
       permissions: ['manage_users', 'view_analytics', 'manage_requests']
     }

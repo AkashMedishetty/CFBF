@@ -14,13 +14,15 @@ import i18n from './utils/i18n';
 
 // Context providers
 import { ThemeProvider } from './contexts/ThemeContext';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthContext.jsx';
 
 // Components
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
-import ErrorBoundary from './components/ErrorBoundary';
-import LoadingSpinner from './components/ui/LoadingSpinner';
+import ErrorBoundary from './components/ui/ErrorBoundary';
+
+import Loading from './components/ui/Loading';
+import ToastProvider from './components/ui/Toast';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Alert from './components/ui/Alert';
 import InstallPrompt from './components/pwa/InstallPrompt';
@@ -29,7 +31,7 @@ import PWAInstallPrompt from './components/features/PWAInstallPrompt';
 
 
 // Hooks
-import { useAuth } from './contexts/AuthContext';
+import { useAuth } from './contexts/AuthContext.jsx';
 
 // Public Pages
 const HomePage = lazy(() => import('./pages/public/HomePage'));
@@ -53,6 +55,7 @@ const HospitalLoginPage = lazy(() => import('./pages/auth/HospitalLoginPage'));
 const DonorDashboardPage = lazy(() => import('./pages/donor/DashboardPage'));
 const DonorOnboardingPage = lazy(() => import('./pages/donor/OnboardingPage'));
 const DonorProfilePage = lazy(() => import('./pages/donor/ProfilePage'));
+const NotificationsPage = lazy(() => import('./pages/donor/NotificationsPage'));
 
 // Admin Pages
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
@@ -65,43 +68,47 @@ const HospitalDashboardPage = lazy(() => import('./pages/hospital/DashboardPage'
 // Component to track route changes
 const RouteTracker = () => {
   const location = useLocation();
-  
+
   useEffect(() => {
     logger.route('NAVIGATE', location.pathname, 'APP');
     logger.debug(`Full location: ${JSON.stringify(location)}`, 'APP');
-    
+
     // Record navigation for performance monitoring
     performanceMonitor.recordMetric('navigation', {
       path: location.pathname,
       timestamp: Date.now()
     });
-    
+
     // Record navigation for preload manager
     const previousPath = sessionStorage.getItem('previousPath');
     if (previousPath) {
       preloadManager.recordNavigation(previousPath, location.pathname);
     }
     sessionStorage.setItem('previousPath', location.pathname);
-    
+
     // Scroll to top on route change
     window.scrollTo(0, 0);
   }, [location]);
-  
+
   return null;
 };
 
 // Loading component for Suspense fallback
 const LoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <LoadingSpinner size="lg" />
-  </div>
+  <Loading
+    fullScreen
+    variant="heart"
+    message="Loading page..."
+  />
 );
 
 // Auth loading component
 const AuthLoadingScreen = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <LoadingSpinner size="lg" text="Loading..." />
-  </div>
+  <Loading
+    fullScreen
+    variant="blood"
+    message="Authenticating..."
+  />
 );
 
 // App content component that uses auth context
@@ -118,7 +125,7 @@ const AppContent = () => {
         <RouteTracker />
         <div className="min-h-screen text-foreground flex flex-col">
           <Header />
-          
+
           <main className="flex-1">
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
@@ -131,7 +138,7 @@ const AppContent = () => {
                 <Route path="/emergency" element={<EmergencyRequestPage />} />
                 <Route path="/blood-banks" element={<BloodBanksPage />} />
                 <Route path="/articles/:slug" element={<ArticleDetail />} />
-                
+
                 {/* Authentication Routes */}
                 <Route path="/login" element={<SignInPage />} />
                 <Route path="/signin" element={<SignInPage />} />
@@ -140,7 +147,7 @@ const AppContent = () => {
                 <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/admin/login" element={<AdminLoginPage />} />
                 <Route path="/hospital/login" element={<HospitalLoginPage />} />
-                
+
                 {/* Donor Routes - Protected */}
                 <Route path="/donor">
                   <Route path="dashboard" element={
@@ -159,7 +166,29 @@ const AppContent = () => {
                     </ProtectedRoute>
                   } />
                 </Route>
-                
+
+                {/* Direct routes for authenticated users */}
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <DonorDashboardPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <DonorProfilePage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/notifications" element={
+                  <ProtectedRoute>
+                    <NotificationsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/onboarding" element={
+                  <ProtectedRoute>
+                    <DonorOnboardingPage />
+                  </ProtectedRoute>
+                } />
+
                 {/* Admin Routes - Protected */}
                 <Route path="/admin">
                   <Route index element={
@@ -187,15 +216,15 @@ const AppContent = () => {
                     </ProtectedRoute>
                   } />
                 </Route>
-                
+
                 {/* 404 - Not Found */}
                 <Route path="*" element={
                   <div className="min-h-[60vh] flex items-center justify-center">
                     <div className="text-center">
                       <h1 className="text-4xl font-bold text-red-600 dark:text-red-400 mb-4">404</h1>
                       <p className="text-xl text-gray-700 dark:text-gray-300 mb-6">Page not found</p>
-                      <a 
-                        href="/" 
+                      <a
+                        href="/"
                         className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                       >
                         Go to Home
@@ -206,7 +235,7 @@ const AppContent = () => {
               </Routes>
             </Suspense>
           </main>
-          
+
           <Footer />
         </div>
       </ErrorBoundary>
@@ -220,15 +249,15 @@ function App() {
     logger.info(' CallforBlood Foundation client starting...', 'APP');
     logger.debug(`Environment: ${process.env.NODE_ENV}`, 'APP');
     logger.debug(`React version: ${React.version}`, 'APP');
-    
+
     // Log browser information
     logger.debug(`User Agent: ${navigator.userAgent}`, 'APP');
     logger.debug(`Screen resolution: ${window.screen.width}x${window.screen.height}`, 'APP');
     logger.debug(`Viewport: ${window.innerWidth}x${window.innerHeight}`, 'APP');
-    
+
     // Initialize session restoration for PWA
     sessionRestoration.initializeListeners();
-    
+
     // Check if this is a PWA restart and attempt session restoration
     if (sessionRestoration.isPWARestart()) {
       logger.info('PWA restart detected, attempting session restoration', 'APP');
@@ -242,13 +271,13 @@ function App() {
         logger.warn('Session restoration failed after PWA restart', 'APP', error);
       });
     }
-    
+
     // Initialize PWA install manager
     logger.debug('PWA capabilities', 'APP', pwaInstallManager.getPWACapabilities());
-    
+
     // Initialize performance monitoring
     logger.debug('Performance monitoring initialized', 'APP');
-    
+
     // Initialize browser compatibility
     const compatibilityReport = browserCompatibility.getCompatibilityReport();
     logger.debug('Browser compatibility initialized', 'APP', {
@@ -256,13 +285,13 @@ function App() {
       version: compatibilityReport.browser.version,
       score: compatibilityReport.compatibilityScore
     });
-    
+
     // Apply browser-specific fixes
     browserCompatibility.applyBrowserFixes();
-    
+
     // Initialize accessibility manager
     logger.debug('Accessibility manager initialized', 'APP');
-    
+
     // Initialize i18n system
     i18n.initialize().then(() => {
       logger.debug('i18n system initialized', 'APP', {
@@ -272,17 +301,17 @@ function App() {
     }).catch(error => {
       logger.warn('Failed to initialize i18n system', 'APP', error);
     });
-    
+
     // Preload critical chunks for better performance
     codeSplittingManager.prefetchCriticalChunks().then(() => {
       logger.debug('Critical chunks preloaded', 'APP');
     }).catch(error => {
       logger.warn('Failed to preload critical chunks', 'APP', error);
     });
-    
+
     // Record navigation for preload manager
     preloadManager.recordNavigation('/', window.location.pathname);
-    
+
     // Listen for PWA update availability and show a toast-like inline banner
     const onUpdateAvailable = () => {
       logger.info('PWA update available - prompting user', 'APP');
@@ -314,41 +343,44 @@ function App() {
   };
 
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        {/* Update prompt */}
-        {isUpdateAvailable && (
-          <div className="fixed bottom-4 right-4 z-50 max-w-sm w-full">
-            <Alert variant="info" title="Update available" dismissible onDismiss={() => setIsUpdateAvailable(false)}>
-              <div className="space-y-3">
-                <div>New version is ready. Refresh to get the latest features and fixes.</div>
-                <div className="flex gap-2 justify-end">
-                  <button
-                    onClick={() => setIsUpdateAvailable(false)}
-                    className="px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-white/10 dark:hover:bg-white/15 dark:text-gray-200"
-                  >
-                    Later
-                  </button>
-                  <button
-                    onClick={handleRefreshNow}
-                    className="px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    Refresh
-                  </button>
-                </div>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <ToastProvider>
+            {/* Update prompt */}
+            {isUpdateAvailable && (
+              <div className="fixed bottom-4 right-4 z-50 max-w-sm w-full">
+                <Alert variant="info" title="Update available" dismissible onDismiss={() => setIsUpdateAvailable(false)}>
+                  <div className="space-y-3">
+                    <div>New version is ready. Refresh to get the latest features and fixes.</div>
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        onClick={() => setIsUpdateAvailable(false)}
+                        className="px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-white/10 dark:hover:bg-white/15 dark:text-gray-200"
+                      >
+                        Later
+                      </button>
+                      <button
+                        onClick={handleRefreshNow}
+                        className="px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white"
+                      >
+                        Refresh
+                      </button>
+                    </div>
+                  </div>
+                </Alert>
               </div>
-            </Alert>
-          </div>
-        )}
-        <AppContent />
-        
-        {/* PWA Components */}
-        <InstallPrompt />
-        <UpdateNotification />
-        <PWAInstallPrompt />
+            )}
+            <AppContent />
 
-      </AuthProvider>
-    </ThemeProvider>
+            {/* PWA Components */}
+            <InstallPrompt />
+            <UpdateNotification />
+            <PWAInstallPrompt />
+          </ToastProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
