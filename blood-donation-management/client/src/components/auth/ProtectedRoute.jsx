@@ -92,10 +92,11 @@ const ProtectedRoute = ({ children, requiredRole = null, redirectTo = '/login' }
                       user?.verification?.isVerified === true;
     
     // Check if user has completed onboarding
-    const hasCompletedOnboarding = user?.onboardingCompleted || 
-      (user?.documents && user?.documents.length > 0) || 
-      user?.questionnaireCompleted || 
-      user?.status === 'pending';
+    const hasCompletedOnboarding = Boolean(
+      user?.onboardingCompleted ||
+      (user?.documents && user?.documents.length > 0) ||
+      user?.questionnaireCompleted
+    );
     
     logger.debug('🔍 Donor onboarding check', 'PROTECTED_ROUTE', {
       hasCompletedOnboarding,

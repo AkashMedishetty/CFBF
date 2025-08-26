@@ -473,9 +473,9 @@ const AboutUs = () => {
                   International recognition for our humanitarian efforts
                 </p>
                 <img
-                  src="/Awards/Award-5.jpg"
+                  src="/Awards/Award-5.jpeg"
                   alt="Appreciation Certificate from Maa Gulf News, Dubai"
-                  className="w-full h-24 object-cover rounded-lg"
+                  className="w-full max-h-56 object-contain rounded-lg bg-white"
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
@@ -504,9 +504,9 @@ const AboutUs = () => {
                   Recognition for community service and social impact
                 </p>
                 <img
-                  src="/Awards/Award-6.jpg"
+                  src="/Awards/Award-6.JPG"
                   alt="Appreciation Award from WSO (We Shall Overcome) Hyderabad"
-                  className="w-full h-24 object-cover rounded-lg"
+                  className="w-full max-h-56 object-contain rounded-lg bg-white"
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
@@ -534,14 +534,24 @@ const AboutUs = () => {
                 <p className="text-gray-600 mb-4">
                   Recognition for outstanding contribution to healthcare innovation and community service
                 </p>
-                <img
-                  src="/Awards/Award-7.jpg"
-                  alt="Excellence in Healthcare Award 2025"
-                  className="w-full h-24 object-cover rounded-lg"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
+                <div className="grid grid-cols-2 gap-2">
+                  <img
+                    src="/Awards/Award-7.jpeg"
+                    alt="Excellence in Healthcare Award 2025"
+                    className="w-full max-h-56 object-contain rounded-lg bg-white"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  <img
+                    src="/Awards/Award-7.1.jpeg"
+                    alt="Excellence in Healthcare Award 2025 - Additional"
+                    className="w-full max-h-56 object-contain rounded-lg bg-white"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
               </div>
             </motion.div>
           </div>

@@ -198,7 +198,7 @@ const UpdateNotification = () => {
                   Update Available
                 </h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  A new version of CallforBlood Foundation is ready with improvements and fixes
+                  A new version of Callforblood Foundation is ready with improvements and fixes
                 </p>
                 {updateInfo?.version && (
                   <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">

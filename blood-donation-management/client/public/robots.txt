@@ -1,0 +1,9 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow common private paths (uncomment if added later)
+# Disallow: /admin/
+# Disallow: /dashboard/
+
+Sitemap: https://www.callforbloodfoundation.com/sitemap.xml

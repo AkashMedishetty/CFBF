@@ -63,7 +63,7 @@ const HeroImages = ({ layout = 'desktop', className = '' }) => {
     }
   };
 
-  // Desktop layout - Large images that fill the entire container space
+  // Desktop layout - Enforce same-size images
   if (layout === 'desktop') {
     return (
       <motion.div
@@ -72,21 +72,21 @@ const HeroImages = ({ layout = 'desktop', className = '' }) => {
         animate="visible"
         className={`relative w-full h-full flex flex-col space-y-4 ${className}`}
       >
-        {/* Primary image - takes most of the space */}
+        {/* Primary image - fixed size */}
         <motion.div
           variants={imageVariants}
           whileHover="hover"
-          className="relative w-full flex-1"
+          className="relative w-full"
         >
           <motion.div
             variants={hoverVariants}
-            className="relative w-full h-full"
+            className="relative w-full"
           >
             <OptimizedImage
               src={images.primary.src}
               alt={images.primary.alt}
               fallbackSrc={images.primary.fallback}
-              className="rounded-2xl shadow-2xl w-full h-full object-cover"
+              className="rounded-2xl shadow-2xl w-full h-auto object-cover"
               aspectRatio="16/10"
               priority={true}
               retryAttempts={3}
@@ -97,11 +97,11 @@ const HeroImages = ({ layout = 'desktop', className = '' }) => {
           </motion.div>
         </motion.div>
 
-        {/* Secondary image - smaller but still prominent */}
+        {/* Secondary image - same aspect ratio and constrained width */}
         <motion.div
           variants={imageVariants}
           whileHover="hover"
-          className="relative w-3/4 ml-auto"
+          className="relative w-full"
         >
           <motion.div
             variants={hoverVariants}
@@ -111,13 +111,13 @@ const HeroImages = ({ layout = 'desktop', className = '' }) => {
               src={images.secondary.src}
               alt={images.secondary.alt}
               fallbackSrc={images.secondary.fallback}
-              className="rounded-xl shadow-xl w-full h-auto"
-              aspectRatio="4/3"
+              className="rounded-2xl shadow-2xl w-full h-auto object-cover"
+              aspectRatio="16/10"
               retryAttempts={3}
-              sizes="(min-width: 1024px) 32vw, 38vw"
+              sizes="(min-width: 1024px) 42vw, 50vw"
             />
             {/* Subtle overlay for depth */}
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/5 rounded-xl pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/5 rounded-2xl pointer-events-none" />
           </motion.div>
         </motion.div>
 
@@ -128,7 +128,7 @@ const HeroImages = ({ layout = 'desktop', className = '' }) => {
     );
   }
 
-  // Tablet layout - Larger images for tablet screens
+  // Tablet layout - Enforce same-size images
   if (layout === 'tablet') {
     return (
       <motion.div
@@ -157,21 +157,21 @@ const HeroImages = ({ layout = 'desktop', className = '' }) => {
           </motion.div>
         </motion.div>
 
-        {/* Secondary image - slightly overlapped */}
+        {/* Secondary image - same size */}
         <motion.div
           variants={imageVariants}
           whileHover="hover"
-          className="relative w-4/5 -mt-10"
+          className="relative w-full"
         >
           <motion.div variants={hoverVariants}>
             <OptimizedImage
               src={images.secondary.src}
               alt={images.secondary.alt}
               fallbackSrc={images.secondary.fallback}
-              className="rounded-lg shadow-lg w-full h-auto"
-              aspectRatio="4/3"
+              className="rounded-xl shadow-xl w-full h-auto"
+              aspectRatio="16/10"
               retryAttempts={3}
-              sizes="(min-width: 768px) 60vw, 75vw"
+              sizes="(min-width: 768px) 70vw, 85vw"
             />
           </motion.div>
         </motion.div>
@@ -179,7 +179,7 @@ const HeroImages = ({ layout = 'desktop', className = '' }) => {
     );
   }
 
-  // Mobile layout - Larger images for mobile screens
+  // Mobile layout - Enforce same-size images
   return (
     <motion.div
       variants={containerVariants}
@@ -213,7 +213,7 @@ const HeroImages = ({ layout = 'desktop', className = '' }) => {
           src={images.secondary.src}
           alt={images.secondary.alt}
           fallbackSrc={images.secondary.fallback}
-          className="rounded-lg shadow-md w-full h-auto"
+          className="rounded-lg shadow-lg w-full h-auto"
           aspectRatio="16/10"
           retryAttempts={3}
           sizes="92vw"

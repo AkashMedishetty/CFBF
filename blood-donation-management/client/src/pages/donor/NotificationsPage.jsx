@@ -16,6 +16,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Input from '../../components/ui/Input';
 import logger from '../../utils/logger';
+import { authApi } from '../../utils/api';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -34,60 +35,37 @@ const NotificationsPage = () => {
 
   const fetchNotifications = async () => {
     setIsLoading(true);
-    
     try {
-      // Mock notifications for now
-      const mockNotifications = [
-        {
-          id: 1,
-          type: 'blood_request',
-          title: 'Urgent Blood Request',
-          message: 'O+ blood needed at Apollo Hospital for emergency surgery',
-          timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          read: false,
-          priority: 'high',
-          icon: Droplet,
-          color: 'red'
-        },
-        {
-          id: 2,
-          type: 'donation_reminder',
-          title: 'Donation Eligibility',
-          message: 'You are now eligible to donate blood again!',
-          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          read: false,
-          priority: 'normal',
-          icon: Heart,
-          color: 'green'
-        },
-        {
-          id: 3,
-          type: 'system',
-          title: 'Profile Verification Complete',
-          message: 'Your donor profile has been successfully verified by our admin team',
-          timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-          read: true,
-          priority: 'normal',
-          icon: CheckCircle,
-          color: 'blue'
-        },
-        {
-          id: 4,
-          type: 'appointment',
-          title: 'Upcoming Donation Drive',
-          message: 'Blood donation camp at City Hospital on March 15th, 2025',
-          timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-          read: true,
-          priority: 'normal',
-          icon: Calendar,
-          color: 'purple'
-        }
-      ];
-      
-      setNotifications(mockNotifications);
-      logger.success('Notifications loaded', 'NOTIFICATIONS_PAGE');
+      // Get current user id
+      const me = await authApi.getCurrentUser();
+      const u = me?.data?.user || me?.data;
+      const userId = u?._id || u?.id || localStorage.getItem('userId');
+      if (!userId) throw new Error('USER_ID_NOT_AVAILABLE');
+
+      // Fetch notifications from API (replace with actual endpoint when available)
+      const res = await fetch(`/api/v1/users/${userId}/notifications`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      const apiItems = (data?.data?.notifications || data?.notifications || []).map((n, idx) => ({
+        id: n.id || n._id || idx,
+        type: n.type || 'system',
+        title: n.title || n.message || 'Notification',
+        message: n.message || '',
+        timestamp: n.timestamp || n.createdAt || new Date().toISOString(),
+        read: Boolean(n.read),
+        priority: n.priority || 'normal',
+        icon: (n.type === 'blood_request' ? Droplet : n.type === 'donation_reminder' ? Heart : n.type === 'appointment' ? Calendar : CheckCircle),
+        color: (n.type === 'blood_request' ? 'red' : n.type === 'donation_reminder' ? 'green' : n.type === 'appointment' ? 'purple' : 'blue')
+      }));
+
+      setNotifications(apiItems);
+      logger.success('Notifications loaded (API)', 'NOTIFICATIONS_PAGE');
     } catch (error) {
       logger.error('Failed to load notifications', 'NOTIFICATIONS_PAGE', error);
+      setNotifications([]);
     } finally {
       setIsLoading(false);
     }

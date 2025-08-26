@@ -128,12 +128,12 @@ const MissionMessaging = ({ className = '', variant = 'full' }) => {
             key={index}
             variants={itemVariants}
             whileHover={{ scale: 1.05, y: -2 }}
-            className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20"
+            className="text-center bg-red-600/10 rounded-xl p-4 border border-red-300/30"
           >
-            <stat.icon className={`w-8 h-8 ${stat.color} mx-auto mb-2`} />
-            <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-            <div className="text-sm font-medium text-red-100 mb-1">{stat.label}</div>
-            <div className="text-xs text-red-200 leading-tight">{stat.description}</div>
+            <stat.icon className={`w-8 h-8 text-red-700 mx-auto mb-2`} />
+            <div className="text-2xl font-bold text-slate-900 mb-1">{stat.value}</div>
+            <div className="text-sm font-medium text-slate-700 mb-1">{stat.label}</div>
+            <div className="text-xs text-slate-600 leading-tight">{stat.description}</div>
           </motion.div>
         ))}
       </motion.div>
@@ -150,7 +150,7 @@ const MissionMessaging = ({ className = '', variant = 'full' }) => {
     >
       {/* Main Mission Statement */}
       <motion.div variants={itemVariants}>
-        <div className="bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+        <div className="bg-red-700/30 rounded-2xl p-8 border border-red-500/40">
           <div className="flex items-start space-x-6">
             <div className="flex-shrink-0">
               <div className="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center">
@@ -161,23 +161,20 @@ const MissionMessaging = ({ className = '', variant = 'full' }) => {
               <h3 className="text-2xl font-bold text-white mb-3">
                 Revolutionizing Blood Donation in India
               </h3>
-              <p className="text-red-100 leading-relaxed text-lg mb-4">
-                We're the first platform in India to prioritize donor privacy while maintaining 
-                the life-saving mission of blood donation. Our innovative 3-month hiding feature 
-                ensures your personal information stays protected while you make a meaningful 
-                difference in your community.
+              <p className="text-white leading-relaxed text-lg mb-4 drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]">
+                Every donation through our platform can save up to 3 lives. Join thousands of donors who trust our privacy-first approach to make a meaningful difference in their communities while keeping their personal information completely secure.
               </p>
-              <div className="flex items-center space-x-4 text-sm text-red-200">
+              <div className="flex items-center space-x-4 text-sm text-white/90">
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <CheckCircle className="w-4 h-4 text-white" />
                   <span>Privacy First Approach</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <CheckCircle className="w-4 h-4 text-white" />
                   <span>Life-Saving Impact</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <CheckCircle className="w-4 h-4 text-white" />
                   <span>Community Building</span>
                 </div>
               </div>
@@ -193,12 +190,12 @@ const MissionMessaging = ({ className = '', variant = 'full' }) => {
             <motion.div
               key={index}
               whileHover={{ scale: 1.05, y: -4 }}
-              className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 text-center group hover:bg-white/15 transition-all duration-300"
+              className="bg-red-600/10 rounded-xl p-6 border border-red-300/30 text-center group hover:bg-red-600/15 transition-all duration-300"
             >
-              <stat.icon className={`w-10 h-10 ${stat.color} mx-auto mb-3 group-hover:scale-110 transition-transform`} />
-              <div className="text-3xl font-bold text-white mb-2">{stat.value}</div>
-              <div className="text-sm font-semibold text-red-100 mb-2">{stat.label}</div>
-              <div className="text-xs text-red-200 leading-tight">{stat.description}</div>
+              <stat.icon className={`w-10 h-10 text-red-700 mx-auto mb-3 group-hover:scale-110 transition-transform`} />
+              <div className="text-3xl font-bold text-slate-900 mb-2">{stat.value}</div>
+              <div className="text-sm font-semibold text-slate-700 mb-2">{stat.label}</div>
+              <div className="text-xs text-slate-600 leading-tight">{stat.description}</div>
             </motion.div>
           ))}
         </div>
@@ -214,13 +211,13 @@ const MissionMessaging = ({ className = '', variant = 'full' }) => {
               className="flex items-start space-x-4 bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300"
             >
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-br from-red-500/20 to-red-600/20 rounded-xl flex items-center justify-center">
-                  <point.icon className="w-6 h-6 text-red-300" />
+                <div className="w-12 h-12 bg-red-600/20 rounded-xl flex items-center justify-center">
+                  <point.icon className="w-6 h-6 text-red-700" />
                 </div>
               </div>
               <div className="flex-1">
-                <h4 className="text-lg font-semibold text-white mb-2">{point.title}</h4>
-                <p className="text-red-100 text-sm leading-relaxed">{point.description}</p>
+                <h4 className="text-lg font-semibold text-slate-900 mb-2">{point.title}</h4>
+                <p className="text-slate-600 text-sm leading-relaxed">{point.description}</p>
               </div>
             </motion.div>
           ))}

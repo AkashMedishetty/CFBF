@@ -102,7 +102,7 @@ const ServiceWorkerUpdater = () => {
                   App Update Available
                 </h3>
                 <p className="text-xs text-gray-600 mb-3">
-                  A new version of CallforBlood Foundation is ready with improvements and bug fixes.
+                  A new version of Callforblood Foundation is ready with improvements and bug fixes.
                 </p>
                 <div className="flex space-x-2">
                   <Button

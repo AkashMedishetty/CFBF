@@ -37,6 +37,9 @@ import { useAuth } from './contexts/AuthContext.jsx';
 const HomePage = lazy(() => import('./pages/public/HomePage'));
 const AboutPage = lazy(() => import('./pages/public/AboutPage'));
 const ContactPage = lazy(() => import('./pages/public/ContactPage'));
+const HelpPage = lazy(() => import('./pages/public/HelpPage'));
+const PrivacyPage = lazy(() => import('./pages/public/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/public/TermsPage'));
 const ComponentsPage = lazy(() => import('./pages/public/ComponentsPage'));
 const EducationPage = lazy(() => import('./pages/public/EducationPage'));
 const EmergencyRequestPage = lazy(() => import('./pages/public/EmergencyRequestPage'));
@@ -133,6 +136,9 @@ const AppContent = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<ContactPage />} />
+                <Route path="/help" element={<HelpPage />} />
+                <Route path="/privacy" element={<PrivacyPage />} />
+                <Route path="/terms" element={<TermsPage />} />
                 <Route path="/components" element={<ComponentsPage />} />
                 <Route path="/education" element={<EducationPage />} />
                 <Route path="/emergency" element={<EmergencyRequestPage />} />
@@ -246,7 +252,7 @@ const AppContent = () => {
 function App() {
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
   useEffect(() => {
-    logger.info(' CallforBlood Foundation client starting...', 'APP');
+    logger.info(' Callforblood Foundation client starting...', 'APP');
     logger.debug(`Environment: ${process.env.NODE_ENV}`, 'APP');
     logger.debug(`React version: ${React.version}`, 'APP');
 

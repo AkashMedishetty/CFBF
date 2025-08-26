@@ -259,7 +259,7 @@ const Map = ({
     try {
       // Use Nominatim API for geocoding
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=8&countrycodes=in`
       );
       
       const results = await response.json();

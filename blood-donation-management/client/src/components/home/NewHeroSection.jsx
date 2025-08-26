@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, memo, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import PrivacyBadge, { PremiumPrivacyBadge } from './PrivacyBadge';
+import PrivacyBadge, { PremiumPrivacyBadge, CompactPrivacyBadge } from './PrivacyBadge';
 import HeroContent from './HeroContent';
 import HeroImages from './HeroImages';
 import HeroCTA from './HeroCTA';
@@ -92,7 +92,11 @@ const NewHeroSection = memo(({
   // Performance optimization: Skip heavy components for minimal variant
   if (variant === 'minimal') {
     return (
-      <section className={`relative bg-gradient-to-br from-primary-600 via-primary-700 to-red-800 text-white min-h-screen flex items-center ${className}`}>
+      <section className={`relative bg-white min-h-screen flex items-center ${className}`}>
+        {/* Top half blue background */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 right-0 h-[calc(35%+20px)] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+        </div>
         <div className="max-w-4xl mx-auto px-6 py-12 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -123,7 +127,11 @@ const NewHeroSection = memo(({
   // Compact variant for mobile or space-constrained layouts
   if (variant === 'compact' || layout === 'mobile') {
     return (
-      <section className={`relative bg-gradient-to-br from-primary-600 via-primary-700 to-red-800 text-white min-h-screen ${className}`}>
+      <section className={`relative bg-white min-h-screen ${className}`}>
+        {/* Top half blue background */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 left-0 right-0 h-[calc(35%+20px)] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+        </div>
         <div className="relative max-w-sm mx-auto px-4 py-8 min-h-screen flex flex-col justify-center">
           <motion.div
             variants={containerVariants}
@@ -133,7 +141,7 @@ const NewHeroSection = memo(({
           >
             {heroConfig.showPrivacyBadge && (
               <AnimatedSection variants={sectionVariants} className="text-center">
-                <PrivacyBadge />
+                <CompactPrivacyBadge className="mx-auto max-w-[90%]" />
               </AnimatedSection>
             )}
             
@@ -152,12 +160,10 @@ const NewHeroSection = memo(({
 
   // Full variant with all features
   return (
-    <section className={`relative bg-gradient-to-br from-primary-600 via-primary-700 to-red-800 text-white overflow-visible min-h-screen ${className}`}>
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-black/10">
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
+    <section className={`relative bg-white overflow-visible min-h-screen ${className}`}>
+      {/* Background: top half blue, bottom half white */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 right-0 h-[calc(29.5%)] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-6 lg:px-8 py-8 min-h-screen overflow-visible">
@@ -169,9 +175,15 @@ const NewHeroSection = memo(({
           {/* Privacy Badge */}
           {heroConfig.showPrivacyBadge && (
             <AnimatedSection variants={sectionVariants} className="text-center mb-8">
-              <PremiumPrivacyBadge />
+              {layout === 'desktop' ? (
+                <PremiumPrivacyBadge />
+              ) : (
+                <CompactPrivacyBadge className="mx-auto max-w-[90%]" />
+              )}
             </AnimatedSection>
           )}
+
+          {/* Associations will be shown under the branding inside the left column */}
 
           {/* Main Content Layout - Balanced proportions */}
           {layout === 'desktop' ? (
@@ -180,7 +192,7 @@ const NewHeroSection = memo(({
                 <HeroContent onRegisterClick={handleRegisterClick} />
               </AnimatedSection>
               
-              <AnimatedSection variants={sectionVariants} className="col-span-5">
+              <AnimatedSection variants={sectionVariants} className="col-span-5 mt-10">
                 <HeroImages layout="desktop" />
               </AnimatedSection>
             </div>
@@ -204,6 +216,8 @@ const NewHeroSection = memo(({
               </Suspense>
             </AnimatedSection>
           )}
+
+          {/* Associations block removed from below stats per request */}
         </motion.div>
       </div>
 

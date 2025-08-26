@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import SEO from '../../components/ui/SEO';
 import { useNavigate } from 'react-router-dom';
 
 // Home page components
@@ -21,6 +22,12 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Callforblood Foundation – Privacy‑Protected Blood Donation"
+        description="Connect with donors safely using our 3‑month donor hiding feature. India's first privacy‑protected blood donation platform."
+        url="https://www.callforbloodfoundation.com/"
+        image="/og-card.jpg"
+      />
       {/* Hero Section with Privacy Focus */}
       <HeroSection onRegisterClick={handleRegisterClick} />
       

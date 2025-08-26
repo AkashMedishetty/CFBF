@@ -223,6 +223,7 @@ export const AuthProvider = ({ children }) => {
 
       if (response.success && response.data?.user) {
         const userData = response.data.user;
+        console.log('AuthContext init: server user payload', userData);
         
         // Ensure user data has proper structure
         const normalizedUser = {

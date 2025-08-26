@@ -103,7 +103,7 @@ class IOSPWAManager {
       // Apple-specific meta tags
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
       { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
-      { name: 'apple-mobile-web-app-title', content: 'CallforBlood Foundation' },
+      { name: 'apple-mobile-web-app-title', content: 'Callforblood Foundation' },
       
       // Touch icons
       { rel: 'apple-touch-icon', href: '/icons/apple-touch-icon-57x57.png', sizes: '57x57' },
@@ -285,7 +285,7 @@ class IOSPWAManager {
     const structuredData = {
       '@context': 'https://schema.org',
       '@type': 'MobileApplication',
-      name: 'CallforBlood Foundation',
+      name: 'Callforblood Foundation',
       description: 'Emergency blood donation management system',
       applicationCategory: 'HealthApplication',
       operatingSystem: 'iOS',

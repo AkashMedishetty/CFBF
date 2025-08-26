@@ -50,9 +50,27 @@ const ProfilePage = () => {
 
   const fetchUserProfile = async () => {
     try {
-      // Get user ID from localStorage or auth context
-      const userId = localStorage.getItem('userId') || 'current-user-id';
-      
+      // Prefer auth API to fetch current user to avoid placeholder IDs
+      try {
+        const meRes = await fetch('/api/v1/auth/me', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        const meData = await meRes.json();
+        if (meRes.ok && (meData?.data?.user || meData?.data)) {
+          const u = meData.data.user || meData.data;
+          if (u?._id) {
+            localStorage.setItem('userId', u._id);
+          }
+        }
+      } catch {}
+
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        logger.warn('No userId available for profile fetch', 'PROFILE_PAGE');
+        setIsLoading(false);
+        return;
+      }
+
       const response = await fetch(`/api/v1/users/${userId}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -90,13 +108,34 @@ const ProfilePage = () => {
 
   const handleSave = async () => {
     logger.ui('CLICK', 'SaveProfile', null, 'PROFILE_PAGE');
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
+    // Build partial update payload to avoid backend schema errors
+    const buildPartialPayload = () => {
+      const payload = {};
+      if (!user) return payload;
+      const orig = user;
+      const cur = editData || {};
+      Object.keys(cur).forEach((key) => {
+        const before = orig[key];
+        const after = cur[key];
+        const changed = typeof after === 'object' ? JSON.stringify(after) !== JSON.stringify(before) : after !== before;
+        if (!changed) return;
+        // Skip complex fields not supported by current Joi schema
+        if (key === 'location') return;
+        if (key === 'address' && typeof after !== 'string') return;
+        if (key === 'emergencyContact' && typeof after !== 'string') return;
+        payload[key] = after;
+      });
+      logger.debug('Partial profile update payload', 'PROFILE_PAGE', payload);
+      return payload;
+    };
+
     setSaving(true);
-    
+
     try {
       const response = await fetch(`/api/v1/users/${user._id}`, {
         method: 'PUT',
@@ -104,7 +143,7 @@ const ProfilePage = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify(editData)
+        body: JSON.stringify(buildPartialPayload())
       });
       
       const data = await response.json();

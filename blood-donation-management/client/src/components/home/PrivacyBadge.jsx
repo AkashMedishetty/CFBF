@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Star, Award } from 'lucide-react';
+import { Droplet, Droplets } from 'lucide-react';
 
 const PrivacyBadge = ({ 
   text = "1st time in India with Unique Donor Details Privacy Concept",
@@ -50,7 +50,7 @@ const PrivacyBadge = ({
   };
 
   const BadgeContent = () => (
-    <div className="relative inline-flex items-center justify-center px-8 py-4 rounded-full overflow-hidden border border-white/30 shadow-2xl backdrop-blur-sm">
+    <div className="relative inline-flex items-center justify-center px-8 py-3 rounded-full overflow-hidden border border-white/30 shadow-2xl backdrop-blur-sm whitespace-nowrap max-w-full">
       {/* Indian Flag Gradient Background */}
       <div 
         className="absolute inset-0 opacity-90"
@@ -82,12 +82,12 @@ const PrivacyBadge = ({
           initial={animated ? "hidden" : "visible"}
           animate="visible"
         >
-          <Shield className="w-5 h-5 text-orange-800 drop-shadow-sm" />
+          <Droplet className="w-5 h-5 text-red-800 drop-shadow-sm" />
         </motion.div>
         
         {/* Text */}
         <span 
-          className="font-bold text-sm md:text-base lg:text-lg tracking-wide text-center leading-tight"
+          className="font-extrabold text-base md:text-lg lg:text-xl tracking-wide text-center leading-tight whitespace-nowrap"
           style={{
             color: '#1a365d', // Dark blue for contrast
             textShadow: '0 1px 2px rgba(255, 255, 255, 0.8), 0 1px 1px rgba(0, 0, 0, 0.1)'
@@ -102,7 +102,7 @@ const PrivacyBadge = ({
           initial={animated ? "hidden" : "visible"}
           animate="visible"
         >
-          <Star className="w-5 h-5 text-green-800 drop-shadow-sm fill-current" />
+          <Droplets className="w-5 h-5 text-red-900 drop-shadow-sm" />
         </motion.div>
       </div>
       
@@ -139,7 +139,7 @@ const PrivacyBadge = ({
 
 // Alternative compact version for smaller screens
 export const CompactPrivacyBadge = ({ 
-  text = "India's 1st Privacy-Protected Platform",
+  text = "1st time in India with Unique Donor Details Privacy Concept",
   className = ''
 }) => {
   return (
@@ -147,7 +147,7 @@ export const CompactPrivacyBadge = ({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5 }}
-      className={`inline-flex items-center px-4 py-2 rounded-full text-xs font-semibold ${className}`}
+      className={`inline-flex items-center px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-semibold whitespace-nowrap ${className}`}
       style={{
         background: `linear-gradient(90deg, 
           #FF9933 0%,     /* Saffron */
@@ -158,9 +158,9 @@ export const CompactPrivacyBadge = ({
         textShadow: '0 1px 1px rgba(255, 255, 255, 0.8)'
       }}
     >
-      <Shield className="w-3 h-3 mr-2 text-orange-800" />
+      <Droplet className="w-3 h-3 mr-1.5 text-red-800" />
       {text}
-      <Star className="w-3 h-3 ml-2 text-green-800 fill-current" />
+      <Droplets className="w-3 h-3 ml-1.5 text-red-900" />
     </motion.div>
   );
 };
@@ -182,7 +182,7 @@ export const PremiumPrivacyBadge = ({
       <div className="absolute -inset-1 bg-gradient-to-r from-orange-400 via-white to-green-400 rounded-full blur opacity-30" />
       
       {/* Main badge */}
-      <div className="relative flex items-center px-10 py-5 rounded-full overflow-hidden border border-white/40 shadow-2xl backdrop-blur-md">
+      <div className="relative flex items-center px-14 py-6 rounded-full overflow-hidden border border-white/40 shadow-2xl backdrop-blur-md whitespace-nowrap">
         {/* Enhanced Indian Flag Background */}
         <div 
           className="absolute inset-0"
@@ -217,11 +217,11 @@ export const PremiumPrivacyBadge = ({
             animate={{ scale: 1 }}
             transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
           >
-            <Award className="w-6 h-6 text-orange-800 drop-shadow-lg" />
+            <Droplet className="w-6 h-6 text-red-800 drop-shadow-lg" />
           </motion.div>
           
           <span 
-            className="font-black text-base md:text-lg lg:text-xl tracking-wide text-center leading-tight"
+            className="font-black text-xl md:text-2xl lg:text-3xl tracking-wide text-center leading-tight whitespace-nowrap"
             style={{
               color: '#1a365d',
               textShadow: '0 2px 4px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(0, 0, 0, 0.1)'
@@ -235,7 +235,7 @@ export const PremiumPrivacyBadge = ({
             animate={{ scale: 1 }}
             transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
           >
-            <Star className="w-6 h-6 text-green-800 drop-shadow-lg fill-current" />
+            <Droplets className="w-6 h-6 text-red-900 drop-shadow-lg" />
           </motion.div>
         </div>
         

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import React, { useState } from 'react';
 import {
   Heart,
   Target,
@@ -8,6 +9,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import FounderStorySection from '../../components/home/FounderStorySection';
+import SEO from '../../components/ui/SEO';
 
 const AboutPage = () => {
   const containerVariants = {
@@ -59,8 +61,23 @@ const AboutPage = () => {
     'HIPAA Compliant Platform'
   ];
 
+  const [previewSrc, setPreviewSrc] = useState(null);
+
+  const handleImageClick = (e) => {
+    const target = e.target;
+    if (target && target.tagName === 'IMG' && target.src) {
+      setPreviewSrc(target.src);
+    }
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" onClick={handleImageClick}>
+      <SEO
+        title="About – Callforblood Foundation"
+        description="Learn about our mission to protect donor privacy while saving lives across India."
+        url="https://www.callforbloodfoundation.com/about"
+        image="/og-card.jpg"
+      />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-20">
         <div className="absolute inset-0 opacity-20">
@@ -80,7 +97,7 @@ const AboutPage = () => {
               variants={itemVariants}
               className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
             >
-              About CallforBlood Foundation
+              About Callforblood Foundation
             </motion.h1>
             <motion.p
               variants={itemVariants}
@@ -88,6 +105,79 @@ const AboutPage = () => {
             >
               Revolutionizing blood donation through technology, compassion, and community
             </motion.p>
+          </motion.div>
+        </div>
+      </section>
+
+      {previewSrc && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center" onClick={() => setPreviewSrc(null)}>
+          <img src={previewSrc} alt="Preview" className="max-w-[95vw] max-height-[95vh] rounded-lg shadow-2xl object-contain" />
+        </div>
+      )}
+
+      {/* About Hero Content Summary Section */}
+      <section className="py-16 bg-white dark:bg-dark-bg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid lg:grid-cols-2 gap-10 items-start"
+          >
+            {/* Left: Headline and tagline */}
+            <motion.div variants={itemVariants} className="space-y-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 leading-tight">
+                <span className="block">India's First</span>
+                <span className="block text-red-500">Privacy-Protected</span>
+                <span className="block">Blood Donation Platform</span>
+              </h2>
+              <div className="flex items-center space-x-2 text-slate-600">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41 1.01 4.22 2.53C11.09 5.01 12.76 4 14.5 4 17 4 19 6 19 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <span className="text-base font-medium">by <span className="font-semibold text-slate-900">Callforblood Foundation</span></span>
+              </div>
+              <div className="inline-block bg-white text-slate-700 rounded-xl px-5 py-3 shadow-md max-w-2xl border border-slate-200">
+                <p className="text-base md:text-lg leading-relaxed">
+                  Revolutionary donor privacy protection with <span className="font-bold text-red-600">3-month hiding feature</span>. Connect with patients while keeping your details completely secure.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Right: Feature capsules and mission card */}
+            <motion.div variants={itemVariants} className="space-y-6">
+              {/* Feature capsules */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="flex items-center space-x-3 bg-red-600 text-white rounded-xl px-4 py-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a9.99 9.99 0 018.944 13.548l1.77 1.771-1.414 1.414-1.77-1.77A10 10 0 1112 2zm0 2a8 8 0 100 16 8 8 0 000-16z"/></svg>
+                  <div>
+                    <p className="font-semibold text-sm">Complete Privacy</p>
+                    <p className="text-white/90 text-xs">Your details stay protected</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 bg-red-600 text-white rounded-xl px-4 py-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 100 18 9 9 0 000-18zm1 9h5v2h-7V7h2v5z"/></svg>
+                  <div>
+                    <p className="font-semibold text-sm">3-Month Hiding</p>
+                    <p className="text-white/90 text-xs">Automatic privacy protection</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 bg-red-600 text-white rounded-xl px-4 py-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M5 12l5 5L20 7l-1.41-1.41L10 14.17l-3.59-3.59L5 12z"/></svg>
+                  <div>
+                    <p className="font-semibold text-sm">Instant Matching</p>
+                    <p className="text-white/90 text-xs">Quick donor connections</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mission statement card */}
+              <div className="bg-red-900/50 rounded-2xl p-6 border border-red-900/60">
+                <h3 className="text-lg md:text-xl font-bold text-white mb-2">Saving Lives Through Innovation</h3>
+                <p className="text-white leading-relaxed text-base drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)]">
+                  Every donation through our platform can save up to 3 lives. Join thousands of donors who trust our privacy-first approach to make a meaningful difference in their communities while keeping their personal information completely secure.
+                </p>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -283,7 +373,7 @@ const AboutPage = () => {
                   <img
                     src="/Awards/Award-1.jpg"
                     alt="National Mother Teresa Award 2021"
-                    className="w-full h-24 object-cover rounded-lg"
+                    className="w-full max-h-56 object-contain rounded-lg bg-white"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}
@@ -291,7 +381,7 @@ const AboutPage = () => {
                   <img
                     src="/Awards/Award-1.1.jpg"
                     alt="National Mother Teresa Award 2021 - Certificate"
-                    className="w-full h-24 object-cover rounded-lg"
+                    className="w-full max-h-56 object-contain rounded-lg bg-white"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}
@@ -322,7 +412,7 @@ const AboutPage = () => {
                   <img
                     src="/Awards/Award-2.jpg"
                     alt="Best Blood Donors Award 2025"
-                    className="w-full h-24 object-cover rounded-lg"
+                    className="w-full max-h-56 object-contain rounded-lg bg-white"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}
@@ -330,7 +420,7 @@ const AboutPage = () => {
                   <img
                     src="/Awards/Award-2.1.JPG"
                     alt="Best Blood Donors Award 2025 - Certificate"
-                    className="w-full h-24 object-cover rounded-lg"
+                    className="w-full max-h-56 object-contain rounded-lg bg-white"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}
@@ -360,7 +450,7 @@ const AboutPage = () => {
                 <img
                   src="/Awards/Award-3.jpg"
                   alt="Seva Icon Award 2025"
-                  className="w-full h-24 object-cover rounded-lg"
+                  className="w-full max-h-56 object-contain rounded-lg bg-white"
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
@@ -394,7 +484,7 @@ const AboutPage = () => {
                   <img
                     src="/Awards/Award-4.JPG"
                     alt="Best Social Activist Award 2025 - With Sri Sajjanar, IPS CP Hyderabad"
-                    className="w-full h-24 object-cover rounded-lg"
+                    className="w-full max-h-56 object-contain rounded-lg bg-white"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}
@@ -402,7 +492,7 @@ const AboutPage = () => {
                   <img
                     src="/Awards/Award-4.1.JPG"
                     alt="Best Social Activist Award 2025 - With Sri Parikipandla Narahari garu, IAS Bhopal, M.P."
-                    className="w-full h-24 object-cover rounded-lg"
+                    className="w-full max-h-56 object-contain rounded-lg bg-white"
                     onError={(e) => {
                       e.target.style.display = 'none';
                     }}
@@ -430,9 +520,9 @@ const AboutPage = () => {
                   International recognition for our humanitarian efforts
                 </p>
                 <img
-                  src="/Awards/Award-5.jpg"
+                  src="/Awards/Award-5.jpeg"
                   alt="Appreciation Certificate from Maa Gulf News, Dubai"
-                  className="w-full h-24 object-cover rounded-lg"
+                  className="w-full max-h-56 object-contain rounded-lg bg-white"
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
@@ -459,9 +549,9 @@ const AboutPage = () => {
                   Recognition for community service and social impact
                 </p>
                 <img
-                  src="/Awards/Award-6.jpg"
+                  src="/Awards/Award-6.JPG"
                   alt="Appreciation Award from WSO (We Shall Overcome) Hyderabad"
-                  className="w-full h-24 object-cover rounded-lg"
+                  className="w-full max-h-56 object-contain rounded-lg bg-white"
                   onError={(e) => {
                     e.target.style.display = 'none';
                   }}
@@ -487,14 +577,24 @@ const AboutPage = () => {
                 <p className="text-slate-600 dark:text-slate-400 mb-4">
                   Recognition for outstanding contribution to healthcare innovation and community service
                 </p>
-                <img
-                  src="/Awards/Award-7.jpg"
-                  alt="Excellence in Healthcare Award 2025"
-                  className="w-full h-24 object-cover rounded-lg"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
+                <div className="grid grid-cols-2 gap-2">
+                  <img
+                    src="/Awards/Award-7.jpeg"
+                    alt="Excellence in Healthcare Award 2025"
+                    className="w-full max-h-56 object-contain rounded-lg bg-white"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  <img
+                    src="/Awards/Award-7.1.jpeg"
+                    alt="Excellence in Healthcare Award 2025 - Additional"
+                    className="w-full max-h-56 object-contain rounded-lg bg-white"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
               </div>
             </motion.div>
           </motion.div>

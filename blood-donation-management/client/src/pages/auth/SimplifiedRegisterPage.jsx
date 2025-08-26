@@ -25,7 +25,7 @@ const SimplifiedRegisterPage = () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // For now, just show success and redirect to home
-      alert('Registration successful! Welcome to CallforBlood Foundation.');
+      alert('Registration successful! Welcome to Callforblood Foundation.');
       navigate('/', { replace: true });
       
     } catch (error) {
@@ -51,7 +51,7 @@ const SimplifiedRegisterPage = () => {
           </div>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-          Join CallforBlood Foundation
+          Join Callforblood Foundation
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           India's first privacy-protected blood donation platform. 

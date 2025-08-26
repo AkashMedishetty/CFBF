@@ -18,6 +18,35 @@ import { useAuth } from '../../contexts/AuthContext';
 
 
 
+// Helper to compute a friendly display name without falling back to email prefix
+const getDisplayName = (u) => {
+  if (!u) return 'User';
+  const emailPrefix = (u.email && typeof u.email === 'string') ? u.email.split('@')[0] : '';
+  const rawCandidates = [
+    u.name,
+    u.fullName,
+    u.displayName,
+    u.username,
+    `${u.firstName || ''} ${u.lastName || ''}`.trim(),
+    u.profile?.name,
+    u.profile?.fullName,
+    u.profile?.displayName,
+    `${u.profile?.firstName || ''} ${u.profile?.lastName || ''}`.trim()
+  ];
+  const candidates = rawCandidates
+    .filter(Boolean)
+    .map(s => String(s).trim())
+    .filter(Boolean)
+    .filter(s => s.toLowerCase() !== (emailPrefix || '').toLowerCase());
+  if (candidates.length > 0) return candidates[0];
+  const phone = u.phoneNumber || u.profile?.phoneNumber || u.phone;
+  if (phone && String(phone).length >= 4) {
+    const last4 = String(phone).slice(-4);
+    return `Donor • ${last4}`;
+  }
+  return 'User';
+};
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -196,15 +225,15 @@ const Header = () => {
               >
                 <img 
                   src="/Logo/android-chrome-192x192.png" 
-                  alt="CallforBlood Foundation Logo" 
+                  alt="Callforblood Foundation Logo" 
                   className="h-full w-full object-contain"
                 />
               </motion.div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-lg sm:text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors truncate">
-                  CallforBlood
+              <div className="flex items-baseline min-w-0 space-x-1">
+                <span className="text-xl sm:text-2xl font-bold text-slate-900 group-hover:text-primary-600 transition-colors truncate">
+                  Callforblood
                 </span>
-                <span className="text-xs text-gray-500 -mt-1 hidden sm:block">
+                <span className="text-xl sm:text-2xl font-bold text-red-600 truncate">
                   Foundation
                 </span>
               </div>
@@ -309,32 +338,12 @@ const Header = () => {
                   >
                     <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
                       <span className="text-white text-sm font-medium">
-                        {(user.name || user.fullName || user.firstName || user.email)?.charAt(0).toUpperCase() || 'U'}
+                        {getDisplayName(user).charAt(0).toUpperCase() || 'U'}
                       </span>
                     </div>
                     <div className="text-left">
                       <p className="text-sm font-medium text-gray-900">
-                        {(() => {
-                          // Debug: Log user data for troubleshooting
-                          console.log('User data for name display:', {
-                            name: user.name,
-                            fullName: user.fullName,
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            email: user.email,
-                            profile: user.profile
-                          });
-                          
-                          // Priority order: name > fullName > firstName + lastName > profile.name > email prefix
-                          const displayName = user.name || 
-                                            user.fullName || 
-                                            `${user.firstName || ''} ${user.lastName || ''}`.trim() ||
-                                            user.profile?.firstName + ' ' + user.profile?.lastName ||
-                                            user.email?.split('@')[0] || 
-                                            'User';
-                          
-                          return displayName;
-                        })()}
+                        {getDisplayName(user)}
                       </p>
                       <p className="text-xs text-gray-500 capitalize">
                         {user.role || 'Donor'}
@@ -355,12 +364,7 @@ const Header = () => {
                       >
                         <div className="px-4 py-2 border-b border-gray-100">
                           <p className="text-sm font-medium text-gray-900">
-                            {user.name || 
-                             user.fullName || 
-                             `${user.firstName || ''} ${user.lastName || ''}`.trim() ||
-                             user.profile?.firstName + ' ' + user.profile?.lastName ||
-                             user.email?.split('@')[0] || 
-                             'User'}
+                            {getDisplayName(user)}
                           </p>
                           <p className="text-xs text-gray-500">{user.email}</p>
                           <p className="text-xs text-primary-600 capitalize">{user.role || 'Donor'}</p>
@@ -547,11 +551,11 @@ const Header = () => {
                       >
                         <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center mr-3">
                           <span className="text-white font-medium">
-                            {(user.name || user.fullName || user.firstName || user.email)?.charAt(0).toUpperCase() || 'U'}
+                            {getDisplayName(user).charAt(0).toUpperCase() || 'U'}
                           </span>
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900">{user.name || user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email?.split('@')[0] || 'User'}</p>
+                          <p className="font-medium text-gray-900">{getDisplayName(user)}</p>
                           <p className="text-sm text-gray-600 capitalize">{user.role || 'Donor'}</p>
                         </div>
                       </motion.div>

@@ -143,7 +143,7 @@ const DashboardPage = () => {
   };
 
   const shareAchievement = (achievement) => {
-    const text = `🎉 I just earned the "${achievement.name}" badge on CallforBlood Foundation! ${achievement.description} #BloodDonation #LifeSaver`;
+    const text = `🎉 I just earned the "${achievement.name}" badge on Callforblood Foundation! ${achievement.description} #BloodDonation #LifeSaver`;
     
     if (navigator.share) {
       navigator.share({

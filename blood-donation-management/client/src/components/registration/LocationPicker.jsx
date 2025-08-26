@@ -25,8 +25,8 @@ const LocationPicker = ({ onLocationSelect, enableHighAccuracy = true, allowManu
 
     const options = {
       enableHighAccuracy: enableHighAccuracy,
-      timeout: 10000,
-      maximumAge: 300000 // 5 minutes
+      timeout: 20000,
+      maximumAge: 60000 // 1 minute
     };
 
     const handleLocationSuccess = async (position) => {
@@ -63,8 +63,8 @@ const LocationPicker = ({ onLocationSelect, enableHighAccuracy = true, allowManu
         
         const fallbackOptions = {
           enableHighAccuracy: false,
-          timeout: 15000,
-          maximumAge: 600000 // 10 minutes
+          timeout: 20000,
+          maximumAge: 60000
         };
         
         navigator.geolocation.getCurrentPosition(
